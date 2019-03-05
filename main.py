@@ -12,15 +12,17 @@ def init_screen(width, height):
 
 screen = init_screen(800, 600)
 pygame.font.init()
-player = Animator(screen, "juoksu.png", Rect(0,0,128,128),16)
+player = Animator(screen, "juoksu2.png", Rect(0,0,128,128),2)
 running = True
 pygame.init()
 where_to = (0,0)
+clk = pygame.time.Clock()
+fps = 60
 
 while running:
     # cropped.blit(image, image_pos)
     pygame.display.update()
-    if (player.move_player(where_to)):
+    if ((where_to != (0,0)) and player.move_player(where_to)):
         player.move_steps = player.move_len
     # screen.blit(image, image_pos, image_crop)
     EventList = pygame.event.get() 
@@ -40,3 +42,4 @@ while running:
                 where_to = (0,1)
         if (e.type == KEYUP):
             where_to = (0,0)
+    clk.tick(fps)
