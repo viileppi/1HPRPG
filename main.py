@@ -27,19 +27,19 @@ while running:
     # screen.blit(image, image_pos, image_crop)
     EventList = pygame.event.get() 
     for e in EventList:
+        if (e.type == KEYUP):
+            where_to = (0,0)
         if (e.type == KEYDOWN):
             if (e.key == K_ESCAPE or e.key == K_q):
                 running = False
                 pygame.quit()
                 break
             elif (e.key == K_RIGHT):
-                where_to = (1,0)
+                where_to = (1,where_to[1])
             elif (e.key == K_LEFT):
-                where_to = (-1,0)
+                where_to = (-1,where_to[1])
             elif (e.key == K_UP):
-                where_to = (0,-1)
+                where_to = (where_to[0],-1)
             elif (e.key == K_DOWN):
-                where_to = (0,1)
-        if (e.type == KEYUP):
-            where_to = (0,0)
+                where_to = (where_to[0],1)
     clk.tick(fps)
