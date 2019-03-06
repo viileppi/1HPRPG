@@ -1,6 +1,7 @@
 import pygame
 from pygame.locals import *
 from animator import Animator
+from objects import Object
 # from sprite_strip_anim import SpriteStripAnim
 
 def init_screen(width, height):
@@ -12,17 +13,25 @@ def init_screen(width, height):
 
 screen = init_screen(800, 600)
 pygame.font.init()
-player = Animator(screen, "juoksu2.png", Rect(0,0,128,128),2)
+# player = Animator(screen, "juoksu2.png", 2)
+mygroup = pygame.sprite.Group()
+enemygroup = pygame.sprite.Group()
+player = Object(screen, "juoksu2.png", (30,30))
+enemy = Object(screen, "juoksu2.png", (10,10))
+player.move_animator.add2group(mygroup)
+enemy.move_animator.add2group(enemygroup)
 running = True
 pygame.init()
 where_to = (0,0)
 clk = pygame.time.Clock()
 fps = 60
-
+enemy.move((0,0))
+player.move((0,0))
+pygame.display.update()
 while running:
     # cropped.blit(image, image_pos)
     pygame.display.update()
-    if ((where_to != (0,0)) and player.move_player(where_to)):
+    if ((where_to != (0,0)) and player.move(where_to)):
         player.move_steps = player.move_len
     # screen.blit(image, image_pos, image_crop)
     EventList = pygame.event.get() 
