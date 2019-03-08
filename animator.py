@@ -7,7 +7,6 @@ class Animator(pygame.sprite.Sprite):
     def __init__(self, screen, image, pos):
         pygame.sprite.Sprite.__init__(self)
         self.group = None
-        print(pygame.sprite.Sprite.groups(self))
         self.screen = screen
         # self.image = pygame.image.load(image).convert()
         self.image = image        
@@ -28,9 +27,6 @@ class Animator(pygame.sprite.Sprite):
         self.group = group
 
     def goto(self, whereto):
-        if (pygame.sprite.spritecollideany(self, self.group) != None):
-            print("hit")
-            return False
         # flip image if needed
         self.target = whereto
         if (self.target[0] < 0 and self.facing_right):
@@ -61,13 +57,10 @@ class Animator(pygame.sprite.Sprite):
                 self.image_crop.move_ip(-self.crop_size,0)           
                 self.move -= self.crop_size
 
-            r = self.screen.blit(
-                    self.image, 
-                    self.image_pos, 
-                    self.image_crop
-                    )
-            return False
-        else:
-            return True
+        r = self.screen.blit(
+                self.image, 
+                self.image_pos, 
+                self.image_crop
+                )
 
 

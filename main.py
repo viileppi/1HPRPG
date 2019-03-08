@@ -15,25 +15,23 @@ screen = init_screen(800, 600)
 pygame.font.init()
 # player = Animator(screen, "juoksu2.png", 2)
 mygroup = pygame.sprite.Group()
-enemygroup = pygame.sprite.Group()
-player = Object(screen, "juoksu2.png", (30,30))
-enemy = Object(screen, "juoksu2.png", (10,10))
-player.move_animator.add2group(mygroup)
-enemy.move_animator.add2group(enemygroup)
+player = Object(screen, "juoksu2.png", (120,120), mygroup)
+enemy = Object(screen, "juoksu2.png", (10,10), mygroup)
 running = True
 pygame.init()
 where_to = (0,0)
 clk = pygame.time.Clock()
 fps = 60
-enemy.move((0,0))
+enemy.move((1,0))
 player.move((0,0))
 pygame.display.update()
 while running:
     # cropped.blit(image, image_pos)
-    pygame.display.update()
-    if ((where_to != (0,0)) and player.move(where_to)):
-        player.move_steps = player.move_len
+    screen.fill(Color("black"))
+    enemy.patrol()
+    player.move(where_to)
     # screen.blit(image, image_pos, image_crop)
+    pygame.display.update()
     EventList = pygame.event.get() 
     for e in EventList:
         if (e.type == KEYUP):
