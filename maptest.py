@@ -1,4 +1,3 @@
-import logging
 
 import pygame
 from pygame.locals import *

@@ -1,7 +1,9 @@
 import pygame
 from pygame.locals import *
-from animator import Animator
 from objects import Object
+import pytmx
+from pytmx.util_pygame import load_pygame
+import maptest
 # from sprite_strip_anim import SpriteStripAnim
 
 def init_screen(width, height):
@@ -11,14 +13,14 @@ def init_screen(width, height):
     """
     return pygame.display.set_mode((width, height), pygame.RESIZABLE)
 
-screen = init_screen(800, 600)
+screen = init_screen(800, 640)
 screen.set_colorkey(SRCALPHA)
-pygame.font.init()
+tiled_map = maptest.TiledRenderer("testmap.tmx")
 # player = Animator(screen, "juoksu2.png", 2)
 bg = pygame.image.load("alpha_fill.png").convert_alpha()
 mygroup = pygame.sprite.Group()
-player = Object(screen, "juoksu2.png", (120,120), mygroup)
-enemy = Object(screen, "juoksu2.png", (10,10), mygroup)
+player = Object(screen, "juoksu3.png", (120,120), mygroup)
+enemy = Object(screen, "juoksu3.png", (10,10), mygroup)
 fill_a = Color(0,0,0,2)
 running = True
 pygame.init()
@@ -28,6 +30,7 @@ fps = 60
 enemy.move((1,0))
 player.move((0,0))
 pygame.display.update()
+tiled_map.render_map(bg)
 while running:
     # cropped.blit(image, image_pos)
     # screen.fill(fill_a)
