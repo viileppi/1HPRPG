@@ -10,13 +10,13 @@ class Animator(pygame.sprite.Sprite):
         self.screen = screen
         # self.image = pygame.image.load(image).convert()
         self.image = image        
-        self.rect = self.image.get_rect()
         self.step = 2
         self.image_w = self.image.get_width()
         self.image_h = self.image.get_height()
         self.crop_size = self.image_h
         self.move = 0
         self.image_crop = Rect(0,0,self.crop_size,self.crop_size)
+        self.rect = self.image_crop
         self.crop_init = self.image_crop
         self.image_pos = pos
         self.target = (0,0)

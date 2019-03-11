@@ -8,11 +8,11 @@ class Object:
     def __init__(self, screen, image, coords, group):
         """ image should be a spritesheet of square sprites """
         self.image = pygame.image.load(image).convert_alpha()
-        self.rect = self.image.get_rect()
         self.image_pos = coords
         self.screen = screen
         self.move_animator = Animator(self.screen, self.image, self.image_pos)
         self.group = group
+        self.group.add(self.move_animator)
         self.forward = True
         self.walked = 0
 
@@ -21,9 +21,6 @@ class Object:
         return "foo"
     def move(self, coords):
         self.move_animator.goto(coords)
-        hit = pygame.sprite.spritecollide(self.move_animator, self.group, False, self.collboll)
-        if (hit != []):
-            print(hit)
 
     def patrol(self):
         if (self.forward):

@@ -19,8 +19,9 @@ tiled_map = maptest.TiledRenderer("testmap.tmx")
 # player = Animator(screen, "juoksu2.png", 2)
 bg = pygame.image.load("alpha_fill.png").convert_alpha()
 mygroup = pygame.sprite.Group()
-player = Object(screen, "juoksu3.png", (120,120), mygroup)
-enemy = Object(screen, "juoksu3.png", (10,10), mygroup)
+enemygroup = pygame.sprite.Group()
+player = Object(screen, "juoksu3.png", (220,120), mygroup)
+enemy = Object(screen, "juoksu3.png", (10,10), enemygroup)
 fill_a = Color(0,0,0,2)
 running = True
 pygame.init()
@@ -37,6 +38,11 @@ while running:
     screen.blit(bg, (0,0))
     enemy.patrol()
     player.move(where_to)
+    hit_list = pygame.sprite.groupcollide(enemygroup, mygroup, False, False)
+    if (hit_list != {}):
+        for key in hit_list:
+            print(key.image_pos)
+            del key
     # screen.blit(image, image_pos, image_crop)
     pygame.display.update()
     EventList = pygame.event.get() 
