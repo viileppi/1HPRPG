@@ -17,6 +17,9 @@ class Object(pygame.sprite.Sprite):
         self.forward = True
         self.walked = 0
 
+    def destroy(self):
+        self.kill()
+
     def collboll(self, a, b):
         print(a, b)
         return "foo"

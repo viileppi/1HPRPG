@@ -4,6 +4,7 @@ from objects import Object
 import pytmx
 from pytmx.util_pygame import load_pygame
 import maptest
+from ammo import Ammo 
 # from sprite_strip_anim import SpriteStripAnim
 
 def init_screen(width, height):
@@ -13,22 +14,23 @@ def init_screen(width, height):
     """
     return pygame.display.set_mode((width, height), pygame.RESIZABLE)
 
+# set up basic level
 screen = init_screen(800, 640)
 screen.set_colorkey(SRCALPHA)
+# using semi-transparent image for clearing the screen and smoothing out animation
 bg = pygame.image.load("alpha_fill.png").convert_alpha()
 tiled_map = maptest.TiledRenderer("testmap.tmx")
+# map is rendered on background image
 tiled_map.render_map(bg)
-# player = Animator(screen, "juoksu2.png", 2)
 player = Object(screen, "juoksu3.png", (10,20))
 enemy = Object(screen, "juoksu3.png", (10,10))
 mygroup = pygame.sprite.Group(player)
 enemygroup = pygame.sprite.Group(enemy)
+ammogroup = pygame.sprite.Group()
 player.move((100,100))
-fill_a = Color(0,0,0,2)
 running = True
 pygame.init()
 where_to = (0,0)
-print(tiled_map.spritelist)
 clk = pygame.time.Clock()
 fps = 60
 enemy.move((1,0))
@@ -37,6 +39,7 @@ pygame.display.update()
 # fills to show rects
 #player.image.fill(Color("blue"))
 #enemy.image.fill(Color("blue"))
+
 def colli(l, r):
     # testfunction for collision callbacks
     if (pygame.sprite.collide_rect(l, r)):
@@ -44,27 +47,14 @@ def colli(l, r):
         return True
     else:
         return False
+
 while running:
-    # cropped.blit(image, image_pos)
-    # screen.fill(fill_a)
-    screen.blit(bg, (0,0))
     # uncomment to see coordinates
     # pygame.display.set_caption(str(enemy.rect) + str(player.rect))
-    enemy.patrol()
-    player.move(where_to)
-    c = pygame.sprite.spritecollide(player, enemygroup, False, colli)
-    if (c != []):
-        for i in c:
-            i.image.fill(Color("blue"), i.rect) 
-            i.draw()
-    for w in tiled_map.spritelist:
-        if (player.rect.colliderect(w)):
-            print("HIT" + str(pygame.time.get_ticks()))
-    # print(w)
-    # print("hit the wall" + str(pygame.time.get_ticks()))
-    # screen.blit(image, image_pos, image_crop)
     pygame.display.update()
+    screen.blit(bg, (0,0))
     EventList = pygame.event.get() 
+    # get events and move player
     for e in EventList:
         if (e.type == KEYUP):
             where_to = (0,0)
@@ -81,4 +71,22 @@ while running:
                 where_to = (where_to[0],-1)
             elif (e.key == K_DOWN):
                 where_to = (where_to[0],1)
+            mods = pygame.key.get_mods()
+            if (mods & KMOD_LSHIFT):
+                print("pew")
+                pew = Ammo(screen, "blue.png", (player.rect[0], player.rect[1]), where_to)
+                ammogroup.add(pew)
+    enemy.patrol()
+    player.move(where_to)
+    ammogroup.update()
+    ammogroup.draw(screen)
+    c = pygame.sprite.spritecollide(player, enemygroup, False, colli)
+    if (c != []):
+        for i in c:
+            i.image.fill(Color("blue"), i.rect) 
+            i.draw()
+    for w in tiled_map.spritelist:
+        if (player.rect.colliderect(w)):
+            # take a step back
+            player.move((where_to[0] * -3, where_to[1] * -3))
     clk.tick(fps)
