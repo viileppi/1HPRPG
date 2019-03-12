@@ -15,34 +15,53 @@ def init_screen(width, height):
 
 screen = init_screen(800, 640)
 screen.set_colorkey(SRCALPHA)
-tiled_map = maptest.TiledRenderer("testmap.tmx")
-# player = Animator(screen, "juoksu2.png", 2)
 bg = pygame.image.load("alpha_fill.png").convert_alpha()
-mygroup = pygame.sprite.Group()
-enemygroup = pygame.sprite.Group()
-player = Object(screen, "juoksu3.png", (220,120), mygroup)
-enemy = Object(screen, "juoksu3.png", (10,10), enemygroup)
+tiled_map = maptest.TiledRenderer("testmap.tmx")
+tiled_map.render_map(bg)
+# player = Animator(screen, "juoksu2.png", 2)
+player = Object(screen, "juoksu3.png", (10,20))
+enemy = Object(screen, "juoksu3.png", (10,10))
+mygroup = pygame.sprite.Group(player)
+enemygroup = pygame.sprite.Group(enemy)
+player.move((100,100))
 fill_a = Color(0,0,0,2)
 running = True
 pygame.init()
 where_to = (0,0)
+print(tiled_map.spritelist)
 clk = pygame.time.Clock()
 fps = 60
 enemy.move((1,0))
 player.move((0,0))
 pygame.display.update()
-tiled_map.render_map(bg)
+# fills to show rects
+#player.image.fill(Color("blue"))
+#enemy.image.fill(Color("blue"))
+def colli(l, r):
+    # testfunction for collision callbacks
+    if (pygame.sprite.collide_rect(l, r)):
+        print("colbollsuparoll " + str(pygame.time.get_ticks()))
+        return True
+    else:
+        return False
 while running:
     # cropped.blit(image, image_pos)
     # screen.fill(fill_a)
     screen.blit(bg, (0,0))
+    # uncomment to see coordinates
+    # pygame.display.set_caption(str(enemy.rect) + str(player.rect))
     enemy.patrol()
     player.move(where_to)
-    hit_list = pygame.sprite.groupcollide(enemygroup, mygroup, False, False)
-    if (hit_list != {}):
-        for key in hit_list:
-            print(key.image_pos)
-            del key
+    c = pygame.sprite.spritecollide(player, enemygroup, False, colli)
+    if (c != []):
+        for i in c:
+            i.image.fill(Color("blue"), i.rect) 
+            i.draw()
+    for w in tiled_map.spritelist:
+        if (player.rect.colliderect(w)):
+            print("HIT" + str(pygame.time.get_ticks()))
+    # print(w)
+    # print("hit the wall" + str(pygame.time.get_ticks()))
     # screen.blit(image, image_pos, image_crop)
     pygame.display.update()
     EventList = pygame.event.get() 

@@ -15,9 +15,9 @@ class Animator(pygame.sprite.Sprite):
         self.image_h = self.image.get_height()
         self.crop_size = self.image_h
         self.move = 0
-        self.image_crop = Rect(0,0,self.crop_size,self.crop_size)
-        self.rect = self.image_crop
-        self.crop_init = self.image_crop
+        # self.image_crop = Rect(0,0,self.crop_size,self.crop_size)
+        self.rect = Rect(0,0,self.crop_size,self.crop_size)
+        self.crop_init = self.rect
         self.image_pos = pos
         self.target = (0,0)
         self.facing_right = True
@@ -45,22 +45,22 @@ class Animator(pygame.sprite.Sprite):
             # move spritesheet in place to RIGHT
             if (self.facing_right):
                 if (self.move >= self.image_w):
-                    self.image_crop.move_ip(self.image_w * -1, 0)
+                    self.rect.move_ip(self.image_w * -1, 0)
                     self.move = 0
-                self.image_crop.move_ip(self.crop_size,0)           
+                self.rect.move_ip(self.crop_size,0)           
                 self.move += self.crop_size
             # move spritesheet in place to LEFT
             if (not self.facing_right):
                 if (self.move <= self.crop_size):
-                    self.image_crop.move_ip(self.image_w - self.crop_size, 0)
+                    self.rect.move_ip(self.image_w - self.crop_size, 0)
                     self.move = self.image_w
-                self.image_crop.move_ip(-self.crop_size,0)           
+                self.rect.move_ip(-self.crop_size,0)           
                 self.move -= self.crop_size
 
         r = self.screen.blit(
                 self.image, 
                 self.image_pos, 
-                self.image_crop
+                self.rect
                 )
-
+        return r
 
