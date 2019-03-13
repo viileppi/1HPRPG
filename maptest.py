@@ -24,6 +24,8 @@ class TiledRenderer(object):
         # this value is used later to render the entire map to a pygame surface
         self.pixel_size = tm.width * tm.tilewidth, tm.height * tm.tileheight
         self.tmx_data = tm
+        self.spritelist = []
+
     def render_map(self, surface):
         """ Render our map to a pygame surface
 
@@ -43,13 +45,12 @@ class TiledRenderer(object):
         # iterate over all the visible layers, then draw them
         for layer in self.tmx_data.visible_layers:
             # each layer can be handled differently by checking their type
-
             if isinstance(layer, TiledTileLayer):
                 self.render_tile_layer(surface, layer)
-
+                print("tilelayer")
             elif isinstance(layer, TiledObjectGroup):
                 self.render_object_layer(surface, layer)
-
+                print("objectgroup")
             elif isinstance(layer, TiledImageLayer):
                 self.render_image_layer(surface, layer)
 
@@ -64,6 +65,8 @@ class TiledRenderer(object):
         # iterate over the tiles in the layer, and blit them
         for x, y, image in layer.tiles():
             surface_blit(image, (x * tw, y * th))
+            if (layer.name== "nopass"):
+                self.spritelist.append(Rect(x*tw, y*th, tw, th))
 
     def render_object_layer(self, surface, layer):
         """ Render all TiledObjects contained in this layer
@@ -99,101 +102,9 @@ class TiledRenderer(object):
                 draw_rect(surface, rect_color,
                           (obj.x, obj.y, obj.width, obj.height), 3)
 
+
     def render_image_layer(self, surface, layer):
         if layer.image:
             surface.blit(layer.image, (0, 0))
-
-class SimpleTest(object):
-    """ Basic app to display a rendered Tiled map
-    """
-
-    def __init__(self, filename, screen):
-        self.renderer = None
-        self.running = False
-        self.dirty = False
-        self.exit_status = 0
-        self.load_map(filename)
-        self.screen = screen
-
-    def load_map(self, filename):
-        """ Create a renderer, load data, and print some debug info
-        """
-        self.renderer = TiledRenderer(filename)
-
-        logger.info("Objects in map:")
-        for obj in self.renderer.tmx_data.objects:
-            logger.info(obj)
-            for k, v in obj.properties.items():
-                logger.info("%s\t%s", k, v)
-
-        logger.info("GID (tile) properties:")
-        for k, v in self.renderer.tmx_data.tile_properties.items():
-            logger.info("%s\t%s", k, v)
-
-    def draw(self, surface):
-        """ Draw our map to some surface (probably the display)
-        """
-        # first we make a temporary surface that will accommodate the entire
-        # size of the map.
-        # because this demo does not implement scrolling, we render the
-        # entire map each frame
-        temp = pygame.Surface(self.renderer.pixel_size)
-
-        # render the map onto the temporary surface
-        self.renderer.render_map(temp)
-
-        # now resize the temporary surface to the size of the display
-        # this will also 'blit' the temp surface to the display
-        pygame.transform.smoothscale(temp, surface.get_size(), surface)
-
-        # display a bit of use info on the display
-        f = pygame.font.Font(pygame.font.get_default_font(), 20)
-        i = f.render('press any key for next map or ESC to quit',
-                     1, (180, 180, 0))
-        surface.blit(i, (0, 0))
-
-    def handle_input(self):
-        try:
-            event = pygame.event.wait()
-
-            if event.type == QUIT:
-                self.exit_status = 0
-                self.running = False
-
-            elif event.type == KEYDOWN:
-                if event.key == K_ESCAPE:
-                    self.exit_status = 0
-                    self.running = False
-                else:
-                    self.running = False
-
-            elif event.type == VIDEORESIZE:
-                init_screen(event.w, event.h)
-                self.dirty = True
-
-        except KeyboardInterrupt:
-            self.exit_status = 0
-            self.running = False
-
-    def run(self):
-        """ This is our app main loop
-        """
-        self.dirty = True
-        self.running = True
-        self.exit_status = 1
-
-        while self.running:
-            self.handle_input()
-
-            # we don't want to constantly draw on the display, as that is way
-            # inefficient.  so, this 'dirty' values is used.  If dirty is True,
-            # then re-render the map, display it, then mark 'dirty' False.
-            if self.dirty:
-                self.draw(self.screen)
-                self.dirty = False
-                pygame.display.flip()
-
-        return self.exit_status
-
 
 
