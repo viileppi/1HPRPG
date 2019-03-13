@@ -12,7 +12,6 @@ class Ammo(objects.Object):
         self.start = pygame.time.get_ticks()
         self.image.fill(Color("yellow"))
         self.dir = (direction[0] * self.speed, direction[1] * self.speed)
-
     def update(self):
         if ((pygame.time.get_ticks() - self.start) < self.length):
             self.move(self.dir)

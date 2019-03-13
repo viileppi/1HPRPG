@@ -3,7 +3,7 @@
  <properties>
   <property name="passable" type="bool" value="false"/>
  </properties>
- <image source="../Pictures/tiles/blue.png" width="32" height="32"/>
+ <image source="blue.png" width="32" height="32"/>
  <tile id="0" type="wall">
   <properties>
    <property name="passable" type="bool" value="false"/>
