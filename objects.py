@@ -16,9 +16,11 @@ class Object(pygame.sprite.Sprite):
         # self.group.add(self.move_animator)
         self.forward = True
         self.walked = 0
+        self.walk_dist = 100
 
     def destroy(self):
         self.kill()
+        del self
 
     def collboll(self, a, b):
         print(a, b)
@@ -33,13 +35,12 @@ class Object(pygame.sprite.Sprite):
                 self.rect
                 )
 
-
     def patrol(self):
         coords = (0,0)
         if (self.forward):
             coords = (1, 0)
             self.walked += 1
-        if (self.walked > 50):
+        if (self.walked > self.walk_dist):
             self.forward = False
         if ((not self.forward)):
             coords = (-1, 0)
@@ -47,5 +48,12 @@ class Object(pygame.sprite.Sprite):
         if (self.walked < 0):
             self.forward = True
         self.move(coords)
+
+    def turnaround(self):
+        self.forward = not self.forward
+        self.walked = 1
+
+    def update(self):
+        self.patrol()
 
 

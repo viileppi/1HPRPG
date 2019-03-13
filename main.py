@@ -23,9 +23,12 @@ tiled_map = maptest.TiledRenderer("testmap.tmx")
 # map is rendered on background image
 tiled_map.render_map(bg)
 player = Object(screen, "juoksu3.png", (10,20))
-enemy = Object(screen, "juoksu3.png", (10,10))
+enemygroup = pygame.sprite.Group()
+for y in range(10, 600, 200):
+    for x in range(0, 700, 350):
+        enemy = Object(screen, "juoksu3.png", (x,y))
+        enemygroup.add(enemy)
 mygroup = pygame.sprite.Group(player)
-enemygroup = pygame.sprite.Group(enemy)
 ammogroup = pygame.sprite.Group()
 player.move((100,100))
 running = True
@@ -44,6 +47,8 @@ def colli(l, r):
     # testfunction for collision callbacks
     if (pygame.sprite.collide_rect(l, r)):
         print("colbollsuparoll " + str(pygame.time.get_ticks()))
+        l.destroy()
+        r.destroy()
         return True
     else:
         return False
@@ -74,9 +79,10 @@ while running:
             mods = pygame.key.get_mods()
             if (mods & KMOD_LSHIFT):
                 print("pew")
-                pew = Ammo(screen, "blue.png", (player.rect[0], player.rect[1]), where_to)
+                pew = Ammo(screen, "ammo.png", (player.rect[0], player.rect[1]), where_to)
                 ammogroup.add(pew)
-    enemy.patrol()
+    # enemy.patrol()
+    enemygroup.update()
     player.move(where_to)
     ammogroup.update()
     ammogroup.draw(screen)
@@ -89,4 +95,10 @@ while running:
         if (player.rect.colliderect(w)):
             # take a step back
             player.move((where_to[0] * -3, where_to[1] * -3))
+        for e in enemygroup:
+            if (e.rect.colliderect(w)):
+                e.turnaround()
+    d = pygame.sprite.groupcollide(ammogroup, enemygroup, True, True, colli)
+    if (d != {}):
+        print(d)
     clk.tick(fps)

@@ -22,6 +22,7 @@ class Animator(pygame.sprite.Sprite):
         self.target = (0,0)
         self.facing_right = True
         self.step_multi = 0
+        self.doblit = True
 
     def add2group(self, group):
         self.group = group
@@ -56,11 +57,14 @@ class Animator(pygame.sprite.Sprite):
                     self.move = self.image_w
                 self.rect.move_ip(-self.crop_size,0)           
                 self.move -= self.crop_size
-
-        r = self.screen.blit(
-                self.image, 
-                self.image_pos, 
-                self.rect
-                )
+        
+        if (self.doblit):
+            r = self.screen.blit(
+                    self.image, 
+                    self.image_pos, 
+                    self.rect
+                    )
+        else:
+            r = self.rect
         return r
 

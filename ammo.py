@@ -7,8 +7,8 @@ class Ammo(objects.Object):
     
     def __init__(self, screen, image, coords, direction):
         objects.Object.__init__(self, screen, image, coords)
-        self.speed = 4
-        self.length = 250
+        self.speed = 8
+        self.length = 1000
         self.start = pygame.time.get_ticks()
         self.image.fill(Color("yellow"))
         self.dir = (direction[0] * self.speed, direction[1] * self.speed)
@@ -23,4 +23,4 @@ class Ammo(objects.Object):
                     )
         else:
             self.dir = (0,0)
-            print("stop")
+            self.destroy()
