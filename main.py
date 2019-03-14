@@ -24,10 +24,10 @@ bg = pygame.image.load("alpha_fill.png").convert_alpha()
 tiled_map = maptest.TiledRenderer("testmap.tmx")
 # map is rendered on background image
 tiled_map.render_map(bg)
-player = Object(screen, "juoksu3.png", (10,20))
+player = Object(screen, "juoksu4.png", (10,20))
 enemygroup = pygame.sprite.Group()
-for y in range(10, 600, 200):
-    for x in range(0, 700, 350):
+for y in range(30, 600, 200):
+    for x in range(30, 700, 350):
         enemy = Enemy(screen, "juoksu3.png", (x,y))
         enemygroup.add(enemy)
 mygroup = pygame.sprite.Group(player)
@@ -36,6 +36,7 @@ player.move((100,100))
 running = True
 pygame.init()
 where_to = (0,0)
+old_where = (0,0)
 clk = pygame.time.Clock()
 fps = 40
 enemy.move((1,0))
@@ -60,7 +61,7 @@ def colli(l, r):
 def shoot(where):
     s = shot
     if (pygame.time.get_ticks() > s + cooldown):
-        pew = Ammo(screen, "ammo.png", (player.rect[0], player.rect[1]), where_to)
+        pew = Ammo(screen, "ammo.png", (player.rect[0], player.rect[1]), where)
         ammogroup.add(pew)
         s = pygame.time.get_ticks()
     return s
@@ -74,6 +75,8 @@ while running:
     # get events and move player
     for e in EventList:
         if (e.type == KEYUP):
+            if (where_to != (0,0)):
+                old_where = where_to
             where_to = (0,0)
         if (e.type == KEYDOWN):
             if (e.key == K_ESCAPE or e.key == K_q):
@@ -89,8 +92,10 @@ while running:
             elif (e.key == K_DOWN):
                 where_to = (where_to[0],1)
             mods = pygame.key.get_mods()
-            if (mods & KMOD_LSHIFT):
+            if (mods & KMOD_LSHIFT and where_to != (0,0)):
                 shot = shoot(where_to)
+            if (mods & KMOD_LSHIFT and where_to == (0,0)):
+                shot = shoot(old_where)
     # enemy.patrol()
     enemygroup.update()
     player.move(where_to)
@@ -112,4 +117,4 @@ while running:
             if  (f.rect.colliderect(w)):
                 f.destroy()
     d = pygame.sprite.groupcollide(ammogroup, enemygroup, True, True, colli)
-clk.tick(fps)
+    clk.tick(fps)
