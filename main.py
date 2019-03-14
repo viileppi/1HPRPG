@@ -6,6 +6,7 @@ import pytmx
 from pytmx.util_pygame import load_pygame
 import maptest
 from ammo import Ammo 
+from enemy import Enemy
 # from sprite_strip_anim import SpriteStripAnim
 
 def init_screen(width, height):
@@ -16,7 +17,7 @@ def init_screen(width, height):
     return pygame.display.set_mode((width, height), pygame.RESIZABLE)
 
 # set up basic level
-screen = init_screen(800, 640)
+screen = init_screen(800, 600)
 screen.set_colorkey(SRCALPHA)
 # using semi-transparent image for clearing the screen and smoothing out animation
 bg = pygame.image.load("alpha_fill.png").convert_alpha()
@@ -25,9 +26,9 @@ tiled_map = maptest.TiledRenderer("testmap.tmx")
 tiled_map.render_map(bg)
 player = Object(screen, "juoksu3.png", (10,20))
 enemygroup = pygame.sprite.Group()
-for y in range(10, 600, 200):
-    for x in range(0, 700, 350):
-        enemy = Object(screen, "juoksu3.png", (x,y))
+for y in range(20, 600, 200):
+    for x in range(20, 700, 350):
+        enemy = Enemy(screen, "juoksu3.png", (x,y))
         enemygroup.add(enemy)
 mygroup = pygame.sprite.Group(player)
 ammogroup = pygame.sprite.Group()
@@ -49,7 +50,7 @@ pygame.display.update()
 def colli(l, r):
     # testfunction for collision callbacks
     if (pygame.sprite.collide_rect(l, r)):
-        print("colbollsuparoll " + str(pygame.time.get_ticks()))
+        # print("colbollsuparoll " + str(pygame.time.get_ticks()))
         l.destroy()
         r.destroy()
         return True
@@ -88,8 +89,15 @@ while running:
             elif (e.key == K_DOWN):
                 where_to = (where_to[0],1)
             mods = pygame.key.get_mods()
+<<<<<<< HEAD
             if (mods & KMOD_LSHIFT):
                 shot = shoot(where_to)
+=======
+            if (mods & KMOD_LSHIFT and where_to != (0,0)):
+                # print("pew")
+                pew = Ammo(screen, "ammo.png", (player.rect[0], player.rect[1]), where_to)
+                ammogroup.add(pew)
+>>>>>>> 66dc372a505ba7d105e16d294ef9a34023723ecc
     # enemy.patrol()
     enemygroup.update()
     player.move(where_to)
@@ -107,8 +115,17 @@ while running:
         for e in enemygroup:
             if (e.rect.colliderect(w)):
                 e.turnaround()
+<<<<<<< HEAD
         for f in ammogroup:
             if  (f.rect.colliderect(w)):
                 f.destroy()
     d = pygame.sprite.groupcollide(ammogroup, enemygroup, True, True, colli)
+=======
+        for a in ammogroup:
+            if (a.rect.colliderect(w)):
+                a.destroy()
+    d = pygame.sprite.groupcollide(ammogroup, enemygroup, True, True, colli)
+    # if (d != {}):
+        # print(d)
+>>>>>>> 66dc372a505ba7d105e16d294ef9a34023723ecc
     clk.tick(fps)
