@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import pygame
 from pygame.locals import *
 from objects import Object
@@ -38,6 +39,8 @@ clk = pygame.time.Clock()
 fps = 60
 enemy.move((1,0))
 player.move((0,0))
+cooldown = 200
+shot = 0
 pygame.display.update()
 # fills to show rects
 #player.image.fill(Color("blue"))
@@ -52,6 +55,14 @@ def colli(l, r):
         return True
     else:
         return False
+
+def shoot(where):
+    s = shot
+    if (pygame.time.get_ticks() > s + cooldown):
+        pew = Ammo(screen, "ammo.png", (player.rect[0], player.rect[1]), where_to)
+        ammogroup.add(pew)
+        s = pygame.time.get_ticks()
+    return s
 
 while running:
     # uncomment to see coordinates
@@ -78,9 +89,7 @@ while running:
                 where_to = (where_to[0],1)
             mods = pygame.key.get_mods()
             if (mods & KMOD_LSHIFT):
-                print("pew")
-                pew = Ammo(screen, "ammo.png", (player.rect[0], player.rect[1]), where_to)
-                ammogroup.add(pew)
+                shot = shoot(where_to)
     # enemy.patrol()
     enemygroup.update()
     player.move(where_to)
@@ -98,7 +107,8 @@ while running:
         for e in enemygroup:
             if (e.rect.colliderect(w)):
                 e.turnaround()
+        for f in ammogroup:
+            if  (f.rect.colliderect(w)):
+                f.destroy()
     d = pygame.sprite.groupcollide(ammogroup, enemygroup, True, True, colli)
-    if (d != {}):
-        print(d)
     clk.tick(fps)
