@@ -26,10 +26,9 @@ tiled_map = maptest.TiledRenderer("testmap.tmx")
 tiled_map.render_map(bg)
 player = Object(screen, "juoksu4.png", (10,20))
 enemygroup = pygame.sprite.Group()
-for y in range(30, 600, 200):
-    for x in range(30, 700, 350):
-        enemy = Enemy(screen, "juoksu3.png", (x,y))
-        enemygroup.add(enemy)
+for t in tiled_map.enemylist:
+    enemy = Enemy(screen, "juoksu3.png", t)
+    enemygroup.add(enemy)
 mygroup = pygame.sprite.Group(player)
 ammogroup = pygame.sprite.Group()
 player.move((100,100))

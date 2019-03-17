@@ -25,6 +25,7 @@ class TiledRenderer(object):
         self.pixel_size = tm.width * tm.tilewidth, tm.height * tm.tileheight
         self.tmx_data = tm
         self.spritelist = []
+        self.enemylist = []
 
     def render_map(self, surface):
         """ Render our map to a pygame surface
@@ -47,10 +48,8 @@ class TiledRenderer(object):
             # each layer can be handled differently by checking their type
             if isinstance(layer, TiledTileLayer):
                 self.render_tile_layer(surface, layer)
-                print("tilelayer")
             elif isinstance(layer, TiledObjectGroup):
                 self.render_object_layer(surface, layer)
-                print("objectgroup")
             elif isinstance(layer, TiledImageLayer):
                 self.render_image_layer(surface, layer)
 
@@ -67,7 +66,6 @@ class TiledRenderer(object):
             surface_blit(image, (x * tw, y * th))
             if (layer.name== "nopass"):
                 self.spritelist.append(Rect(x*tw, y*th, tw, th))
-
     def render_object_layer(self, surface, layer):
         """ Render all TiledObjects contained in this layer
         """
@@ -94,6 +92,9 @@ class TiledRenderer(object):
             # Tiled calls them "GID Objects"
             elif obj.image:
                 surface_blit(obj.image, (obj.x, obj.y))
+
+            elif (obj.name == "Enemy"):
+                self.enemylist.append((obj.x, obj.y))
 
             # draw a rect for everything else
             # Mostly, I am lazy, but you could check if it is circle/oval
