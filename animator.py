@@ -45,11 +45,11 @@ class Animator(pygame.sprite.Sprite):
                 )
             # move spritesheet in place to RIGHT
             if (self.facing_right):
-                if (self.move >= self.image_w):
-                    self.rect.move_ip(self.image_w * -1, 0)
-                    self.move = 0
                 self.rect.move_ip(self.crop_size,0)           
                 self.move += self.crop_size
+                if (self.move >= (self.image_w)):
+                    self.rect.move_ip(self.image_w * -1, 0)
+                    self.move = 0
             # move spritesheet in place to LEFT
             if (not self.facing_right):
                 if (self.move <= self.crop_size):
