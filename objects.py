@@ -12,17 +12,17 @@ class Object(pygame.sprite.Sprite):
         self.rect = Rect(coords[0], coords[1], self.image.get_height(), self.image.get_height())
         self.screen = screen
         self.move_animator = Animator(self.screen, self.image, self.rect)
+        self.m_image = self.image.subsurface(self.move_animator.crop_init)
+        self.mask = pygame.mask.from_surface(self.m_image)
+        self.dir = (0,0)
         # self.group = group
         # self.group.add(self.move_animator)
     def destroy(self):
         self.kill()
         del self
 
-    def collboll(self, a, b):
-        print(a, b)
-        return "foo"
     def move(self, coords):
-        self.rect = self.move_animator.goto(coords)
+        self.dir = coords
 
     def draw(self):
         r = self.screen.blit(
@@ -30,8 +30,11 @@ class Object(pygame.sprite.Sprite):
                 self.rect, 
                 self.rect
                 )
+    def turnaround(self, point):
+        self.dir = (self.dir[0] * -1, self.dir[1] * -1)
+        self.update()
 
     def update(self):
-        pass
+        self.rect = self.move_animator.goto(self.dir)
 
 

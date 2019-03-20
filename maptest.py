@@ -1,6 +1,8 @@
-
+# -*- coding: UTF-8 -*-     
 import pygame
 from pygame.locals import *
+from os import listdir
+from os import path
 
 import pytmx
 from pytmx import TiledImageLayer
@@ -8,6 +10,8 @@ from pytmx import TiledObjectGroup
 from pytmx import TiledTileLayer
 from pytmx.util_pygame import load_pygame
 import logging
+from objects import Object
+from enemy import Enemy
 
 logger = logging.getLogger(__name__)
 logger.info(pytmx.__version__)
@@ -17,15 +21,20 @@ class TiledRenderer(object):
     Super simple way to render a tiled map
     """
 
-    def __init__(self, filename):
+    def __init__(self, screen, filename):
         tm = load_pygame(filename)
 
         # self.size will be the pixel size of the map
         # this value is used later to render the entire map to a pygame surface
+        self.screen = screen
         self.pixel_size = tm.width * tm.tilewidth, tm.height * tm.tileheight
         self.tmx_data = tm
-        self.spritelist = []
-        self.enemylist = []
+        self.spritelist = pygame.sprite.Group()
+        self.walllist = []
+        self.player = None
+        self.enemygroup = pygame.sprite.Group()
+        self.mygroup = pygame.sprite.Group()
+        self.waypoints = {}
 
     def render_map(self, surface):
         """ Render our map to a pygame surface
@@ -63,9 +72,10 @@ class TiledRenderer(object):
 
         # iterate over the tiles in the layer, and blit them
         for x, y, image in layer.tiles():
-            surface_blit(image, (x * tw, y * th))
+            # surface_blit(image, (x * tw, y * th))
             if (layer.name== "nopass"):
-                self.spritelist.append(Rect(x*tw, y*th, tw, th))
+                self.spritelist.add(Object(self.screen, path.join("levels", "blue.png"), (x * tw, y * th)))
+
     def render_object_layer(self, surface, layer):
         """ Render all TiledObjects contained in this layer
         """
@@ -92,9 +102,19 @@ class TiledRenderer(object):
             # Tiled calls them "GID Objects"
             elif obj.image:
                 surface_blit(obj.image, (obj.x, obj.y))
-
+                # s = pygame.sprite.Sprite()
             elif (obj.name == "Enemy"):
-                self.enemylist.append((obj.x, obj.y))
+                e = Enemy(self.screen, path.join("images", "enemy.png"), (obj.x, obj.y))
+                self.enemygroup.add(e)
+
+            elif (obj.name == "Player"):
+                self.mygroup.empty()
+                self.waypoints["start"] = (obj.x, obj.y)
+                self.player = Object(self.screen, path.join("images", "player.png"), (obj.x, obj.y + 33))
+                self.mygroup.add(self.player)
+
+            elif (obj.name == "Finish"):
+                self.waypoints["finish"] = Rect(obj.x, obj.y, obj.width, obj.height)
 
             # draw a rect for everything else
             # Mostly, I am lazy, but you could check if it is circle/oval

@@ -27,11 +27,11 @@ class Enemy(objects.Object):
     def seek(self):
         self.walked += 1
         if (self.walked > self.walk_dist):
-            self.turnaround()
+            self.turnaround(0)
             self.walked = 0
         self.move(self.where)
 
-    def turnaround(self):
+    def turnaround(self, point):
         self.forward = not self.forward
         # self.walked = 1
         if (self.where == (1,0)):
@@ -46,9 +46,6 @@ class Enemy(objects.Object):
             self.where = (1,0)
         self.move((self.where[0] * 4, self.where[1] * 4))
 
-
-
-
     def update(self):
         self.seek()
-
+        self.rect = self.move_animator.goto(self.dir)
