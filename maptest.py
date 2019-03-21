@@ -28,13 +28,19 @@ class TiledRenderer(object):
         # this value is used later to render the entire map to a pygame surface
         self.screen = screen
         self.pixel_size = tm.width * tm.tilewidth, tm.height * tm.tileheight
+        self.character_scale = 0.75
         self.tmx_data = tm
         self.spritelist = pygame.sprite.Group()
         self.walllist = []
         self.player = None
         self.enemygroup = pygame.sprite.Group()
         self.mygroup = pygame.sprite.Group()
-        self.waypoints = {}
+        self.waypoints = pygame.sprite.Group()
+        self.finish = None
+
+    def move_player(self, where):
+        for player in self.mygroup:
+            player.move(where)
 
     def render_map(self, surface):
         """ Render our map to a pygame surface
@@ -74,7 +80,7 @@ class TiledRenderer(object):
         for x, y, image in layer.tiles():
             # surface_blit(image, (x * tw, y * th))
             if (layer.name== "nopass"):
-                self.spritelist.add(Object(self.screen, path.join("levels", "blue.png"), (x * tw, y * th)))
+                self.spritelist.add(Object(self.screen, path.join("levels", "blue.png"), (x * tw, y * th), 1))
 
     def render_object_layer(self, surface, layer):
         """ Render all TiledObjects contained in this layer
@@ -104,17 +110,17 @@ class TiledRenderer(object):
                 surface_blit(obj.image, (obj.x, obj.y))
                 # s = pygame.sprite.Sprite()
             elif (obj.name == "Enemy"):
-                e = Enemy(self.screen, path.join("images", "enemy.png"), (obj.x, obj.y))
+                e = Enemy(self.screen, path.join("images", "enemy.png"), (obj.x, obj.y), self.character_scale)
                 self.enemygroup.add(e)
 
             elif (obj.name == "Player"):
                 self.mygroup.empty()
-                self.waypoints["start"] = (obj.x, obj.y)
-                self.player = Object(self.screen, path.join("images", "player.png"), (obj.x, obj.y + 33))
+                self.player = Object(self.screen, path.join("images", "player.png"), (obj.x, obj.y + 33), self.character_scale)
                 self.mygroup.add(self.player)
 
             elif (obj.name == "Finish"):
-                self.waypoints["finish"] = Rect(obj.x, obj.y, obj.width, obj.height)
+                self.finish = Object(self.screen, path.join("levels", "black.png"), (obj.x, obj.y), 1)
+                self.waypoints.add(self.finish)
 
             # draw a rect for everything else
             # Mostly, I am lazy, but you could check if it is circle/oval

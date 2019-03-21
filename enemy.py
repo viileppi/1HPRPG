@@ -2,9 +2,9 @@
 import objects
 
 class Enemy(objects.Object):
-    def __init__(self, screen, image, coords):
+    def __init__(self, screen, image, coords, size):
         """ image should be a spritesheet of square sprites """
-        objects.Object.__init__(self, screen, image, coords)
+        objects.Object.__init__(self, screen, image, coords, size)
         self.forward = True
         self.walked = 0
         self.walk_dist = 100
