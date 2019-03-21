@@ -7,12 +7,13 @@ class LevelManager:
     def __init__(self, screen):
         self.levels = []
         l = os.listdir("levels")
+        l.sort()
         for t in l:
             if (t.split(".")[1] == "tmx"):
                 self.levels.append(os.path.join("levels", t))
                 print(t)
         self.total_levels = len(self.levels)
-        self.index = self.total_levels - 1
+        self.index = 0
         self.screen = screen
         self.current_level = maptest.TiledRenderer(self.screen, self.levels[self.index])
         print(self.levels[self.index])
