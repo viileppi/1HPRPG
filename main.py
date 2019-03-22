@@ -103,7 +103,7 @@ while running:
                 where_to = (where_to[0],0)
             if (k[K_DOWN]):
                 where_to = (where_to[0],0)
-        tiled_map.move_player(where_to)
+    tiled_map.move_player(where_to)
 
     tiled_map.enemygroup.update()
     tiled_map.spritelist.update()
@@ -115,12 +115,15 @@ while running:
     amm_coll = pygame.sprite.groupcollide(tiled_map.enemygroup, ammogroup, False, False, colli_kill_l)
     amm_wall = pygame.sprite.groupcollide(ammogroup, tiled_map.spritelist, False, False, colli_kill_l)
     enm_wall = pygame.sprite.groupcollide(tiled_map.enemygroup, tiled_map.spritelist, False, False, colli_bounce)
-    pla_wall = pygame.sprite.groupcollide(tiled_map.mygroup, tiled_map.spritelist, False, False, colli_bounce)
     pla_fin = pygame.sprite.groupcollide(tiled_map.mygroup, tiled_map.waypoints, False, False, colli)
+    pla_wall = pygame.sprite.groupcollide(tiled_map.mygroup, tiled_map.spritelist, False, False, colli_bounce)
     for c in chr_coll:
         c.destroy()
         del c
-        print(tiled_map.mygroup)
+        level.index = 0
+        tiled_map = level.next()
+        tiled_map.render_map(bg)
+        pygame.display.flip()
     for u in pla_fin:
         # next level
         tiled_map = level.next()

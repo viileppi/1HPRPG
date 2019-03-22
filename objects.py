@@ -46,7 +46,7 @@ class Object(pygame.sprite.Sprite):
                 self.rect
                 )
     def turnaround(self, point):
-        self.dir = (self.dir[0] * -1, self.dir[1] * -1)
+        self.dir = (self.dir[0] * -1,self.dir[1] * -1)
         self.update()
 
     def update(self):
