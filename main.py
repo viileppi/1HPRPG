@@ -61,49 +61,17 @@ while running:
     EventList = pygame.event.get() 
     # get events and move player
     for e in EventList:
-        # if (e.type == KEYUP):
-        #     if (where_to != (0,0)):
-        #         old_where = where_to
-        #     where_to = (0,0)
         if (e.type == KEYDOWN):
             k = pygame.key.get_pressed()
             if (k[K_ESCAPE] or k[K_q]):
                 running = False
                 pygame.quit()
                 break
-            if (k[K_p] and fps != 0):
-                print("pause")
-                old_fps = fps
-                fps = 0
-            elif (k[K_p] and fps == 0):
-                print("continue")
-                fps = old_fps
-            if (k[K_z] and where_to != (0,0)):
-                shot = shoot(where_to)
-            elif (k[K_z] and where_to == (0,0)):
-                shot = shoot(old_where)
-            if (k[K_RIGHT]):
-                where_to = (1,where_to[1])
-            if (k[K_LEFT]):
-                where_to = (-1,where_to[1])
-            if (k[K_UP]):
-                where_to = (where_to[0],-1)
-            if (k[K_DOWN]):
-                where_to = (where_to[0],1)
-            if (where_to != (0,0)):
-                old_where = where_to
+            else:
+                tiled_map.player.read_keys(k)
         if (e.type == KEYUP):
-            if (where_to != (0,0)):
-                old_where = where_to
-            if (k[K_RIGHT]):
-                where_to = (0,where_to[1])
-            if (k[K_LEFT]):
-                where_to = (0,where_to[1])
-            if (k[K_UP]):
-                where_to = (where_to[0],0)
-            if (k[K_DOWN]):
-                where_to = (where_to[0],0)
-    tiled_map.move_player(where_to)
+            k = pygame.key.get_pressed()
+            tiled_map.player.read_keys(k)
 
     tiled_map.enemygroup.update()
     tiled_map.spritelist.update()

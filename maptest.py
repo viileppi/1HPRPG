@@ -11,6 +11,7 @@ from pytmx import TiledTileLayer
 from pytmx.util_pygame import load_pygame
 import logging
 from objects import Object
+from player import Player
 from enemy import Enemy
 
 logger = logging.getLogger(__name__)
@@ -115,7 +116,7 @@ class TiledRenderer(object):
 
             elif (obj.name == "Player"):
                 self.mygroup.empty()
-                self.player = Object(self.screen, path.join("images", "player.png"), (obj.x, obj.y + 33), self.character_scale)
+                self.player = Player(self.screen, path.join("images", "player.png"), (obj.x, obj.y + 33), self.character_scale)
                 self.mygroup.add(self.player)
 
             elif (obj.name == "Finish"):
