@@ -12,6 +12,11 @@ class Ammo(objects.Object):
         self.start = pygame.time.get_ticks()
         self.image.fill(Color("yellow"))
         self.dir = (direction[0] * self.speed, direction[1] * self.speed)
+        print(self.dir)
+
+    def make_shot(self, d):
+        return lambda d : Ammo(self.screen, self.ammo_image, (self.rect[0], self.rect[1]), d)
+
 
     def update(self):
         if ((pygame.time.get_ticks() - self.start) < self.length):
