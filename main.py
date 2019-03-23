@@ -77,13 +77,15 @@ while running:
     tiled_map.spritelist.update()
     tiled_map.spritelist.draw(screen)
     tiled_map.mygroup.update()
+    tiled_map.waypoints.draw(screen)
     ammogroup.update()
     ammogroup.draw(screen)
     chr_coll = pygame.sprite.groupcollide(tiled_map.mygroup, tiled_map.enemygroup, True, True, colli_kill_both)
     amm_coll = pygame.sprite.groupcollide(tiled_map.enemygroup, ammogroup, False, False, colli_kill_l)
     amm_wall = pygame.sprite.groupcollide(ammogroup, tiled_map.spritelist, False, False, colli_kill_l)
     enm_wall = pygame.sprite.groupcollide(tiled_map.enemygroup, tiled_map.spritelist, False, False, colli_bounce)
-    pla_fin = pygame.sprite.groupcollide(tiled_map.mygroup, tiled_map.waypoints, False, False, colli)
+    enm_wal2 = pygame.sprite.groupcollide(tiled_map.enemygroup, tiled_map.waypoints, False, False, colli_bounce)
+    pla_fin = pygame.sprite.groupcollide(tiled_map.mygroup, tiled_map.waypoints, False, False, colli_basic)
     pla_wall = pygame.sprite.groupcollide(tiled_map.mygroup, tiled_map.spritelist, False, False, colli_bounce)
     for c in chr_coll:
         c.destroy()
@@ -94,6 +96,8 @@ while running:
         pygame.display.flip()
     for u in pla_fin:
         # next level
+        screen = init_screen(800, 640)
+        screen.set_colorkey(SRCALPHA)
         tiled_map = level.next()
         tiled_map.render_map(bg)
         pygame.display.flip()

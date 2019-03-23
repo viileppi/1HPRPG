@@ -11,6 +11,7 @@ from pytmx import TiledTileLayer
 from pytmx.util_pygame import load_pygame
 import logging
 from objects import Object
+from actiontile import ActionTile
 from player import Player
 from enemy import Enemy
 
@@ -120,7 +121,9 @@ class TiledRenderer(object):
                 self.mygroup.add(self.player)
 
             elif (obj.name == "Finish"):
-                self.finish = Object(self.screen, path.join("levels", "black.png"), (obj.x, obj.y), 1)
+                self.finish = ActionTile(self.screen, path.join("levels", "green.png"), (obj.x, obj.y), 1)
+                self.finish.image = pygame.transform.scale(self.finish.image, (int(obj.width), int(obj.height)))
+                self.finish.rect = Rect(obj.x, obj.y, self.finish.image.get_width(), self.finish.image.get_height())
                 self.waypoints.add(self.finish)
 
             # draw a rect for everything else

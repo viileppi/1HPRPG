@@ -9,6 +9,13 @@ def colli(l, r):
     else:
         return False
 
+def colli_basic(l, r):
+    # testfunction for collision callbacks
+    if (sprite.collide_rect(l, r)):
+        return True
+    else:
+        return False
+
 def colli_bounce(l, r):
     # testfunction for collision callbacks
     if (sprite.collide_rect(l, r)):
