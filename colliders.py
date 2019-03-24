@@ -40,4 +40,12 @@ def colli_kill_l(l, r):
         return True
     else:
         return False
+def colli_los(l, r):
+    # testfunction for collision callbacks
+    if (sprite.collide_rect(l, r)):
+        l.destroy()
+        print("hit")
+        return True
+    else:
+        return False
 

@@ -26,6 +26,7 @@ fps = 60
 tiled_map.player.move((0,0))
 pygame.key.set_repeat(50,50)
 pygame.display.update()
+enemy_ammos = pygame.sprite.Group()
 
 while running:
     # uncomment to see coordinates
@@ -58,6 +59,9 @@ while running:
     tiled_map.waypoints.draw(screen)
     tiled_map.player.ammogroup.update()
     tiled_map.player.ammogroup.draw(screen)
+    for enemy in tiled_map.enemygroup:
+        enemy.ammogroup.update()
+        enemy.ammogroup.draw(screen)
     chr_coll = pygame.sprite.groupcollide(tiled_map.mygroup, tiled_map.enemygroup, True, True, colli_kill_both)
     amm_coll = pygame.sprite.groupcollide(tiled_map.enemygroup, tiled_map.player.ammogroup, False, False, colli_kill_l)
     amm_wall = pygame.sprite.groupcollide(tiled_map.player.ammogroup, tiled_map.spritelist, False, False, colli_kill_l)

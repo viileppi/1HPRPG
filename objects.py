@@ -52,4 +52,11 @@ class Object(pygame.sprite.Sprite):
     def update(self):
         self.rect = self.move_animator.goto(self.dir)
 
+    def get_pos(self):
+        x = (self.rect.x)
+        y = (self.rect.y)
+        r = (x,y)
+        return r
+
+
 

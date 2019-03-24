@@ -4,6 +4,7 @@ from objects import Object
 from pygame.locals import *
 from pygame import key
 from pygame import time
+from pygame.math import Vector2
 from ammo import Ammo
 from os import path
 
@@ -17,7 +18,6 @@ class Player(Object):
         self.aimx = lambda x : x * self.speed
         self.aimy = lambda y : y * self.speed
         self.old_dir = (1,0)
-        self.shoot = Ammo(self.screen, self.ammo_image, (self.rect[0], self.rect[1]), self.dir)
         self.keyh = {
                     K_RIGHT: self.aimx(1),
                     K_LEFT: self.aimx(-1),
@@ -29,7 +29,6 @@ class Player(Object):
         self.keya = {
                     K_z: Ammo 
                     }
-
 
 
     def read_keys(self, pressed):
@@ -47,7 +46,7 @@ class Player(Object):
             self.old_dir = self.dir
         for k, v in self.keya.items():
             if (pressed[k]):
-                pew = self.keya[k](self.screen, self.ammo_image, (self.rect[0], self.rect[1]), self.old_dir)
+                pew = self.keya[k](self.screen, self.ammo_image, (self.rect[0], self.rect[1]), self.old_dir, 4)
                 self.ammogroup.add(pew)
 
 

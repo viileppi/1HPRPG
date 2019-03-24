@@ -5,14 +5,13 @@ import objects
 
 class Ammo(objects.Object):
     
-    def __init__(self, screen, image, coords, direction):
+    def __init__(self, screen, image, coords, direction, speed):
         objects.Object.__init__(self, screen, image, coords, 1)
-        self.speed = 8
-        self.length = 1000
+        self.speed = speed
+        self.length = 500
         self.start = pygame.time.get_ticks()
         self.image.fill(Color("yellow"))
         self.dir = (direction[0] * self.speed, direction[1] * self.speed)
-        print(self.dir)
 
     def make_shot(self, d):
         return lambda d : Ammo(self.screen, self.ammo_image, (self.rect[0], self.rect[1]), d)
