@@ -30,8 +30,8 @@ class Enemy(objects.Object):
             v1 = Vector2(p)
             v2 = Vector2(e)
             v3 = v1 - v2
-            delta = v2.distance_to(v1)
-            velocity = 7.5 / delta
+            delta = v2.distance_to(v3)
+            velocity = 50 / delta
             print(velocity)
             if (len(self.ammogroup.sprites()) < 4):
                 pew = Ammo(self.screen, self.ammo_image, v2, v3, velocity)

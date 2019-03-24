@@ -53,8 +53,8 @@ class Object(pygame.sprite.Sprite):
         self.rect = self.move_animator.goto(self.dir)
 
     def get_pos(self):
-        x = (self.rect.x)
-        y = (self.rect.y)
+        x = (self.rect.centerx)
+        y = (self.rect.centery)
         r = (x,y)
         return r
 
