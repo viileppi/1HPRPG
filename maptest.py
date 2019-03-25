@@ -33,12 +33,12 @@ class TiledRenderer(object):
         self.character_scale = 0.75
         self.tmx_data = tm
         self.spritelist = pygame.sprite.Group()
-        self.walllist = []
-        self.player = Player(self.screen, path.join("images", "player.png"), (0,0), self.character_scale)
         self.enemygroup = pygame.sprite.Group()
         self.mygroup = pygame.sprite.Group()
         self.enemyammo = pygame.sprite.Group()
         self.waypoints = pygame.sprite.Group()
+        # self.player = Player(self.screen, path.join("images", "player.png"), (0,0), self.character_scale, self.spritelist)
+        self.player = None
         self.finish = None
 
     def move_player(self, where):
@@ -100,6 +100,15 @@ class TiledRenderer(object):
 
         # iterate over all the objects in the layer
         # These may be Tiled shapes like circles or polygons, GID objects, or Tiled Objects
+        # get player first for sanity sake
+        for obj in layer:
+            if (obj.name == "Player"):
+                self.mygroup.empty()
+                self.player = Player(self.screen, path.join("images", "player.png"), (obj.x, obj.y + 33), self.character_scale, self.spritelist)
+                self.player.rect.x = obj.x
+                self.player.rect.y = obj.y
+                self.mygroup.add(self.player)
+
         for obj in layer:
             logger.info(obj)
 
@@ -113,11 +122,8 @@ class TiledRenderer(object):
                 surface_blit(obj.image, (obj.x, obj.y))
                 # s = pygame.sprite.Sprite()
             elif (obj.name == "Player"):
-                self.mygroup.empty()
-                # self.player = Player(self.screen, path.join("images", "player.png"), (obj.x, obj.y + 33), self.character_scale)
-                self.player.rect.x = obj.x
-                self.player.rect.y = obj.y
-                self.mygroup.add(self.player)
+                # we got the player already
+                pass
 
             elif (obj.name == "Enemy"):
                 e = Enemy(self.screen, path.join("images", "enemy.png"), (obj.x, obj.y), self.character_scale, self.player, self.spritelist, self.enemyammo)
@@ -135,6 +141,7 @@ class TiledRenderer(object):
             else:
                 draw_rect(surface, rect_color,
                           (obj.x, obj.y, obj.width, obj.height), 3)
+            self.mygroup.update()
 
 
     def render_image_layer(self, surface, layer):

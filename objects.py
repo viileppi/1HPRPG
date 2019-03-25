@@ -40,11 +40,12 @@ class Object(pygame.sprite.Sprite):
         self.dir = coords
 
     def draw(self):
-        r = self.screen.blit(
-                self.image, 
-                self.rect, 
-                self.rect
-                )
+        # r = self.screen.blit(
+        #         self.image, 
+        #         self.rect, 
+        #         self.rect
+        #         )
+        pass
     def turnaround(self, point):
         self.dir = (self.dir[0] * -1,self.dir[1] * -1)
         self.update()

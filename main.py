@@ -65,6 +65,7 @@ while running:
     amm_coll = pygame.sprite.groupcollide(tiled_map.enemygroup, tiled_map.player.ammogroup, False, False, colli_kill_l)
     amm_enem = pygame.sprite.groupcollide(tiled_map.mygroup, tiled_map.enemyammo, False, False, colli_kill_l)
     amm_wall = pygame.sprite.groupcollide(tiled_map.player.ammogroup, tiled_map.spritelist, False, False, colli_kill_l)
+    ea_wall = pygame.sprite.groupcollide(tiled_map.enemyammo, tiled_map.spritelist, False, False, colli_kill_l)
     enm_wall = pygame.sprite.groupcollide(tiled_map.enemygroup, tiled_map.spritelist, False, False, colli_bounce)
     enm_wal2 = pygame.sprite.groupcollide(tiled_map.enemygroup, tiled_map.waypoints, False, False, colli_bounce)
     pla_fin = pygame.sprite.groupcollide(tiled_map.mygroup, tiled_map.waypoints, False, False, colli_basic)

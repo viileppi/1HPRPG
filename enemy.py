@@ -2,6 +2,7 @@
 import objects
 import pygame
 from ammo import Ammo
+from ammo import deltaAmmo
 from los import LOS
 from os import path
 from pygame.math import Vector2
@@ -20,22 +21,23 @@ class Enemy(objects.Object):
         self.ammogroup = ammogroup
         self.los = LOS(self.screen, self.get_pos(), self.player, self.wall_group)
         self.seen_player = False
-
+        self.shoot_start = pygame.time.get_ticks()
+        self.cooldown = 1000
 
     def seek(self):
         if (self.seen_player):
             self.where = (0,0)
             p = self.player.get_pos()
             e = self.get_pos()
-            v1 = Vector2(p)
-            v2 = Vector2(e)
-            v3 = v1 - v2
-            delta = v2.distance_to(v3)
-            velocity = 50 / delta
-            print(velocity)
-            if (len(self.ammogroup.sprites()) < 4):
-                pew = Ammo(self.screen, self.ammo_image, v2, v3, velocity)
-                self.ammogroup.add(pew)
+            # v1 = Vector2(p)
+            # v2 = Vector2(e)
+            # v3 = v1 - v2
+            # print(v3.normalize())
+            velocity = 16
+            if (((pygame.time.get_ticks() - self.shoot_start) > self.cooldown)):
+                    pew = deltaAmmo(self.screen, self.ammo_image, e, p, velocity)
+                    self.ammogroup.add(pew)
+                    self.shoot_start = pygame.time.get_ticks()
         self.walked += 1
         if (self.walked > self.walk_dist):
             self.turnaround(0)
