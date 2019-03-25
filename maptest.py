@@ -11,6 +11,8 @@ from pytmx import TiledTileLayer
 from pytmx.util_pygame import load_pygame
 import logging
 from objects import Object
+from actiontile import ActionTile
+from player import Player
 from enemy import Enemy
 
 logger = logging.getLogger(__name__)
@@ -31,11 +33,12 @@ class TiledRenderer(object):
         self.character_scale = 0.75
         self.tmx_data = tm
         self.spritelist = pygame.sprite.Group()
-        self.walllist = []
-        self.player = None
         self.enemygroup = pygame.sprite.Group()
         self.mygroup = pygame.sprite.Group()
+        self.enemyammo = pygame.sprite.Group()
         self.waypoints = pygame.sprite.Group()
+        # self.player = Player(self.screen, path.join("images", "player.png"), (0,0), self.character_scale, self.spritelist)
+        self.player = None
         self.finish = None
 
     def move_player(self, where):
@@ -97,6 +100,15 @@ class TiledRenderer(object):
 
         # iterate over all the objects in the layer
         # These may be Tiled shapes like circles or polygons, GID objects, or Tiled Objects
+        # get player first for sanity sake
+        for obj in layer:
+            if (obj.name == "Player"):
+                self.mygroup.empty()
+                self.player = Player(self.screen, path.join("images", "player.png"), (obj.x, obj.y + 33), self.character_scale, self.spritelist)
+                self.player.rect.x = obj.x
+                self.player.rect.y = obj.y
+                self.mygroup.add(self.player)
+
         for obj in layer:
             logger.info(obj)
 
@@ -109,17 +121,18 @@ class TiledRenderer(object):
             elif obj.image:
                 surface_blit(obj.image, (obj.x, obj.y))
                 # s = pygame.sprite.Sprite()
+            elif (obj.name == "Player"):
+                # we got the player already
+                pass
+
             elif (obj.name == "Enemy"):
-                e = Enemy(self.screen, path.join("images", "enemy.png"), (obj.x, obj.y), self.character_scale)
+                e = Enemy(self.screen, path.join("images", "enemy.png"), (obj.x, obj.y), self.character_scale, self.player, self.spritelist, self.enemyammo)
                 self.enemygroup.add(e)
 
-            elif (obj.name == "Player"):
-                self.mygroup.empty()
-                self.player = Object(self.screen, path.join("images", "player.png"), (obj.x, obj.y + 33), self.character_scale)
-                self.mygroup.add(self.player)
-
             elif (obj.name == "Finish"):
-                self.finish = Object(self.screen, path.join("levels", "black.png"), (obj.x, obj.y), 1)
+                self.finish = ActionTile(self.screen, path.join("levels", "green.png"), (obj.x, obj.y), 1)
+                self.finish.image = pygame.transform.scale(self.finish.image, (int(obj.width), int(obj.height)))
+                self.finish.rect = Rect(obj.x, obj.y, self.finish.image.get_width(), self.finish.image.get_height())
                 self.waypoints.add(self.finish)
 
             # draw a rect for everything else
@@ -128,6 +141,7 @@ class TiledRenderer(object):
             else:
                 draw_rect(surface, rect_color,
                           (obj.x, obj.y, obj.width, obj.height), 3)
+            self.mygroup.update()
 
 
     def render_image_layer(self, surface, layer):

@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-     
 from pygame import sprite
+from pygame import math
 
 def colli(l, r):
     # testfunction for collision callbacks
@@ -8,11 +9,17 @@ def colli(l, r):
     else:
         return False
 
+def colli_basic(l, r):
+    # testfunction for collision callbacks
+    if (sprite.collide_rect(l, r)):
+        return True
+    else:
+        return False
+
 def colli_bounce(l, r):
     # testfunction for collision callbacks
-    p = sprite.collide_mask(l, r)
-    if (p != None):
-        l.turnaround(p)
+    if (sprite.collide_rect(l, r)):
+        l.turnaround(r)
         return True
     else:
         return False
@@ -30,6 +37,14 @@ def colli_kill_l(l, r):
     # testfunction for collision callbacks
     if (sprite.collide_mask(l, r) != None):
         l.destroy()
+        return True
+    else:
+        return False
+def colli_los(l, r):
+    # testfunction for collision callbacks
+    if (sprite.collide_rect(l, r)):
+        l.destroy()
+        print("hit")
         return True
     else:
         return False
