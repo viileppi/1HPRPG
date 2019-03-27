@@ -22,4 +22,28 @@ class LOS(pygame.sprite.Sprite):
         else:
             return True
 
+class Cast(pygame.sprite.Sprite):
+    def __init__(self, screen, walls, player):
+        pygame.sprite.Sprite.__init__(self)
+        self.screen = screen
+        self.walls = walls
+        self.player = player
+        self.surf = self.screen.copy()
+        self.pos = self.player.get_pos()
+        self.ray_len = (16,32)
+        self.color = pygame.Color("red")
+        #self.left = (self.pos[0] - self.ray_len, self.pos[1])
+        #self.right = (self.pos[0] + self.ray_len, self.pos[1])
+        #self.up = (self.pos[0], self.pos[1] - self.ray_len)
+        #self.down = (self.pos[0], self.pos[1] + self.ray_len)
+
+    def test(self, to):
+        self.pos = self.player.get_pos()
+        self.ray = pygame.draw.line(self.surf, self.color, self.pos, (self.pos[0] + to[0] * self.ray_len[0], 
+            self.pos[1] + to[1] * self.ray_len[1]), 1)
+
+        if (self.ray.collidelist(self.walls) == -1):
+            return (1,1)
+        else:
+            return (to[0] - to[0],to[1] - to[1])
 

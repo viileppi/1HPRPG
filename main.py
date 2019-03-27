@@ -15,7 +15,7 @@ from menu import Menu
 # init stuff
 scr = Screen(800, 600)
 screen = scr.screen
-level = levelmanager.LevelManager(screen)
+level = levelmanager.LevelManager(scr)
 tiled_map = level.current_level
 
 # map is rendered on background image

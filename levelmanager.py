@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-     
 import maptest
 import os
+import pygame
 
 class LevelManager:
     """ manages operations such as switching to next level """
@@ -15,14 +16,14 @@ class LevelManager:
         self.total_levels = len(self.levels)
         self.index = 0
         self.screen = screen
-        self.current_level = maptest.TiledRenderer(self.screen, self.levels[self.index])
+        self.current_level = maptest.LevelRenderer(self.screen) 
         print(self.levels[self.index])
         self.index = (self.index + 1) % self.total_levels
 
     def next(self):
         print(self.levels[self.index])
         # del self.current_level
-        self.current_level = maptest.TiledRenderer(self.screen, self.levels[self.index])
+        self.current_level = maptest.LevelRenderer(self.screen, self.levels[self.index])
         self.index = (self.index + 1) % self.total_levels
         return self.current_level
 

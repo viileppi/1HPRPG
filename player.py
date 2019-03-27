@@ -6,6 +6,7 @@ from pygame import key
 from pygame import time
 from ammo import deltaAmmo
 from os import path
+from los import Cast
 
 class Player(Object):
     def __init__(self, screen, image, coords, size, wallgroup):
@@ -23,6 +24,7 @@ class Player(Object):
         self.shoot_start = pygame.time.get_ticks()
         self.cooldown = 500
         self.old_dir = (1,0)
+        self.cast = Cast(self.screen, self.wall_list, self)
         self.keyh = {
                     K_RIGHT: self.aimx(1),
                     K_LEFT: self.aimx(-1),
@@ -40,6 +42,7 @@ class Player(Object):
         self.update()
 
     def read_keys(self, pressed):
+        self.cast.walls = self.wall_list.sprites()
         self.dir = (0,0)
         x = 0
         y = 0
@@ -52,10 +55,8 @@ class Player(Object):
         self.dir = (x,y)
         if (self.dir != (0,0)):
             self.old_dir = self.dir
-            cr = self.rect.move(self.dir)
-            lc = cr.collidelistall(self.wall_list)
-            if (len(lc) > 0):
-                self.dir = (0,0)
+            testdir = self.cast.test(self.dir)
+            self.dir = (self.dir[0] * testdir[0], self.dir[1] * testdir[1])
         for k, v in self.keya.items():
             if (pressed[k]):
                 if (((pygame.time.get_ticks() - self.shoot_start) > self.cooldown)):
