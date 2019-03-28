@@ -10,13 +10,14 @@ class Screen:
     def __init__(self, width, height):
         pygame.init()
         self.width = width
-        self.height = height + 64
+        self.height = height
+        self.top_h = 48
+        self.bottom_h = 32
+        self.middle_h = self.height - self.top_h - self.bottom_h
         self.screen = pygame.display.set_mode((self.width, self.height), pygame.RESIZABLE)
         self.screen.set_colorkey(SRCALPHA)
-        self.margin = 56
         #self.gamearea = pygame.Rect(0, self.margin, self.width, (self.height - self.margin * 2))
-        self.gamearea = self.screen.get_rect().inflate(-self.margin/2, -self.margin)
-        self.gamearea.move_ip(0,self.margin)
+        self.gamearea = self.screen.subsurface(Rect(0, self.top_h, self.width, self.middle_h)) 
         ## using semi-transparent image for clearing the screen and smoothing out animation
         self.bg = pygame.image.load(path.join("images", "alpha_fill.png")).convert_alpha()
         self.top_msg = HUD((8,0), 48, Color("yellow"), "Level 0")

@@ -7,8 +7,8 @@ from pygame.locals import *
 class Menu(vision.Screen):
     """ menu sub-screen """
     def __init__(self, screen):
-        self.width = screen.width
-        self.height = screen.height
+        self.width = screen.get_width()
+        self.height = screen.get_height()
         vision.Screen.__init__(self, self.width, self.height)
         font.init()
         self.fontsize = 64
@@ -17,9 +17,9 @@ class Menu(vision.Screen):
         self.message = font.Font(None, self.fontsize)
         self.pos = (64,64)
         self.menuitems = {
-                            "continue": 0,
-                            "quit": 1,
-                            "choose level": 2
+                            "quit": 0,
+                            "continue": 1,
+                            "next level": 2
                          }
         self.index = 0
 
@@ -51,12 +51,12 @@ class Menu(vision.Screen):
                     if (k[K_RETURN]):
                         if (self.index == 0):
                             running = False
+                            return 0
                         if (self.index == 1):
                             self.running = False
-                            pygame.quit()
-                            break
-                        if (self.index == 3):
-                            pass
+                            return 1
+                        if (self.index == 2):
+                            return 2
 
 
             self.update()

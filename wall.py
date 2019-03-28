@@ -21,5 +21,12 @@ class Wall(pygame.sprite.Sprite):
     def draw(self, screen):
         pygame.draw.line(self.image, self.color, self.start, self.end, 16)
 
+class Finish(Wall):
+    def __init__(self, screen, start, end):
+        Wall.__init__(self, screen, start, end)
+        self.color = pygame.Color("green")
+        self.rect = pygame.draw.line(self.screen, self.color, start, end, 16)
+        self.image = pygame.Surface((self.rect.width, self.rect.height))
+        self.image.fill(self.color)
 
 

@@ -43,19 +43,25 @@ while running:
     for e in EventList:
         if (e.type == KEYDOWN):
             k = pygame.key.get_pressed()
-            if (k[K_q]):
-                # quit
-                running = False
-                pygame.quit()
-                break
+            # send keypresses to player
+            tiled_map.player.read_keys(k)
             if (k[K_ESCAPE]):
                 # menu
                 print("menu called")
                 M = Menu(scr)
-                M.menuloop()
-            else:
-                # send keypresses to player
-                tiled_map.player.read_keys(k)
+                menureturn = M.menuloop()
+                if (menureturn == 0):
+                   running = False
+                   pygame.quit() 
+                   break
+                if (menureturn == 2):
+                    # next level
+                    scr = Screen(800, 600)
+                    screen = screen
+                    tiled_map = level.next(tiled_map.player.get_pos())
+                    tiled_map.render_map(scr.bg)
+                    pygame.display.flip()
+                    scr.top_msg.set_message("Level " + str(level.index))
         if (e.type == KEYUP):
             # send keyups too
             k = pygame.key.get_pressed()
@@ -63,11 +69,11 @@ while running:
     # update level and if level is complete, load next one
     if (tiled_map.update_level()):
             # next level
+            xy = tiled_map.player.get_pos()
             scr = Screen(800, 600)
             screen = screen
-            tiled_map = level.next()
+            tiled_map = level.next(xy)
             tiled_map.render_map(scr.bg)
             pygame.display.flip()
             scr.top_msg.set_message("Level " + str(level.index))
-
     clk.tick(fps)

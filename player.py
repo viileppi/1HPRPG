@@ -59,6 +59,7 @@ class Player(Object):
             self.dir = (self.dir[0] * testdir[0], self.dir[1] * testdir[1])
         for k, v in self.keya.items():
             if (pressed[k]):
+                self.dir = (0,0)
                 if (((pygame.time.get_ticks() - self.shoot_start) > self.cooldown)):
                     ammo_dir = (self.rect.centerx - self.old_dir[0] * -100, self.rect.centery - self.old_dir[1] * -100)
                     pew = self.keya[k](self.screen, self.ammo_image, self.get_pos(), ammo_dir, 16)
