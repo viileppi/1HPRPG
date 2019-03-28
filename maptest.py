@@ -24,6 +24,7 @@ class LevelRenderer(object):
         # self.size will be the pixel size of the map
         # this value is used later to render the entire map to a pygame surface
         self.screen = screen.gamearea
+        self.menuscreen = screen
         self.width = self.screen.get_width()
         self.height = self.screen.get_height()
         self.fifth = int(self.width/5)
@@ -184,7 +185,7 @@ class LevelRenderer(object):
         for u in pla_fin:
             next_level = True
         for death in amm_enem:
-            M = Menu(self.screen, self.player)
+            M = Menu(self.menuscreen, self.player)
             M.menuitems = {"continue": 0,
                             "quit": 1
                             }

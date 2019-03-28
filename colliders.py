@@ -35,8 +35,9 @@ def colli_kill_both(l, r):
 
 def colli_kill_l(l, r):
     # testfunction for collision callbacks
-    if (sprite.collide_mask(l, r) != None):
+    if (sprite.collide_rect(l, r)):
         l.destroy()
+        del l
         return True
     else:
         return False

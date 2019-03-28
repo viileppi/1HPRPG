@@ -30,7 +30,8 @@ class Cast(pygame.sprite.Sprite):
         self.player = player
         self.surf = self.screen.copy()
         self.pos = self.player.get_pos()
-        self.ray_len = (32,32)
+        self.ray_size = (16,32)
+        self.ray_w = 32
         self.color = pygame.Color("red")
         #self.left = (self.pos[0] - self.ray_len, self.pos[1])
         #self.right = (self.pos[0] + self.ray_len, self.pos[1])
@@ -39,8 +40,9 @@ class Cast(pygame.sprite.Sprite):
 
     def test(self, to):
         self.pos = self.player.get_pos()
-        self.ray = pygame.draw.line(self.surf, self.color, self.pos, (self.pos[0] + to[0] * self.ray_len[0], 
-            self.pos[1] + to[1] * self.ray_len[1]), self.ray_len[0])
+        ray_w = self.ray_w + abs(int(self.ray_w * to[0]))
+        self.ray = pygame.draw.line(self.surf, self.color, self.pos, (self.pos[0] + to[0] * self.ray_size[0], 
+            self.pos[1] + to[1] * self.ray_size[1]), ray_w)
 
         if (self.ray.collidelist(self.walls) == -1):
             return (1,1)
