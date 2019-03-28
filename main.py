@@ -13,8 +13,8 @@ from vision import Screen
 from menu import Menu
 
 # init stuff
-resolutionx = 1280
-resolutiony = 800
+resolutionx = 800
+resolutiony = 600
 scr = Screen(resolutionx, resolutiony)
 screen = scr.screen
 level = levelmanager.LevelManager(scr)

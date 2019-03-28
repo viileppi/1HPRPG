@@ -24,7 +24,7 @@ class Player(Object):
         self.aimy = lambda y : y * self.speed
         self.shoot_start = pygame.time.get_ticks()
         self.cooldown = 500
-        self.blast_cool = 1000
+        self.blast_cool = 2000
         self.old_dir = (1,0)
         self.cast = Cast(self.screen, self.wall_list, self)
         self.keyh = {

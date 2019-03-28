@@ -71,7 +71,7 @@ class Blast(pygame.sprite.Sprite):
         self.source = source
         self.radius = radius
         self.deltaR = 2
-        self.speed = 4
+        self.speed = 3
         self.color = pygame.Color("red")
         self.rect = pygame.draw.circle(self.screen, self.color, self.source.get_pos(), self.deltaR, 2)
         self.image = pygame.Surface((self.rect.width, self.rect.height))
