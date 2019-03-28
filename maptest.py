@@ -183,7 +183,7 @@ class LevelRenderer(object):
         for u in pla_fin:
             next_level = True
         for death in amm_enem:
-            M = Menu(self.screen)
+            M = Menu(self.screen, self.player)
             M.menuitems = {"continue": 0,
                             "quit": 1
                             }

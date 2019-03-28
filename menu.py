@@ -3,13 +3,19 @@ import pygame
 from pygame import font
 from pygame import color
 from pygame.locals import *
+import keymap
 
 class Menu(vision.Screen):
     """ menu sub-screen """
-    def __init__(self, screen):
-        self.width = screen.get_width()
-        self.height = screen.get_height()
+    def __init__(self, screen, player):
+        try:
+            self.width = screen.width
+            self.height = screen.height
+        except AttributeError:
+            self.width = screen.get_width()
+            self.height = screen.get_height()
         vision.Screen.__init__(self, self.width, self.height)
+        self.player = player
         font.init()
         self.fontsize = 64
         self.color = color.Color("yellow")
@@ -19,7 +25,8 @@ class Menu(vision.Screen):
         self.menuitems = {
                             "quit": 0,
                             "continue": 1,
-                            "next level": 2
+                            "next level": 2,
+                            "choose keymap": 3
                          }
         self.index = 0
 
@@ -57,7 +64,17 @@ class Menu(vision.Screen):
                             return 1
                         if (self.index == 2):
                             return 2
-
+                        if (self.index == 3):
+                            M = Menu(self.screen, self.player)
+                            M.menuitems = {
+                                    "arrow-keys and z": 0,
+                                    "W,A,S,D and space": 1,
+                                    }
+                            mr = M.menuloop()
+                            self.player.keyh = keymap.keymaps[mr]["keyh"]
+                            self.player.keyv = keymap.keymaps[mr]["keyv"]
+                            self.player.keya = keymap.keymaps[mr]["keya"]
+                            return 1
 
             self.update()
             pygame.display.update()

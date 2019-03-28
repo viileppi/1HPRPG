@@ -48,7 +48,7 @@ while running:
             if (k[K_ESCAPE]):
                 # menu
                 print("menu called")
-                M = Menu(scr)
+                M = Menu(scr, tiled_map.player)
                 menureturn = M.menuloop()
                 if (menureturn == 0):
                    running = False
