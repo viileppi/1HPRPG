@@ -71,15 +71,17 @@ class Blast(pygame.sprite.Sprite):
         self.source = source
         self.radius = radius
         self.deltaR = 2
-        self.speed = 3
+        self.speed = 2
+        self.blast_w = 2
         self.color = pygame.Color("red")
-        self.rect = pygame.draw.circle(self.screen, self.color, self.source.get_pos(), self.deltaR, 2)
+        self.rect = pygame.draw.circle(self.screen, self.color, self.source.get_pos(), self.deltaR, self.blast_w)
         self.image = pygame.Surface((self.rect.width, self.rect.height))
+        print("blast!")
 
     def update(self):
         self.deltaR += self.speed
         if (self.deltaR < self.radius):
-            self.rect = pygame.draw.circle(self.screen, self.color, self.source.get_pos(), self.deltaR, 2)
+            self.rect = pygame.draw.circle(self.screen, self.color, self.source.get_pos(), self.deltaR, self.blast_w)
         else:
             self.destroy()
 

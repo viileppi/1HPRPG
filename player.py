@@ -24,7 +24,7 @@ class Player(Object):
         self.aimy = lambda y : y * self.speed
         self.shoot_start = pygame.time.get_ticks()
         self.cooldown = 500
-        self.blast_cool = 2000
+        self.blast_cool = 1000
         self.old_dir = (1,0)
         self.cast = Cast(self.screen, self.wall_list, self)
         self.keyh = {
@@ -72,6 +72,6 @@ class Player(Object):
                     self.shoot_start = pygame.time.get_ticks()
             if (pressed[k] and self.keya[k] == Blast):
                 if (((pygame.time.get_ticks() - self.shoot_start) > self.blast_cool)):
-                    blast = self.keya[k](self.screen, self, 127)
+                    blast = self.keya[k](self.screen, self, 192)
                     self.ammogroup.add(blast)
                     self.shoot_start = pygame.time.get_ticks()

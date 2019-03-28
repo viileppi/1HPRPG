@@ -173,7 +173,7 @@ class LevelRenderer(object):
         enm_wall = pygame.sprite.groupcollide(self.enemygroup, self.wall_list, False, False, colli_bounce)
         enm_wal2 = pygame.sprite.groupcollide(self.enemygroup, self.waypoints, False, False, colli_bounce)
         pla_fin = pygame.sprite.groupcollide(self.mygroup, self.waypoints, False, False, colli_basic)
-        amm_amm = pygame.sprite.groupcollide(self.enemyammo, self.player.ammogroup, True, True)
+        amm_amm = pygame.sprite.groupcollide(self.enemyammo, self.player.ammogroup, False, False, colli_kill_l)
         #pla_wall = pygame.sprite.groupcollide(self.mygroup, self.wall_list, False, False, colli_bounce)
         for c in chr_coll:
             c.destroy()
@@ -186,7 +186,7 @@ class LevelRenderer(object):
             next_level = True
         for death in amm_enem:
             M = Menu(self.menuscreen, self.player)
-            M.menuitems = {"continue": 0,
+            M.menuitems = {"try again?": 0,
                             "quit": 1
                             }
             mr = M.menuloop()
