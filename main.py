@@ -13,7 +13,9 @@ from vision import Screen
 from menu import Menu
 
 # init stuff
-scr = Screen(800, 600)
+resolutionx = 1280
+resolutiony = 800
+scr = Screen(resolutionx, resolutiony)
 screen = scr.screen
 level = levelmanager.LevelManager(scr)
 tiled_map = level.current_level
@@ -56,7 +58,7 @@ while running:
                    break
                 if (menureturn == 2):
                     # next level
-                    scr = Screen(800, 600)
+                    scr = Screen(resolutionx, resolutiony)
                     screen = screen
                     tiled_map = level.next(tiled_map.player.get_pos())
                     tiled_map.render_map(scr.bg)
@@ -70,7 +72,7 @@ while running:
     if (tiled_map.update_level()):
             # next level
             xy = tiled_map.player.get_pos()
-            scr = Screen(800, 600)
+            scr = Screen(resolutionx, resolutiony)
             screen = screen
             tiled_map = level.next(xy)
             tiled_map.render_map(scr.bg)

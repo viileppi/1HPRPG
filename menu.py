@@ -76,7 +76,7 @@ class Menu(vision.Screen):
                             self.player.keya = keymap.keymaps[mr]["keya"]
                             return 1
 
-            self.update()
+            self.update_menu()
             pygame.display.update()
 
          

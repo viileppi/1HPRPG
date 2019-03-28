@@ -5,6 +5,7 @@ from pygame.locals import *
 from pygame import key
 from pygame import time
 from ammo import deltaAmmo
+from ammo import Blast
 from os import path
 from los import Cast
 
@@ -23,6 +24,7 @@ class Player(Object):
         self.aimy = lambda y : y * self.speed
         self.shoot_start = pygame.time.get_ticks()
         self.cooldown = 500
+        self.blast_cool = 1000
         self.old_dir = (1,0)
         self.cast = Cast(self.screen, self.wall_list, self)
         self.keyh = {
@@ -34,7 +36,8 @@ class Player(Object):
                     K_DOWN: self.aimy(1)
                     }
         self.keya = {
-                    K_z: deltaAmmo 
+                    K_z: deltaAmmo, 
+                    K_x: Blast
                     }
 
     def turnaround(self, p):
@@ -58,7 +61,7 @@ class Player(Object):
             testdir = self.cast.test(self.dir)
             self.dir = (self.dir[0] * testdir[0], self.dir[1] * testdir[1])
         for k, v in self.keya.items():
-            if (pressed[k]):
+            if (pressed[k] and self.keya[k] == deltaAmmo):
                 self.dir = (0,0)
                 if (((pygame.time.get_ticks() - self.shoot_start) > self.cooldown)):
                     ammo_dir = (self.rect.centerx - self.old_dir[0] * -100, self.rect.centery - self.old_dir[1] * -100)
@@ -66,4 +69,9 @@ class Player(Object):
                     self.ammogroup.add(pew)
                     self.dir = (0,0)
                     self.move_animator.rect = self.move_animator.crop_init
+                    self.shoot_start = pygame.time.get_ticks()
+            if (pressed[k] and self.keya[k] == Blast):
+                if (((pygame.time.get_ticks() - self.shoot_start) > self.blast_cool)):
+                    blast = self.keya[k](self.screen, self, 127)
+                    self.ammogroup.add(blast)
                     self.shoot_start = pygame.time.get_ticks()

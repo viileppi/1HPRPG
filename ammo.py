@@ -63,4 +63,35 @@ class deltaAmmo(Ammo):
             self.dir = (0,0)
             self.destroy()
 
+class Blast(pygame.sprite.Sprite):
+    """ short-range ammo in all directions """
+    def __init__(self, screen, source, radius):
+        pygame.sprite.Sprite.__init__(self)
+        self.screen = screen
+        self.source = source
+        self.radius = radius
+        self.deltaR = 2
+        self.speed = 4
+        self.color = pygame.Color("red")
+        self.rect = pygame.draw.circle(self.screen, self.color, self.source.get_pos(), self.deltaR, 2)
+        self.image = pygame.Surface((self.rect.width, self.rect.height))
+
+    def update(self):
+        self.deltaR += self.speed
+        if (self.deltaR < self.radius):
+            self.rect = pygame.draw.circle(self.screen, self.color, self.source.get_pos(), self.deltaR, 2)
+        else:
+            self.destroy()
+
+    def draw(self):
+        self.rect = self.screen.blit(
+                self.image, 
+                self.rect, 
+                self.rect
+                )
+
+    def destroy(self):
+        self.kill()
+        del self
+
 

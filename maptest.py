@@ -165,20 +165,21 @@ class LevelRenderer(object):
         self.enemyammo.update()
         self.enemyammo.draw(self.screen)
         chr_coll = pygame.sprite.groupcollide(self.mygroup, self.enemygroup, True, True, colli_kill_both)
-        amm_coll = pygame.sprite.groupcollide(self.enemygroup, self.player.ammogroup, False, False, colli_kill_l)
-        amm_enem = pygame.sprite.groupcollide(self.mygroup, self.enemyammo, False, False, colli_kill_l)
+        amm_coll = pygame.sprite.groupcollide(self.enemygroup, self.player.ammogroup, True, True)
+        amm_enem = pygame.sprite.groupcollide(self.mygroup, self.enemyammo, False, False, colli_kill_both)
         amm_wall = pygame.sprite.groupcollide(self.player.ammogroup, self.wall_list, False, False, colli_kill_l)
         ea_wall = pygame.sprite.groupcollide(self.enemyammo, self.wall_list, False, False, colli_kill_l)
         enm_wall = pygame.sprite.groupcollide(self.enemygroup, self.wall_list, False, False, colli_bounce)
         enm_wal2 = pygame.sprite.groupcollide(self.enemygroup, self.waypoints, False, False, colli_bounce)
         pla_fin = pygame.sprite.groupcollide(self.mygroup, self.waypoints, False, False, colli_basic)
+        amm_amm = pygame.sprite.groupcollide(self.enemyammo, self.player.ammogroup, True, True)
         #pla_wall = pygame.sprite.groupcollide(self.mygroup, self.wall_list, False, False, colli_bounce)
         for c in chr_coll:
             c.destroy()
             del c
-            level.index = 0
+            self.level.index = 0
             self = level.next()
-            self.render_map(scr.bg)
+            ##  self.render_map(scr.bg)
             pygame.display.flip()
         for u in pla_fin:
             next_level = True
