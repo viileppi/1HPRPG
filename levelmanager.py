@@ -5,12 +5,13 @@ import pygame
 
 class LevelManager:
     """ manages operations such as switching to next level """
-    def __init__(self, screen):
+    def __init__(self, screen, player_keymap_i):
         self.total_levels = 255
         self.index = 0
         self.screen = screen
+        self.player_keymap_i = player_keymap_i
         self.xy = (123,251)
-        self.current_level = maptest.LevelRenderer(self.screen, self.xy, (480, 173)) 
+        self.current_level = maptest.LevelRenderer(self.screen, self.xy, (480, 173), self.player_keymap_i) 
         self.start_top = (self.current_level.width/2, self.current_level.third/2)
         self.start_bottom = (self.current_level.width/2, self.current_level.third*2.33)
         self.start_left = (self.current_level.fifth*0.33, self.current_level.height/2)
@@ -39,7 +40,7 @@ class LevelManager:
                 print("top")
                 start = self.start_top
                 self.xy = (self.xy[0], self.xy[1] + 1)
-        self.current_level = maptest.LevelRenderer(self.screen, self.xy, start)
+        self.current_level = maptest.LevelRenderer(self.screen, self.xy, start, self.player_keymap_i)
         self.index = (self.index + 1) % self.total_levels
         return self.current_level
 

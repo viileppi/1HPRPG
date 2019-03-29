@@ -18,7 +18,7 @@ class Menu(vision.Screen):
         self.player = player
         font.init()
         self.fontsize = 64
-        self.color = color.Color("yellow")
+        self.color = color.Color("brown")
         self.chosen = color.Color("green")
         self.message = font.Font(None, self.fontsize)
         self.pos = (64,64)
@@ -26,7 +26,6 @@ class Menu(vision.Screen):
                             "quit": 0,
                             "continue": 1,
                             "next level": 2,
-                            "choose keymap": 3
                          }
         self.index = 0
 
@@ -60,24 +59,13 @@ class Menu(vision.Screen):
                             running = False
                             return 0
                         if (self.index == 1):
-                            self.running = False
+                            running = False
                             return 1
                         if (self.index == 2):
+                            running = False
                             return 2
-                        if (self.index == 3):
-                            M = Menu(self.screen, self.player)
-                            M.menuitems = {
-                                    "arrow-keys and z": 0,
-                                    "W,A,S,D and space": 1,
-                                    }
-                            mr = M.menuloop()
-                            self.player.keyh = keymap.keymaps[mr]["keyh"]
-                            self.player.keyv = keymap.keymaps[mr]["keyv"]
-                            self.player.keya = keymap.keymaps[mr]["keya"]
-                            return 1
+                            
 
             self.update_menu()
             pygame.display.update()
-
-         
 

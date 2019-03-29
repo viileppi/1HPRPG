@@ -22,7 +22,8 @@ class Enemy(objects.Object):
         self.los = LOS(self.screen, self.get_pos(), self.player, self.wall_group)
         self.seen_player = False
         self.shoot_start = pygame.time.get_ticks()
-        self.cooldown = 1000
+        self.cooldown = 500
+        self.ammo_speed = 5
 
     def seek(self):
         if (self.seen_player):
@@ -33,9 +34,8 @@ class Enemy(objects.Object):
             # v2 = Vector2(e)
             # v3 = v1 - v2
             # print(v3.normalize())
-            velocity = 16
             if (((pygame.time.get_ticks() - self.shoot_start) > self.cooldown)):
-                    pew = deltaAmmo(self.screen, self.ammo_image, e, p, velocity)
+                    pew = deltaAmmo(self.screen, self.ammo_image, e, p, self.ammo_speed)
                     self.ammogroup.add(pew)
                     self.shoot_start = pygame.time.get_ticks()
         self.walked += 1

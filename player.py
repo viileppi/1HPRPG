@@ -8,9 +8,10 @@ from ammo import deltaAmmo
 from ammo import Blast
 from os import path
 from los import Cast
+import keymap
 
 class Player(Object):
-    def __init__(self, screen, image, coords, size, wallgroup):
+    def __init__(self, screen, image, coords, size, wallgroup, keymap_i):
         Object.__init__(self, screen, image, coords, size)
         self.wallgroup = wallgroup
         self.wall_list = []
@@ -27,22 +28,25 @@ class Player(Object):
         self.blast_cool = 1000
         self.old_dir = (1,0)
         self.cast = Cast(self.screen, self.wall_list, self)
-        self.keyh = {
-                    K_RIGHT: self.aimx(1),
-                    K_LEFT: self.aimx(-1),
-                    }
-        self.keyv = {
-                    K_UP: self.aimy(-1),
-                    K_DOWN: self.aimy(1)
-                    }
-        self.keya = {
-                    K_z: deltaAmmo, 
-                    K_x: Blast
-                    }
+        self.keymap_i = keymap_i
+        self.keyh = keymap.keymaps[self.keymap_i]["keyh"]
+        self.keyv = keymap.keymaps[self.keymap_i]["keyv"]
+        self.keya = keymap.keymaps[self.keymap_i]["keya"]
+        # self.keyh = {
+        #             K_RIGHT: self.aimx(1),
+        #             K_LEFT: self.aimx(-1),
+        #             }
+        # self.keyv = {
+        #             K_UP: self.aimy(-1),
+        #             K_DOWN: self.aimy(1)
+        #             }
+        # self.keya = {
+        #             K_z: deltaAmmo, 
+        #             K_x: Blast
+        #             }
 
     def turnaround(self, p):
-        self.dir = (self.old_dir[0] * -1, self.old_dir[1] * -1)
-        self.update()
+        pass
 
     def read_keys(self, pressed):
         self.cast.walls = self.wall_list.sprites()
@@ -65,7 +69,7 @@ class Player(Object):
                 self.dir = (0,0)
                 if (((pygame.time.get_ticks() - self.shoot_start) > self.cooldown)):
                     ammo_dir = (self.rect.centerx - self.old_dir[0] * -100, self.rect.centery - self.old_dir[1] * -100)
-                    pew = self.keya[k](self.screen, self.ammo_image, self.get_pos(), ammo_dir, 16)
+                    pew = self.keya[k](self.screen, self.ammo_image, self.get_pos(), ammo_dir, 3)
                     self.ammogroup.add(pew)
                     self.dir = (0,0)
                     self.move_animator.rect = self.move_animator.crop_init
@@ -75,3 +79,10 @@ class Player(Object):
                     blast = self.keya[k](self.screen, self, 192)
                     self.ammogroup.add(blast)
                     self.shoot_start = pygame.time.get_ticks()
+
+    def change_keymap(self, keymap_i):
+        self.keymap_i = keymap_i
+        self.keyh = keymap.keymaps[self.keymap_i]["keyh"]
+        self.keyv = keymap.keymaps[self.keymap_i]["keyv"]
+        self.keya = keymap.keymaps[self.keymap_i]["keya"]
+

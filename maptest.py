@@ -19,7 +19,7 @@ class LevelRenderer(object):
     Super simple way to render a tiled map
     """
 
-    def __init__(self, screen, xy, player_pos):
+    def __init__(self, screen, xy, player_pos, player_keymap_i):
 
         # self.size will be the pixel size of the map
         # this value is used later to render the entire map to a pygame surface
@@ -41,7 +41,8 @@ class LevelRenderer(object):
         self.enemyammo = pygame.sprite.Group()
         self.waypoints = pygame.sprite.Group()
         self.mygroup.empty()
-        self.player = Player(self.screen, path.join("images", "player.png"), player_pos, self.character_scale, self.wall_list)
+        self.player_keymap_i = player_keymap_i
+        self.player = Player(self.screen, path.join("images", "player.png"), player_pos, self.character_scale, self.wall_list, self.player_keymap_i)
         self.mygroup.add(self.player)
         self.xy = xy
         self.spawn_points = [
@@ -178,13 +179,13 @@ class LevelRenderer(object):
         for c in chr_coll:
             c.destroy()
             del c
-            self.level.index = 0
-            self = level.next()
+            next_level = True
             ##  self.render_map(scr.bg)
             pygame.display.flip()
         for u in pla_fin:
             next_level = True
         for death in amm_enem:
+            pygame.time.wait(500)
             M = Menu(self.menuscreen, self.player)
             M.menuitems = {"try again?": 0,
                             "quit": 1

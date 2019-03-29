@@ -37,7 +37,7 @@ class deltaAmmo(Ammo):
         Ammo.__init__(self, screen, image, coords, direction, speed)
         # overrides for testing
         self.length = 2000
-        self.speed = 4
+        self.speed = speed
         # from
         # self.v1 = Vector2(self.get_pos())
         self.v1 = Vector2(coords)

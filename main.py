@@ -13,11 +13,44 @@ from vision import Screen
 from menu import Menu
 
 # init stuff
+running = True
 resolutionx = 800
 resolutiony = 600
 scr = Screen(resolutionx, resolutiony)
 screen = scr.screen
-level = levelmanager.LevelManager(scr)
+
+# setup framerate and keyboard repeat rate
+clk = pygame.time.Clock()
+fps = 60
+pygame.key.set_repeat(100,100)
+pygame.display.update()
+
+# start menu
+kmapi = 0
+kmap_menuitems = {
+            "arrow-keys and z": 0,
+            "W,A,S,D and space": 1
+             }
+
+start_menuitems = {
+        "New game": 0,
+        "Quit": 1,
+        "Choose keymap": 2
+        }
+
+startmenu = Menu(scr, None)
+startmenu.menuitems = start_menuitems
+sml = startmenu.menuloop()
+if (sml == 1):
+    running = False
+    pygame.quit() 
+if (sml == 2):
+    kmenu = Menu(scr, None)
+    kmenu.menuitems = kmap_menuitems
+    kmapi = kmenu.menuloop()
+
+# level inits
+level = levelmanager.LevelManager(scr, kmapi)
 tiled_map = level.current_level
 
 # map is rendered on background image
@@ -25,14 +58,7 @@ tiled_map.render_map(scr.bg)
 
 # set some variables
 finish = tiled_map.finish
-running = True
 pygame.init()
-
-# setup framerate and keyboard repeat rate
-clk = pygame.time.Clock()
-fps = 60
-pygame.key.set_repeat(50,50)
-pygame.display.update()
 
 while running:
     # uncomment to see coordinates
@@ -47,6 +73,10 @@ while running:
             k = pygame.key.get_pressed()
             # send keypresses to player
             tiled_map.player.read_keys(k)
+            if (k[K_BACKSPACE]):
+                running = False
+                pygame.quit()
+                break
             if (k[K_ESCAPE]):
                 # menu
                 print("menu called")
