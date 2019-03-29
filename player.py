@@ -21,6 +21,7 @@ class Player(Object):
         self.clk = time.Clock()
         self.ammo_image = path.join("images", "ammo.png")
         self.ammogroup = pygame.sprite.Group()
+        self.blastgroup = pygame.sprite.Group()
         self.aimx = lambda x : x * self.speed
         self.aimy = lambda y : y * self.speed
         self.shoot_start = pygame.time.get_ticks()
@@ -76,8 +77,8 @@ class Player(Object):
                     self.shoot_start = pygame.time.get_ticks()
             if (pressed[k] and self.keya[k] == Blast):
                 if (((pygame.time.get_ticks() - self.shoot_start) > self.blast_cool)):
-                    blast = self.keya[k](self.screen, self, 192)
-                    self.ammogroup.add(blast)
+                    blast = self.keya[k](self.screen, self, 72)
+                    self.blastgroup.add(blast)
                     self.shoot_start = pygame.time.get_ticks()
 
     def change_keymap(self, keymap_i):

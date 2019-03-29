@@ -50,3 +50,10 @@ def colli_los(l, r):
     else:
         return False
 
+def colli_circle(l, r):
+    if (sprite.collide_mask(l, r) != None):
+        l.destroy()
+        return True
+    else:
+        return False
+

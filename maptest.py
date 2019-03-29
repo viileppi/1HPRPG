@@ -23,6 +23,12 @@ class LevelRenderer(object):
 
         # self.size will be the pixel size of the map
         # this value is used later to render the entire map to a pygame surface
+        pygame.mixer.init()
+        self.enemy_ch = pygame.mixer.Channel(0)
+        self.player_ch = pygame.mixer.Channel(1)
+        self.pew_sound = pygame.mixer.Sound("sounds/pew.wav")
+        self.player_pew = pygame.mixer.Sound("sounds/wep.wav")
+        self.pew_playing = 0
         self.screen = screen.gamearea
         self.menuscreen = screen
         self.width = self.screen.get_width()
@@ -156,6 +162,8 @@ class LevelRenderer(object):
         surface.blit(layer.image, (0, 0))
 
     def update_level(self):
+        shots_fired = len(self.enemyammo.sprites())
+        player_fired = len(self.player.ammogroup.sprites())
         next_level = False
         self.enemygroup.update()
         self.wall_list.draw(self.screen)
@@ -164,17 +172,21 @@ class LevelRenderer(object):
         self.waypoints.draw(self.screen)
         self.player.ammogroup.update()
         self.player.ammogroup.draw(self.screen)
+        self.player.blastgroup.update()
+        self.player.blastgroup.draw(self.screen)
         self.enemyammo.update()
         self.enemyammo.draw(self.screen)
         chr_coll = pygame.sprite.groupcollide(self.mygroup, self.enemygroup, True, True, colli_kill_both)
-        amm_coll = pygame.sprite.groupcollide(self.enemygroup, self.player.ammogroup, True, True)
-        amm_enem = pygame.sprite.groupcollide(self.mygroup, self.enemyammo, False, False, colli_kill_both)
+        amm_coll = pygame.sprite.groupcollide(self.enemygroup, self.player.ammogroup, True, True, colli_kill_both)
+        amm_enem = pygame.sprite.groupcollide(self.mygroup, self.enemyammo, True, True, colli_kill_both)
         amm_wall = pygame.sprite.groupcollide(self.player.ammogroup, self.wall_list, False, False, colli_kill_l)
         ea_wall = pygame.sprite.groupcollide(self.enemyammo, self.wall_list, False, False, colli_kill_l)
         enm_wall = pygame.sprite.groupcollide(self.enemygroup, self.wall_list, False, False, colli_bounce)
         enm_wal2 = pygame.sprite.groupcollide(self.enemygroup, self.waypoints, False, False, colli_bounce)
         pla_fin = pygame.sprite.groupcollide(self.mygroup, self.waypoints, False, False, colli_basic)
         amm_amm = pygame.sprite.groupcollide(self.enemyammo, self.player.ammogroup, False, False, colli_kill_l)
+        blast_amm = pygame.sprite.groupcollide(self.enemyammo, self.player.blastgroup, False, False, colli_kill_l)
+        blast_enm = pygame.sprite.groupcollide(self.enemygroup, self.player.blastgroup, False, False, colli_kill_l)
         #pla_wall = pygame.sprite.groupcollide(self.mygroup, self.wall_list, False, False, colli_bounce)
         for c in chr_coll:
             c.destroy()
@@ -195,6 +207,13 @@ class LevelRenderer(object):
                 next_level = True
             if (mr == 1):
                 pygame.quit()
+        if (len(self.player.ammogroup.sprites()) > self.pew_playing):
+            self.player_ch.play(self.player_pew)
+            self.pew_playing += 1
+        if (len(self.player.ammogroup.sprites()) < self.pew_playing):
+            self.pew_playing = len(self.player.ammogroup.sprites())
+        if (len(self.enemyammo.sprites()) > shots_fired):
+            self.enemy_ch.play(self.pew_sound)
         return next_level
 
 
