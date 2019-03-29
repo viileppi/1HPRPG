@@ -19,7 +19,7 @@ keymaps = {
            },
     "keya" : {
            K_LALT: deltaAmmo,
-           K_SPACE: Blast
+           K_LCTRL: Blast
            }
     },
         1: {

@@ -53,6 +53,9 @@ class Object(pygame.sprite.Sprite):
     def update(self):
         self.rect = self.move_animator.goto(self.dir)
 
+    def moveOnce(self, coords):
+        self.rect = self.move_animator.goto(coords)
+
     def get_pos(self):
         x = (self.rect.centerx)
         y = (self.rect.centery)

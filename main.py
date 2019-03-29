@@ -98,6 +98,10 @@ while running:
             # send keyups too
             k = pygame.key.get_pressed()
             tiled_map.player.read_keys(k)
+    if (not tiled_map.player.can_blast):
+        scr.bottom_msg.setBusy(2)
+    if (tiled_map.player.can_blast):
+        scr.bottom_msg.setAvailable(2)
     # update level and if level is complete, load next one
     if (tiled_map.update_level()):
             # next level

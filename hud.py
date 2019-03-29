@@ -30,7 +30,26 @@ class HotKeys:
         self.spacing = spacing
         self.image.fill(pygame.Color("black"))
         self.pos = 0
+        self.busy = []
+        for item in self.icons:
+            self.busy.append(item.copy())
         for icon in self.icons:
             self.image.blit(icon, (self.pos, 0))
-            self.pos += icon.get_width() + spacing
+            self.pos += icon.get_width() + self.spacing
+
+    def setBusy(self, item):
+        self.pos = 0
+        self.icons[item].fill(pygame.Color("red"))
+        for icon in self.icons:
+            self.image.blit(icon, (self.pos, 0))
+            self.pos += icon.get_width() + self.spacing
+
+
+    def setAvailable(self, item):
+        self.pos = 0
+        self.icons[item] = self.busy[item].copy()
+        for icon in self.icons:
+            self.image.blit(icon, (self.pos, 0))
+            self.pos += icon.get_width() + self.spacing
+
 

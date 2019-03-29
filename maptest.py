@@ -3,7 +3,6 @@ import pygame
 from pygame.locals import *
 from os import listdir
 from os import path
-from vision import Screen
 from colliders import *
 from objects import Object
 from actiontile import ActionTile
@@ -28,6 +27,7 @@ class LevelRenderer(object):
         self.player_ch = pygame.mixer.Channel(1)
         self.pew_sound = pygame.mixer.Sound("sounds/pew.wav")
         self.player_pew = pygame.mixer.Sound("sounds/wep.wav")
+        self.blast = pygame.mixer.Sound("sounds/blast.wav")
         self.pew_playing = 0
         self.screen = screen.gamearea
         self.menuscreen = screen
@@ -184,9 +184,10 @@ class LevelRenderer(object):
         enm_wall = pygame.sprite.groupcollide(self.enemygroup, self.wall_list, False, False, colli_bounce)
         enm_wal2 = pygame.sprite.groupcollide(self.enemygroup, self.waypoints, False, False, colli_bounce)
         pla_fin = pygame.sprite.groupcollide(self.mygroup, self.waypoints, False, False, colli_basic)
-        amm_amm = pygame.sprite.groupcollide(self.enemyammo, self.player.ammogroup, False, False, colli_kill_l)
+        amm_amm = pygame.sprite.groupcollide(self.enemyammo, self.player.ammogroup, True, True)
         blast_amm = pygame.sprite.groupcollide(self.enemyammo, self.player.blastgroup, False, False, colli_kill_l)
         blast_enm = pygame.sprite.groupcollide(self.enemygroup, self.player.blastgroup, False, False, colli_kill_l)
+        blast_wall = pygame.sprite.groupcollide(self.player.blastgroup, self.wall_list, False, False, colli_clip)
         #pla_wall = pygame.sprite.groupcollide(self.mygroup, self.wall_list, False, False, colli_bounce)
         for c in chr_coll:
             c.destroy()
@@ -212,6 +213,8 @@ class LevelRenderer(object):
             self.pew_playing += 1
         if (len(self.player.ammogroup.sprites()) < self.pew_playing):
             self.pew_playing = len(self.player.ammogroup.sprites())
+        if (len(self.player.blastgroup.sprites()) > 0):
+            self.player_ch.play(self.blast)
         if (len(self.enemyammo.sprites()) > shots_fired):
             self.enemy_ch.play(self.pew_sound)
         return next_level

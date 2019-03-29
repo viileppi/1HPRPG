@@ -27,6 +27,9 @@ class Animator(pygame.sprite.Sprite):
     def add2group(self, group):
         self.group = group
 
+    def reset(self):
+        self.move = 0
+
     def goto(self, whereto):
         # flip image if needed
         self.target = whereto
