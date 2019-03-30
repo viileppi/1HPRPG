@@ -12,7 +12,7 @@ class Enemy(objects.Object):
         """ image should be a spritesheet of square sprites """
         objects.Object.__init__(self, screen, image, coords, size)
         self.forward = True
-        self.speed = 1
+        self.speed = 2
         self.walked = 0
         self.walk_dist = 100
         self.where = (1,0)
@@ -30,6 +30,9 @@ class Enemy(objects.Object):
         self.cooldown = 500
         self.image_backup = self.image.copy()
         self.divider = self.rect.height
+        if (self.player.rect.colliderect(self.player.rect.inflate(100,100))):
+            # in case enemy spawns too close of player
+            self.destroy()
 
     def seek(self):
         if (self.seen_player):

@@ -38,15 +38,14 @@ class Animator(pygame.sprite.Sprite):
             sf = pygame.transform.flip(s, True, False) 
             self.frames_flip.append(sf.copy())
         self.frame_count = len(self.frames)
-        self.frame_skip = [1, 0, 0, 0]
         self.skip = 0
+        self.skip_n = 4
 
     def add2group(self, group):
         self.group = group
 
     def reset(self):
-        self.move = 0
-        self.rect = self.crop_init
+        pass
 
     def goto(self, whereto):
         # flip image if needed
@@ -64,18 +63,20 @@ class Animator(pygame.sprite.Sprite):
                 abs(self.target[0] - self.target[0]), 
                 abs(self.target[1] - self.target[1])
                 )
-            self.skip = (self.skip+1)%len(self.frame_skip)
-            #self.move = (self.move+1)%self.frame_count
-            self.move = (self.move+self.frame_skip[self.skip])%self.frame_count
+            if (self.skip%self.skip_n == 0):
+                self.move = (self.move+1)%self.frame_count
+            self.skip = (self.skip+1)
+            # self.move = (self.move+1)%self.frame_count
+            # self.move = (self.move+self.frame_skip[self.skip])%self.frame_count
         if (self.facing_right):
             r = self.screen.blit(
-                    self.frames[self.move].copy(), 
+                    self.frames[self.move],#.copy(), 
                     self.image_pos, 
                     self.rect
                     )
         else:
             r = self.screen.blit(
-                    self.frames_flip[self.move].copy(), 
+                    self.frames_flip[self.move],#.copy(), 
                     self.image_pos, 
                     self.rect
                     )

@@ -18,6 +18,7 @@ resolutionx = 800
 resolutiony = 600
 scr = Screen(resolutionx, resolutiony)
 screen = scr.screen
+pygame.mixer.init(8000, 8, 2, 1024)
 enemy_ch = pygame.mixer.Channel(0)
 player_ch = pygame.mixer.Channel(1)
 pew_sound = pygame.mixer.Sound("sounds/pew.wav")
@@ -66,7 +67,7 @@ pygame.init()
 lives_left = 3
 start_again = False
 
-fps = 60
+fps = 30
 
 while running:
     # uncomment to see coordinates

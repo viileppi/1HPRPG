@@ -22,7 +22,6 @@ class LevelRenderer(object):
 
         # self.size will be the pixel size of the map
         # this value is used later to render the entire map to a pygame surface
-        pygame.mixer.init()
         self.pew_playing = 0
         self.screen = screen.gamearea
         self.menuscreen = screen
@@ -147,7 +146,7 @@ class LevelRenderer(object):
         self.wall_list.draw(surface)
 
     def render_object_layer(self, surface):
-        enemies_n = random.randint(3, 6)
+        enemies_n = random.randint(1, 6)
         for coord in self.spawn_points:
             if (random.randint(0,6) == enemies_n):
                 e = Enemy(self.screen, path.join("images", "robot.png"), coord, self.character_scale, self.player, self.wall_list, self.enemyammo)
