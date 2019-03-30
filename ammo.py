@@ -9,7 +9,7 @@ class Ammo(objects.Object):
     def __init__(self, screen, image, coords, direction, speed):
         objects.Object.__init__(self, screen, image, coords, 1)
         self.speed = speed
-        self.length = 1000
+        self.length = 2000
         self.start = pygame.time.get_ticks()
         self.image.fill(Color("yellow"))
         # self.dir = (direction[0] * self.speed, direction[1] * self.speed)
@@ -36,8 +36,8 @@ class deltaAmmo(Ammo):
     def __init__(self, screen, image, coords, direction, speed):
         Ammo.__init__(self, screen, image, coords, direction, speed)
         # overrides for testing
-        self.length = 2000
-        self.speed = 4
+        self.length = 4000
+        self.speed = speed
         # from
         # self.v1 = Vector2(self.get_pos())
         self.v1 = Vector2(coords)
@@ -48,6 +48,13 @@ class deltaAmmo(Ammo):
         # calculate speed
         self.v4 = self.v3.normalize()
         self.v4 = self.v4 * self.speed
+        self.screen_w = self.screen.get_width()
+        self.screen_h = self.screen.get_height()
+
+    def destroy(self):
+        self.kill()
+        del self
+
 
     def update(self):
         # destroy ammo if it's been alive for longer than self.length
@@ -62,5 +69,37 @@ class deltaAmmo(Ammo):
         else:
             self.dir = (0,0)
             self.destroy()
+
+class Blast(pygame.sprite.Sprite):
+    """ short-range ammo in all directions """
+    def __init__(self, screen, source, radius):
+        pygame.sprite.Sprite.__init__(self)
+        self.screen = screen
+        self.source = source
+        self.radius = radius
+        self.deltaR = 2
+        self.speed = 2
+        self.blast_w = 2
+        self.color = pygame.Color("red")
+        self.rect = pygame.draw.circle(self.screen, self.color, self.source.get_pos(), self.deltaR, self.blast_w)
+        self.image = pygame.Surface((self.rect.width, self.rect.height))
+
+    def update(self):
+        self.deltaR += int(self.radius/(self.deltaR*2)+1)
+        if (self.deltaR < self.radius):
+            self.rect = pygame.draw.circle(self.screen, self.color, self.source.get_pos(), self.deltaR, self.blast_w)
+        else:
+            self.destroy()
+
+    def draw(self):
+        self.rect = self.screen.blit(
+                self.image, 
+                self.rect, 
+                self.rect
+                )
+
+    def destroy(self):
+        self.kill()
+        del self
 
 

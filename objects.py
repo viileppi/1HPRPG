@@ -33,6 +33,7 @@ class Object(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.m_image)
 
     def destroy(self):
+        pygame.event.post(pygame.event.Event(pygame.USEREVENT + 3))
         self.kill()
         del self
 
@@ -52,6 +53,9 @@ class Object(pygame.sprite.Sprite):
 
     def update(self):
         self.rect = self.move_animator.goto(self.dir)
+
+    def moveOnce(self, coords):
+        self.rect = self.move_animator.goto(coords)
 
     def get_pos(self):
         x = (self.rect.centerx)

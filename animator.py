@@ -3,14 +3,13 @@ import pygame
 from pygame.locals import *
 
 class Animator(pygame.sprite.Sprite):
-    """ Arguments: pygame.display, spritesheet to load (string), rect of single fame, speed of movement (int)"""
     def __init__(self, screen, image, pos):
-        pygame.sprite.Sprite.__init__(self)
+        #pygame.sprite.Sprite.__init__(self)
         self.group = None
         self.screen = screen
         # self.image = pygame.image.load(image).convert()
         self.image = image        
-        self.step = 2
+        self.step = 0.5
         self.image_w = self.image.get_width()
         self.image_h = self.image.get_height()
         self.crop_size = self.image_h
@@ -23,18 +22,39 @@ class Animator(pygame.sprite.Sprite):
         self.facing_right = True
         self.step_multi = 0
         self.doblit = True
+        self.frames = []
+        self.frames_flip = []
+        s = pygame.Surface((self.rect.width, self.rect.height), pygame.SRCALPHA)
+        self.image.scroll(-self.crop_size, 0)
+        s.blit(self.image.copy(), (0,0))
+        self.frames.append(s.copy())
+        sf = pygame.transform.flip(s, True, False) 
+        self.frames_flip.append(sf.copy())
+        for i in range(int(self.image_w/self.crop_size)):
+            s = pygame.Surface((self.rect.width, self.rect.height), pygame.SRCALPHA)
+            self.image.scroll(-self.crop_size, 0)
+            s.blit(self.image.copy(), (0,0))
+            self.frames.append(s.copy())
+            sf = pygame.transform.flip(s, True, False) 
+            self.frames_flip.append(sf.copy())
+        self.frame_count = len(self.frames)
+        self.skip = 0
+        self.skip_n = 4
 
     def add2group(self, group):
         self.group = group
+
+    def reset(self):
+        pass
 
     def goto(self, whereto):
         # flip image if needed
         self.target = whereto
         if (self.target[0] < 0 and self.facing_right):
-            self.image = pygame.transform.flip(self.image, True, False)
+            #self.image = pygame.transform.flip(self.image, True, False)
             self.facing_right = False
         elif (self.target[0] > 0 and (not self.facing_right)):
-            self.image = pygame.transform.flip(self.image, True, False)
+            #self.image = pygame.transform.flip(self.image, True, False)
             self.facing_right = True
         # move image smoothly
         if (whereto != (0,0)):
@@ -43,30 +63,23 @@ class Animator(pygame.sprite.Sprite):
                 abs(self.target[0] - self.target[0]), 
                 abs(self.target[1] - self.target[1])
                 )
-            # move spritesheet in place to RIGHT
-            if (self.facing_right):
-                self.rect.move_ip(self.crop_size,0)           
-                self.move += self.crop_size
-                if (self.move >= (self.image_w)):
-                    self.rect.move_ip(self.image_w * -1, 0)
-                    self.move = 0
-                    self.rect = self.crop_init
-            # move spritesheet in place to LEFT
-            if (not self.facing_right):
-                if (self.move <= self.crop_size):
-                    self.rect.move_ip(self.image_w - self.crop_size, 0)
-                    self.move = self.image_w
-                    self.rect = self.crop_init
-                self.rect.move_ip(-self.crop_size,0)           
-                self.move -= self.crop_size
-        
-        if (self.doblit):
+            if (self.skip%self.skip_n == 0):
+                self.move = (self.move+1)%self.frame_count
+            self.skip = (self.skip+1)
+            # self.move = (self.move+1)%self.frame_count
+            # self.move = (self.move+self.frame_skip[self.skip])%self.frame_count
+        if (self.facing_right):
             r = self.screen.blit(
-                    self.image, 
+                    self.frames[self.move],#.copy(), 
                     self.image_pos, 
                     self.rect
                     )
         else:
-            r = self.rect
+            r = self.screen.blit(
+                    self.frames_flip[self.move],#.copy(), 
+                    self.image_pos, 
+                    self.rect
+                    )
+  
         return r
 

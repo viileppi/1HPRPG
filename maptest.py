@@ -3,149 +3,196 @@ import pygame
 from pygame.locals import *
 from os import listdir
 from os import path
-
-import pytmx
-from pytmx import TiledImageLayer
-from pytmx import TiledObjectGroup
-from pytmx import TiledTileLayer
-from pytmx.util_pygame import load_pygame
-import logging
+from colliders import *
 from objects import Object
 from actiontile import ActionTile
 from player import Player
 from enemy import Enemy
+from wall import Wall
+from wall import Finish
+from menu import Menu
+import random
 
-logger = logging.getLogger(__name__)
-logger.info(pytmx.__version__)
-
-class TiledRenderer(object):
+class LevelRenderer(object):
     """
     Super simple way to render a tiled map
     """
 
-    def __init__(self, screen, filename):
-        tm = load_pygame(filename)
+    def __init__(self, screen, xy, player_pos, player_keymap_i):
 
         # self.size will be the pixel size of the map
         # this value is used later to render the entire map to a pygame surface
-        self.screen = screen
-        self.pixel_size = tm.width * tm.tilewidth, tm.height * tm.tileheight
-        self.character_scale = 0.75
-        self.tmx_data = tm
-        self.spritelist = pygame.sprite.Group()
+        self.pew_playing = 0
+        self.screen = screen.gamearea
+        self.menuscreen = screen
+        self.width = self.screen.get_width()
+        self.height = self.screen.get_height()
+        self.fifth = int(self.width/5)
+        self.third = int(self.height/3)
+        self.offset = 16
+        self.keypoints = []
+        for y in range(1,3):
+            for x in range(1,5):
+                self.keypoints.append((int(self.fifth*x), int(self.third*y)))
+        self.character_scale = 1
+        self.wall_list = pygame.sprite.Group()
         self.enemygroup = pygame.sprite.Group()
         self.mygroup = pygame.sprite.Group()
         self.enemyammo = pygame.sprite.Group()
         self.waypoints = pygame.sprite.Group()
-        # self.player = Player(self.screen, path.join("images", "player.png"), (0,0), self.character_scale, self.spritelist)
-        self.player = None
+        self.mygroup.empty()
+        self.player_keymap_i = player_keymap_i
+        self.player = Player(self.screen, path.join("images", "player.png"), player_pos, self.character_scale, self.wall_list, self.player_keymap_i)
+        self.mygroup.add(self.player)
+        self.xy = xy
+        self.spawn_points = []
+        for item in self.keypoints:
+            self.spawn_points.append((item[0] + 64, item[1] + 64))
+            self.spawn_points.append((item[0] - 64, item[1] - 64))
         self.finish = None
+        self.borders = [
+                            # top row
+                            [
+                                (0,0), 
+                                (self.fifth*2,0)
+                            ], 
+                            [
+                                (self.fifth*3,0), 
+                                (self.width,0)
+                            ], 
+                            # bottom row
+                            [
+                                (0,self.height - self.offset), 
+                                (self.fifth*2, self.height - self.offset)
+                            ],
+                            [
+                                (self.fifth*3,self.height-self.offset), 
+                                (self.width,self.height-self.offset)
+                            ], 
+                            # left column
+                            [
+                                (0,0), 
+                                (0,self.third)
+                            ], 
+                            [
+                                (0,self.third*2), 
+                                (0,self.height)
+                            ], 
+                            # right column
+                            [
+                                (self.width - self.offset,0), 
+                                (self.width - self.offset,self.third), 
+                            ], 
+                            [
+                                (self.width - self.offset,self.third*2), 
+                                (self.width - self.offset,self.height), 
+                            ] 
+                        ]
 
+        self.render_tile_layer(self.screen)
+        self.generate_maze(self.screen)
+        self.render_object_layer(self.screen)
     def move_player(self, where):
         for player in self.mygroup:
             player.move(where)
 
     def render_map(self, surface):
-        """ Render our map to a pygame surface
-
-        Feel free to use this as a starting point for your pygame app.
-        This method expects that the surface passed is the same pixel
-        size as the map.
-
-        Scrolling is a often requested feature, but pytmx is a map
-        loader, not a renderer!  If you'd like to have a scrolling map
-        renderer, please see my pyscroll project.
-        """
-
         # fill the background color of our render surface
-        if self.tmx_data.background_color:
-            surface.fill(pygame.Color(self.tmx_data.background_color))
+        surface.fill(pygame.Color("black"))
 
-        # iterate over all the visible layers, then draw them
-        for layer in self.tmx_data.visible_layers:
-            # each layer can be handled differently by checking their type
-            if isinstance(layer, TiledTileLayer):
-                self.render_tile_layer(surface, layer)
-            elif isinstance(layer, TiledObjectGroup):
-                self.render_object_layer(surface, layer)
-            elif isinstance(layer, TiledImageLayer):
-                self.render_image_layer(surface, layer)
-
-    def render_tile_layer(self, surface, layer):
-        """ Render all TiledTiles in this layer
-        """
-        # deref these heavily used references for speed
-        tw = self.tmx_data.tilewidth
-        th = self.tmx_data.tileheight
+    def render_tile_layer(self, surface):
         surface_blit = surface.blit
+        for line in self.borders:
+            w = Wall(self.screen, line[0], line[1])
+            self.wall_list.add(w)
+        # manually add exits
+        w = Finish(self.screen, (self.fifth*2, 0), (self.fifth*3, 0))
+        self.waypoints.add(w)
+        w = Finish(self.screen, (self.fifth*2, self.height - self.offset), (self.fifth*3, self.height - self.offset))
+        self.waypoints.add(w)
+        w = Finish(self.screen, (0, self.third), (0, self.third*2))
+        self.waypoints.add(w)
+        w = Finish(self.screen, (self.width - self.offset, self.third), (self.width - self.offset, self.third*2))
+        self.waypoints.add(w)
+        self.wall_list.draw(surface)
+        self.waypoints.draw(surface)
+        self.player.wall_list = self.wall_list
 
-        # iterate over the tiles in the layer, and blit them
-        for x, y, image in layer.tiles():
-            # surface_blit(image, (x * tw, y * th))
-            if (layer.name== "nopass"):
-                self.spritelist.add(Object(self.screen, path.join("levels", "blue.png"), (x * tw, y * th), 1))
+    def generate_maze(self, surface):
+        i = 0
+        end = (0,0)
+        xy = (self.xy[1]<<8)|self.xy[0]
+        for i in range(2):
+            xy = xy*7
+            xy += 12627
+        print(xy)
+        for item in self.keypoints:
+            post = (xy>>i)&3
+            # north
+            if post == 0:
+                end = (item[0],item[1] - self.third)
+            # south
+            if post == 1:
+                end = (item[0],item[1] + self.third)
+            # east
+            if post == 2:
+                end = (item[0] - self.fifth,item[1])
+            # west
+            if post == 3:
+                end = (item[0] + self.fifth,item[1])
+            w = Wall(self.screen, item, end)
+            i += 2
+            self.wall_list.add(w)
+        self.wall_list.draw(surface)
 
-    def render_object_layer(self, surface, layer):
-        """ Render all TiledObjects contained in this layer
-        """
-        # deref these heavily used references for speed
-        draw_rect = pygame.draw.rect
-        draw_lines = pygame.draw.lines
-        surface_blit = surface.blit
-
-        # these colors are used to draw vector shapes,
-        # like polygon and box shapes
-        rect_color = (255, 0, 0)
-        poly_color = (0, 255, 0)
-
-        # iterate over all the objects in the layer
-        # These may be Tiled shapes like circles or polygons, GID objects, or Tiled Objects
-        # get player first for sanity sake
-        for obj in layer:
-            if (obj.name == "Player"):
-                self.mygroup.empty()
-                self.player = Player(self.screen, path.join("images", "player.png"), (obj.x, obj.y + 33), self.character_scale, self.spritelist)
-                self.player.rect.x = obj.x
-                self.player.rect.y = obj.y
-                self.mygroup.add(self.player)
-
-        for obj in layer:
-            logger.info(obj)
-
-            # objects with points are polygons or lines
-            if hasattr(obj, 'points'):
-                draw_lines(surface, poly_color, obj.closed, obj.points, 3)
-
-            # some objects have an image
-            # Tiled calls them "GID Objects"
-            elif obj.image:
-                surface_blit(obj.image, (obj.x, obj.y))
-                # s = pygame.sprite.Sprite()
-            elif (obj.name == "Player"):
-                # we got the player already
-                pass
-
-            elif (obj.name == "Enemy"):
-                e = Enemy(self.screen, path.join("images", "enemy.png"), (obj.x, obj.y), self.character_scale, self.player, self.spritelist, self.enemyammo)
+    def render_object_layer(self, surface):
+        enemies_n = random.randint(1, 6)
+        for coord in self.spawn_points:
+            if (random.randint(0,6) == enemies_n):
+                e = Enemy(self.screen, path.join("images", "robot.png"), coord, self.character_scale, self.player, self.wall_list, self.enemyammo)
                 self.enemygroup.add(e)
-
-            elif (obj.name == "Finish"):
-                self.finish = ActionTile(self.screen, path.join("levels", "green.png"), (obj.x, obj.y), 1)
-                self.finish.image = pygame.transform.scale(self.finish.image, (int(obj.width), int(obj.height)))
-                self.finish.rect = Rect(obj.x, obj.y, self.finish.image.get_width(), self.finish.image.get_height())
-                self.waypoints.add(self.finish)
-
-            # draw a rect for everything else
-            # Mostly, I am lazy, but you could check if it is circle/oval
-            # and use pygame to draw an oval here...I just do a rect.
-            else:
-                draw_rect(surface, rect_color,
-                          (obj.x, obj.y, obj.width, obj.height), 3)
-            self.mygroup.update()
+                self.mygroup.update()
+                enemies_n -= 1
 
 
     def render_image_layer(self, surface, layer):
-        if layer.image:
-            surface.blit(layer.image, (0, 0))
+        surface.blit(layer.image, (0, 0))
+
+    def update_level(self):
+        shots_fired = len(self.enemyammo.sprites())
+        player_fired = len(self.player.ammogroup.sprites())
+        next_level = False
+        self.enemygroup.update()
+        self.wall_list.draw(self.screen)
+        self.wall_list.update()
+        self.mygroup.update()
+        self.waypoints.draw(self.screen)
+        self.player.ammogroup.update()
+        self.player.ammogroup.draw(self.screen)
+        self.player.blastgroup.update()
+        self.player.blastgroup.draw(self.screen)
+        self.enemyammo.update()
+        self.enemyammo.draw(self.screen)
+        chr_coll = pygame.sprite.groupcollide(self.mygroup, self.enemygroup, True, True, colli_kill_both)
+        amm_coll = pygame.sprite.groupcollide(self.enemygroup, self.player.ammogroup, True, True, colli_kill_both)
+        amm_enem = pygame.sprite.groupcollide(self.mygroup, self.enemyammo, True, True, colli_kill_both)
+        amm_wall = pygame.sprite.groupcollide(self.player.ammogroup, self.wall_list, False, False, colli_kill_l)
+        ea_wall = pygame.sprite.groupcollide(self.enemyammo, self.wall_list, False, False, colli_kill_l)
+        enm_wall = pygame.sprite.groupcollide(self.enemygroup, self.wall_list, False, False, colli_bounce)
+        enm_wal2 = pygame.sprite.groupcollide(self.enemygroup, self.waypoints, False, False, colli_bounce)
+        pla_fin = pygame.sprite.groupcollide(self.mygroup, self.waypoints, False, False, colli_basic)
+        amm_amm = pygame.sprite.groupcollide(self.enemyammo, self.player.ammogroup, True, True)
+        blast_amm = pygame.sprite.groupcollide(self.enemyammo, self.player.blastgroup, False, False, colli_kill_l)
+        blast_enm = pygame.sprite.groupcollide(self.enemygroup, self.player.blastgroup, False, False, colli_kill_l)
+        blast_wall = pygame.sprite.groupcollide(self.player.blastgroup, self.wall_list, False, False, colli_clip)
+        #pla_wall = pygame.sprite.groupcollide(self.mygroup, self.wall_list, False, False, colli_bounce)
+        for c in chr_coll:
+            c.destroy()
+            del c
+            ##  self.render_map(scr.bg)
+            pygame.display.flip()
+        for u in pla_fin:
+            next_level = True
+        return next_level
 
 
