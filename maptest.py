@@ -23,11 +23,6 @@ class LevelRenderer(object):
         # self.size will be the pixel size of the map
         # this value is used later to render the entire map to a pygame surface
         pygame.mixer.init()
-        self.enemy_ch = pygame.mixer.Channel(0)
-        self.player_ch = pygame.mixer.Channel(1)
-        self.pew_sound = pygame.mixer.Sound("sounds/pew.wav")
-        self.player_pew = pygame.mixer.Sound("sounds/wep.wav")
-        self.blast = pygame.mixer.Sound("sounds/blast.wav")
         self.pew_playing = 0
         self.screen = screen.gamearea
         self.menuscreen = screen
@@ -37,8 +32,8 @@ class LevelRenderer(object):
         self.third = int(self.height/3)
         self.offset = 16
         self.keypoints = []
-        for y in range(2,3):
-            for x in range(2,5):
+        for y in range(1,3):
+            for x in range(1,5):
                 self.keypoints.append((int(self.fifth*x), int(self.third*y)))
         self.character_scale = 1
         self.wall_list = pygame.sprite.Group()
@@ -51,10 +46,10 @@ class LevelRenderer(object):
         self.player = Player(self.screen, path.join("images", "player.png"), player_pos, self.character_scale, self.wall_list, self.player_keymap_i)
         self.mygroup.add(self.player)
         self.xy = xy
-        self.spawn_points = [
-                            (self.width/6, self.height/6),
-                            (self.width/2, self.height/2)
-                            ]
+        self.spawn_points = []
+        for item in self.keypoints:
+            self.spawn_points.append((item[0] + 64, item[1] + 64))
+            self.spawn_points.append((item[0] - 64, item[1] - 64))
         self.finish = None
         self.borders = [
                             # top row
@@ -133,17 +128,18 @@ class LevelRenderer(object):
             xy += 12627
         print(xy)
         for item in self.keypoints:
+            post = (xy>>i)&3
             # north
-            if (xy>>i)&3 == 0:
+            if post == 0:
                 end = (item[0],item[1] - self.third)
             # south
-            if (xy>>i)&3 == 1:
+            if post == 1:
                 end = (item[0],item[1] + self.third)
             # east
-            if (xy>>i)&3 == 2:
+            if post == 2:
                 end = (item[0] - self.fifth,item[1])
             # west
-            if (xy>>i)&3 == 3:
+            if post == 3:
                 end = (item[0] + self.fifth,item[1])
             w = Wall(self.screen, item, end)
             i += 2
@@ -151,11 +147,13 @@ class LevelRenderer(object):
         self.wall_list.draw(surface)
 
     def render_object_layer(self, surface):
-
+        enemies_n = random.randint(3, 6)
         for coord in self.spawn_points:
-            e = Enemy(self.screen, path.join("images", "enemy.png"), coord, self.character_scale, self.player, self.wall_list, self.enemyammo)
-            self.enemygroup.add(e)
-            self.mygroup.update()
+            if (random.randint(0,6) == enemies_n):
+                e = Enemy(self.screen, path.join("images", "robot.png"), coord, self.character_scale, self.player, self.wall_list, self.enemyammo)
+                self.enemygroup.add(e)
+                self.mygroup.update()
+                enemies_n -= 1
 
 
     def render_image_layer(self, surface, layer):
@@ -192,31 +190,10 @@ class LevelRenderer(object):
         for c in chr_coll:
             c.destroy()
             del c
-            next_level = True
             ##  self.render_map(scr.bg)
             pygame.display.flip()
         for u in pla_fin:
             next_level = True
-        for death in amm_enem:
-            pygame.time.wait(500)
-            M = Menu(self.menuscreen, self.player)
-            M.menuitems = {"try again?": 0,
-                            "quit": 1
-                            }
-            mr = M.menuloop()
-            if (mr == 0):
-                next_level = True
-            if (mr == 1):
-                pygame.quit()
-        if (len(self.player.ammogroup.sprites()) > self.pew_playing):
-            self.player_ch.play(self.player_pew)
-            self.pew_playing += 1
-        if (len(self.player.ammogroup.sprites()) < self.pew_playing):
-            self.pew_playing = len(self.player.ammogroup.sprites())
-        if (len(self.player.blastgroup.sprites()) > 0):
-            self.player_ch.play(self.blast)
-        if (len(self.enemyammo.sprites()) > shots_fired):
-            self.enemy_ch.play(self.pew_sound)
         return next_level
 
 

@@ -11,12 +11,13 @@ class LevelManager:
         self.screen = screen
         self.player_keymap_i = player_keymap_i
         self.xy = (123,251)
-        self.current_level = maptest.LevelRenderer(self.screen, self.xy, (480, 173), self.player_keymap_i) 
+        self.current_level = maptest.LevelRenderer(self.screen, self.xy, (692, 260), self.player_keymap_i) 
         self.start_top = (self.current_level.width/2, self.current_level.third/2)
         self.start_bottom = (self.current_level.width/2, self.current_level.third*2.33)
         self.start_left = (self.current_level.fifth*0.33, self.current_level.height/2)
         self.start_right = (self.current_level.fifth*4.33, self.current_level.height/2)
         self.index = (self.index + 1) % self.total_levels
+        print(self.start_right)
 
     def next(self, xy):
         # del self.current_level

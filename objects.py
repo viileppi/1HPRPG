@@ -33,6 +33,7 @@ class Object(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.m_image)
 
     def destroy(self):
+        pygame.event.post(pygame.event.Event(pygame.USEREVENT + 3))
         self.kill()
         del self
 

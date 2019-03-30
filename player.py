@@ -18,16 +18,16 @@ class Player(Object):
         for w in self.wallgroup.sprites():
             self.wall_list.append(w.rect)
         self.speed = 2
-        self.ammo_speed = self.speed * 2
+        self.ammo_speed = 3
         self.clk = time.Clock()
         self.ammo_image = path.join("images", "ammo.png")
         self.ammogroup = pygame.sprite.Group()
         self.blastgroup = pygame.sprite.Group()
         self.aimx = lambda x : x * self.speed
         self.aimy = lambda y : y * self.speed
-        self.cooldown = 500
+        self.cooldown = 250
         self.blast_cool = 2000
-        self.shoot_start = pygame.time.get_ticks()
+        self.shoot_start = pygame.time.get_ticks() - self.cooldown
         self.blast_start = pygame.time.get_ticks() - self.blast_cool
         self.can_blast = True
         self.old_dir = (1,0)
@@ -80,12 +80,14 @@ class Player(Object):
                     self.move_animator.rect = self.move_animator.crop_init
                     self.shoot_start = pygame.time.get_ticks()
                     self.dir = (0,0)
+                    pygame.event.post(pygame.event.Event(pygame.USEREVENT + 1))
             if (pressed[k] and self.keya[k] == Blast):
                 if (((pygame.time.get_ticks() - self.blast_start) > self.blast_cool)):
                     blast = self.keya[k](self.screen, self, 72)
                     self.blastgroup.add(blast)
                     self.blast_start = pygame.time.get_ticks()
                     self.can_blast = False
+                    pygame.event.post(pygame.event.Event(pygame.USEREVENT + 2))
         if (not self.can_blast and ((pygame.time.get_ticks() - self.blast_start) > self.blast_cool)):
             self.can_blast = True
 

@@ -2,7 +2,7 @@ from ammo import deltaAmmo
 from ammo import Blast
 from pygame.locals import *
 
-speed = 2
+speed = 1
 
 aimx = lambda x : x * speed
 aimy = lambda y : y * speed
@@ -18,8 +18,8 @@ keymaps = {
            K_DOWN: aimy(1)
            },
     "keya" : {
-           K_LALT: deltaAmmo,
-           K_LCTRL: Blast
+           K_f: deltaAmmo,
+           K_d: Blast
            }
     },
         1: {
