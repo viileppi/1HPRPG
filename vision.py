@@ -15,7 +15,7 @@ class Screen:
         self.bottom_h = 32
         self.middle_h = self.height - self.top_h - self.bottom_h
         self.screen = pygame.display.set_mode((self.width, self.height), pygame.RESIZABLE)
-        #self.screen = pygame.display.set_mode((self.width, self.height), pygame.FULLSCREEN, pygame.HWSURFACE)
+        #self.screen = pygame.display.set_mode((self.width, self.height), pygame.FULLSCREEN)
         #self.screen.set_colorkey(SRCALPHA)
         #self.gamearea = pygame.Rect(0, self.margin, self.width, (self.height - self.margin * 2))
         self.gamearea = self.screen.subsurface(Rect(0, self.top_h, self.width, self.middle_h)) 

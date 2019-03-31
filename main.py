@@ -21,10 +21,10 @@ screen = scr.screen
 pygame.mixer.init(8000, 8, 2, 1024)
 enemy_ch = pygame.mixer.Channel(0)
 player_ch = pygame.mixer.Channel(1)
-pew_sound = pygame.mixer.Sound("sounds/pew.wav")
-player_pew = pygame.mixer.Sound("sounds/wep.wav")
-blast = pygame.mixer.Sound("sounds/blast.wav")
-death = pygame.mixer.Sound("sounds/death.wav")
+pew_sound = pygame.mixer.Sound(path.join("sounds", "pew.wav"))
+player_pew = pygame.mixer.Sound(path.join("sounds", "wep.wav"))
+blast = pygame.mixer.Sound(path.join("sounds", "blast.wav"))
+death = pygame.mixer.Sound(path.join("sounds", "death.wav"))
 
 # setup framerate and keyboard repeat rate
 clk = pygame.time.Clock()
@@ -67,7 +67,7 @@ pygame.init()
 lives_left = 3
 start_again = False
 
-fps = 30
+fps = 15
 
 while running:
     # uncomment to see coordinates
@@ -137,6 +137,7 @@ while running:
             pygame.display.flip()
             scr.top_msg.set_message("Level " + str(level.xy) + " Lifes: " + str(lives_left))
     if (lives_left < 0):
+        pygame.time.wait(500)
         M = Menu(screen, tiled_map.player)
         M.menuitems = {"try again?": 0,
                         "quit": 1
