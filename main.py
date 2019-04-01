@@ -11,6 +11,7 @@ from colliders import *
 import levelmanager
 from vision import Screen
 from menu import Menu
+import userevents
 
 # init stuff
 running = True
@@ -24,7 +25,8 @@ player_ch = pygame.mixer.Channel(1)
 pew_sound = pygame.mixer.Sound(path.join("sounds", "pew.wav"))
 player_pew = pygame.mixer.Sound(path.join("sounds", "wep.wav"))
 blast = pygame.mixer.Sound(path.join("sounds", "blast.wav"))
-death = pygame.mixer.Sound(path.join("sounds", "death.wav"))
+obj_death = pygame.mixer.Sound(path.join("sounds", "death.wav"))
+
 
 # setup framerate and keyboard repeat rate
 clk = pygame.time.Clock()
@@ -67,7 +69,14 @@ pygame.init()
 lives_left = 3
 start_again = False
 
-fps = 15
+fps = 60
+
+# userevents setup
+player_shot = userevents.player_shot_event().type
+player_blast = userevents.player_blast_event().type
+death = userevents.death_event().type
+enemy_shot = userevents.enemy_shot_event().type
+
 
 while running:
     # uncomment to see coordinates
@@ -107,13 +116,13 @@ while running:
             # send keyups too
             k = pygame.key.get_pressed()
             tiled_map.player.read_keys(k)
-        if (e.type == USEREVENT+1):
+        if (e.type == player_shot):
             player_ch.play(player_pew)
-        if (e.type == USEREVENT+2):
+        if (e.type == player_blast):
             player_ch.play(blast)
-        if (e.type == USEREVENT+3):
-            enemy_ch.play(death)
-        if (e.type == USEREVENT+4):
+        if (e.type == death):
+            enemy_ch.play(obj_death)
+        if (e.type == enemy_shot):
             enemy_ch.play(pew_sound)
     if (not tiled_map.player.can_blast):
         scr.bottom_msg.setBusy(2)
@@ -128,7 +137,7 @@ while running:
     if (tiled_map.update_level() or start_again):
             # next level
             start_again = False
-            pygame.time.wait(500)
+            #pygame.time.wait(500)
             xy = tiled_map.player.get_pos()
             scr = Screen(resolutionx, resolutiony)
             screen = screen
@@ -137,7 +146,7 @@ while running:
             pygame.display.flip()
             scr.top_msg.set_message("Level " + str(level.xy) + " Lifes: " + str(lives_left))
     if (lives_left < 0):
-        pygame.time.wait(500)
+        #pygame.time.wait(500)
         M = Menu(screen, tiled_map.player)
         M.menuitems = {"try again?": 0,
                         "quit": 1

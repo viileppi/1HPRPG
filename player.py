@@ -8,6 +8,7 @@ from ammo import deltaAmmo
 from ammo import Blast
 from os import path
 from los import Cast
+import userevents
 
 class Player(Object):
     def __init__(self, screen, image, coords, size, wallgroup, keymap_i):
@@ -75,7 +76,7 @@ class Player(Object):
                     pew = self.keya[k](self.screen, self.ammo_image, ammo_start, ammo_dir, self.ammo_speed)
                     self.ammogroup.add(pew)
                     self.shoot_start = pygame.time.get_ticks()
-                    pygame.event.post(pygame.event.Event(pygame.USEREVENT + 1))
+                    pygame.event.post(userevents.player_shot_event())
                 self.dir = (0,0)
             if (pressed[k] and self.keya[k] == Blast):
                 if (((pygame.time.get_ticks() - self.blast_start) > self.blast_cool)):
@@ -83,7 +84,7 @@ class Player(Object):
                     self.blastgroup.add(blast)
                     self.blast_start = pygame.time.get_ticks()
                     self.can_blast = False
-                    pygame.event.post(pygame.event.Event(pygame.USEREVENT + 2))
+                    pygame.event.post(userevents.player_blast_event())
         if (not self.can_blast and ((pygame.time.get_ticks() - self.blast_start) > self.blast_cool)):
             self.can_blast = True
 

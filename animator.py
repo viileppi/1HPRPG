@@ -40,6 +40,7 @@ class Animator(pygame.sprite.Sprite):
         self.frame_count = len(self.frames)
         self.skip = 0
         self.skip_n = 4
+        self.die_count = 0
 
     def add2group(self, group):
         self.group = group
@@ -82,4 +83,5 @@ class Animator(pygame.sprite.Sprite):
                     )
   
         return r
+
 
