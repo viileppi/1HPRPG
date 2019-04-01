@@ -4,6 +4,11 @@ from pygame.locals import *
 from hud import HUD
 from hud import HotKeys
 from os import path
+import xml.etree.ElementTree as ET
+
+tree = ET.parse("settings.xml")
+root = tree.getroot().find("vision")
+# resolutionx = int(root.find("resolutionx").text)
 
 class Screen:
     """ screen handling top class """
@@ -11,11 +16,13 @@ class Screen:
         pygame.init()
         self.width = width
         self.height = height
-        self.top_h = 48
-        self.bottom_h = 32
+        self.top_h = int(root.find("top_h").text)
+        self.bottom_h = int(root.find("bottom_h").text)
         self.middle_h = self.height - self.top_h - self.bottom_h
-        self.screen = pygame.display.set_mode((self.width, self.height), pygame.RESIZABLE)
-        #self.screen = pygame.display.set_mode((self.width, self.height), pygame.FULLSCREEN)
+        if (root.find("fullscreen").text == "True"):
+            self.screen = pygame.display.set_mode((self.width, self.height), pygame.FULLSCREEN)
+        else:
+            self.screen = pygame.display.set_mode((self.width, self.height), pygame.RESIZABLE)
         #self.screen.set_colorkey(SRCALPHA)
         #self.gamearea = pygame.Rect(0, self.margin, self.width, (self.height - self.margin * 2))
         self.gamearea = self.screen.subsurface(Rect(0, self.top_h, self.width, self.middle_h)) 

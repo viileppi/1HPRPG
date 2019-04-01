@@ -15,7 +15,7 @@ import userevents
 import xml.etree.ElementTree as ET
 
 tree = ET.parse("settings.xml")
-root = tree.getroot()
+root = tree.getroot().find("main")
 resolutionx = int(root.find("resolutionx").text)
 resolutiony = int(root.find("resolutiony").text)
 sounds = bool(root.find("sounds").text)

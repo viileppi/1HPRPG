@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <data>
+  <main>
     <resolutionx>800</resolutionx>
     <resolutiony>600</resolutiony>
     <sounds>False</sounds>
@@ -10,4 +11,17 @@
     <fps>60</fps>
     <key_rate>60</key_rate>
     <lives_left>3</lives_left>
+  </main>
+  <levelmanager>
+    <total_levels>255</total_levels>
+    <start_x>123</start_x>
+    <start_y>251</start_y>
+    <player_startx>692</player_startx>
+    <player_starty>260</player_starty>
+  </levelmanager>
+  <vision>
+    <top_h>48</top_h>
+    <bottom_h>32</bottom_h>
+    <fullscreen>False</fullscreen>
+  </vision>
 </data>
