@@ -12,3 +12,6 @@ def death_event():
 
 def enemy_shot_event():
     return pygame.event.Event(pygame.USEREVENT + 4)
+
+def player_died():
+    return pygame.event.Event(pygame.USEREVENT + 5)

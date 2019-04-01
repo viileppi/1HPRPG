@@ -94,3 +94,11 @@ class Player(Object):
         self.keyv = keymap.keymaps[self.keymap_i]["keyv"]
         self.keya = keymap.keymaps[self.keymap_i]["keya"]
 
+    def destroy(self):
+        self.dir = (0,0)
+        self.alive = False
+        self.kill()
+        del self
+        pygame.event.post(userevents.player_died())
+
+
