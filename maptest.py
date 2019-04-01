@@ -202,7 +202,7 @@ class LevelRenderer(object):
         blast_enm = pygame.sprite.groupcollide(self.enemygroup, self.player.blastgroup, False, False, colli_kill_l)
         blast_wall = pygame.sprite.groupcollide(self.player.blastgroup, self.wall_list, False, False, colli_clip)
         #snake_wall = pygame.sprite.groupcollide(self.snakegroup, self.wall_list, False, False, colli_kill_l)
-        #pla_wall = pygame.sprite.groupcollide(self.mygroup, self.wall_list, False, False, colli_bounce)
+        pla_wall = pygame.sprite.groupcollide(self.mygroup, self.wall_list, False, False, colli_bounce)
         #for c in chr_coll:
         #    c.destroy()
         #    del c

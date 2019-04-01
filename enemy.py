@@ -107,9 +107,19 @@ class Snake(Enemy):
         self.where = (1,0)
         self.attack_cool = 1000
         self.attack_start = pygame.time.get_ticks()
+        self.turns = [
+                        (0,1), 
+                        (1,0), 
+                        (1,1),
+                        (0,-1), 
+                        (-1,0),
+                        (-1,-1)
+                        ]
+        self.dir_div = 0
 
     def seek(self):
         if (self.seen_player):
+            self.seen_player = False
             p = self.player.get_pos()
             e = self.get_pos()
             x = p[0] - e[0] 
@@ -118,14 +128,21 @@ class Snake(Enemy):
             y = min(1, max(-1, y))
             self.where = (x,y)
 
+    def turnaround(self, p):
+        pass
+
+
     def update(self):
+        c = self.cast.test(self.where)
+        self.where = (self.where[0] * c[0], self.where[1] * c[1])
+        if (c != (1,1)):
+            self.where = self.turns[self.dir_div%len(self.turns)]
+            self.dir_div += 1
+        self.rect = self.move_animator.goto(self.where)
+
         if (self.attack_start + self.attack_cool) < pygame.time.get_ticks():
-            self.where = (self.where[0]*-1, self.where[1]*-1)
+            #self.where = (self.where[0]*-1, self.where[1]*-1)
             self.seen_player = self.los.draw(self.get_pos())
             self.attack_start = pygame.time.get_ticks()
         self.seek()
-        c = self.cast.test(self.where)
-        self.where = (self.where[0] * c[0], self.where[1] * c[1])
-        self.rect = self.move_animator.goto(self.where)
-
 
