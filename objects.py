@@ -22,6 +22,8 @@ class Object(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.m_image)
         self.dir = (0,0)
         self.alive = True
+        self.speed = 1
+        self.clk = pygame.time.Clock()
         # self.group = group
         # self.group.add(self.move_animator)
 
@@ -43,7 +45,7 @@ class Object(pygame.sprite.Sprite):
         pygame.event.post(userevents.death_event())
 
     def move(self, coords):
-        self.dir = coords
+        self.dir = (coords[0], coords[1])
 
     def draw(self):
         # r = self.screen.blit(

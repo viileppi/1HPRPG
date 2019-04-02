@@ -93,10 +93,16 @@ player_blast = userevents.player_blast_event().type
 death = userevents.death_event().type
 enemy_shot = userevents.enemy_shot_event().type
 player_died = userevents.player_died().type
+player_ran = userevents.player_ran().type
+player_blast = userevents.player_blast().type
 
 def bars():
     while(scr.load_animation()):
         pygame.display.update()
+        clk.tick(fps)
+
+bars()
+
 while running:
     # uncomment to see coordinates
     # pygame.display.set_caption(str(enemy.rect) + str(player.rect))
@@ -151,9 +157,13 @@ while running:
             start_again = True
             scr.top_msg.set_message("Level " + str(level.xy) + " Lifes: " + str(lives_left))
     if (not tiled_map.player.can_blast):
-        scr.bottom_msg.setBusy(2)
+        scr.bottom_msg.setBusy(1)
+    if (not tiled_map.player.can_run):
+        scr.bottom_msg.setBusy(0)
     if (tiled_map.player.can_blast):
-        scr.bottom_msg.setAvailable(2)
+        scr.bottom_msg.setAvailable(1)
+    if (tiled_map.player.can_run):
+        scr.bottom_msg.setAvailable(0)
     #if (len(tiled_map.mygroup.sprites()) < 1):
     # update level and if level is complete, load next one
     if (tiled_map.update_level() or start_again):
@@ -180,4 +190,3 @@ while running:
         if (mr == 1):
             pygame.quit()
     clk.tick(fps)
-

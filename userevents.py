@@ -15,3 +15,15 @@ def enemy_shot_event():
 
 def player_died():
     return pygame.event.Event(pygame.USEREVENT + 5)
+
+def player_ran():
+    return pygame.event.Event(pygame.USEREVENT + 6)
+
+def player_blast():
+    return pygame.event.Event(pygame.USEREVENT + 7)
+
+def player_gun():
+    return pygame.event.Event(pygame.USEREVENT + 8)
+
+
+

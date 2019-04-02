@@ -35,7 +35,7 @@ class Screen:
         gun = pygame.image.load(path.join("images", "gun.png")).convert_alpha()
         run = pygame.image.load(path.join("images", "run.png")).convert_alpha()
         blast = pygame.image.load(path.join("images", "blast.png")).convert_alpha()
-        self.hk_list = [gun, run, blast]
+        self.hk_list = [run, blast, gun]
         self.bottom_msg = HotKeys((self.width, self.bottom_h), 16, self.hk_list)
         self.line_w = 1
 
