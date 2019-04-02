@@ -37,6 +37,7 @@ class Screen:
         blast = pygame.image.load(path.join("images", "blast.png")).convert_alpha()
         self.hk_list = [gun, run, blast]
         self.bottom_msg = HotKeys((self.width, self.bottom_h), 16, self.hk_list)
+        self.line_w = 1
 
     def update(self):
         self.screen.blit(self.bg, (0,self.top_h))
@@ -48,4 +49,11 @@ class Screen:
     def update_menu(self):
         pass
 
-
+    def load_animation(self):
+        if (self.line_w < 30):
+            for y in range(0, self.height, 30):
+                pygame.draw.line(self.screen, pygame.Color("black"), (0,y), (self.width,y), self.line_w)
+            self.line_w += 1
+            return True
+        else:
+            return False 

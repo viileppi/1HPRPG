@@ -50,7 +50,7 @@ class Player(Object):
                     }
 
     def turnaround(self, p):
-        self.dir = (self.dir[0] * -1, self.dir[1] * -1)
+        pass
 
     def read_keys(self, pressed):
         self.cast.walls = self.wall_list.sprites()

@@ -7,7 +7,7 @@ import keymap
 
 class Menu(vision.Screen):
     """ menu sub-screen """
-    def __init__(self, screen, player):
+    def __init__(self, screen):
         try:
             self.width = screen.width
             self.height = screen.height
@@ -15,16 +15,15 @@ class Menu(vision.Screen):
             self.width = screen.get_width()
             self.height = screen.get_height()
         vision.Screen.__init__(self, self.width, self.height)
-        self.player = player
         font.init()
-        self.fontsize = 64
+        self.fontsize = int(self.height/10)
         self.color = color.Color("brown")
-        self.chosen = color.Color("green")
+        self.chosen = color.Color("pink")
         self.message = font.Font(None, self.fontsize)
-        self.pos = (64,64)
+        self.pos = (self.fontsize,self.fontsize)
         self.menuitems = {
-                            "quit": 0,
-                            "continue": 1,
+                            "continue": 0,
+                            "quit": 1,
                             "next level": 2,
                          }
         self.index = 0
@@ -32,18 +31,19 @@ class Menu(vision.Screen):
     def menuloop(self):
         running = True
         while running:
+            # render menu
             y_offset = 0
-            for i, k in enumerate(self.menuitems):
-                v = self.menuitems[k]
-                if (v == self.index):
-                    txt = self.message.render(k, False, self.chosen)
+            for v, k in self.menuitems.items():
+                if (k == self.index):
+                    txt = self.message.render(v, False, self.chosen)
                 else:
-                    txt = self.message.render(k, False, self.color)
+                    txt = self.message.render(v, False, self.color)
                 r = self.screen.blit(
                     txt, 
                     (self.pos[0], self.pos[1] + y_offset), 
                     )
                 y_offset += self.fontsize
+            # evaluate keypresses
             EventList = pygame.event.get() 
             for e in EventList:
                 if (e.type == KEYDOWN):
@@ -55,16 +55,7 @@ class Menu(vision.Screen):
                     if (k[K_DOWN]):
                         self.index = (self.index + 1) % len(self.menuitems)
                     if (k[K_RETURN]):
-                        if (self.index == 0):
-                            running = False
-                            return 0
-                        if (self.index == 1):
-                            running = False
-                            return 1
-                        if (self.index == 2):
-                            running = False
-                            return 2
-                            
+                        return self.index
 
             self.update_menu()
             pygame.display.update()

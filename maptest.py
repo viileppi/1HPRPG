@@ -94,6 +94,7 @@ class LevelRenderer(object):
         self.render_tile_layer(self.screen)
         self.generate_maze(self.screen)
         self.render_object_layer(self.screen)
+
     def move_player(self, where):
         for player in self.mygroup:
             player.move(where)
