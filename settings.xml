@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<data>
+  <main>
+    <resolutionx>800</resolutionx>
+    <resolutiony>600</resolutiony>
+    <sounds>True</sounds>
+    <mixer_rate>8000</mixer_rate>
+    <mixer_bitdepth>8</mixer_bitdepth>
+    <mixer_channels>2</mixer_channels>
+    <mixer_buffer>1024</mixer_buffer>
+    <fps>120</fps>
+    <key_rate>60</key_rate>
+    <lives_left>3</lives_left>
+  </main>
+  <levelmanager>
+    <total_levels>255</total_levels>
+    <start_x>123</start_x>
+    <start_y>251</start_y>
+    <player_startx>692</player_startx>
+    <player_starty>260</player_starty>
+  </levelmanager>
+  <vision>
+    <top_h>48</top_h>
+    <bottom_h>32</bottom_h>
+    <fullscreen>False</fullscreen>
+  </vision>
+  <enemy>
+    <speed>2</speed>
+    <walk_dist>150</walk_dist>
+    <ammo_speed>3</ammo_speed>
+    <boot_time>1500</boot_time>
+    <cooldown>500</cooldown>
+  </enemy>
+</data>

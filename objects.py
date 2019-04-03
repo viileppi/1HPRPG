@@ -3,6 +3,8 @@ import pygame
 from pygame.locals import *
 from animator import Animator
 import random
+import userevents
+
 class Object(pygame.sprite.Sprite):
     """ generic class for everything """
     def __init__(self, screen, image, coords, size):
@@ -19,6 +21,9 @@ class Object(pygame.sprite.Sprite):
         self.m_image = self.image.subsurface(self.move_animator.crop_init)
         self.mask = pygame.mask.from_surface(self.m_image)
         self.dir = (0,0)
+        self.alive = True
+        self.speed = 1
+        self.clk = pygame.time.Clock()
         # self.group = group
         # self.group.add(self.move_animator)
 
@@ -33,12 +38,14 @@ class Object(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.m_image)
 
     def destroy(self):
-        pygame.event.post(pygame.event.Event(pygame.USEREVENT + 3))
+        self.dir = (0,0)
+        self.alive = False
         self.kill()
         del self
+        pygame.event.post(userevents.death_event())
 
     def move(self, coords):
-        self.dir = coords
+        self.dir = (coords[0], coords[1])
 
     def draw(self):
         # r = self.screen.blit(
@@ -52,7 +59,10 @@ class Object(pygame.sprite.Sprite):
         self.update()
 
     def update(self):
-        self.rect = self.move_animator.goto(self.dir)
+        if (self.alive):
+            self.rect = self.move_animator.goto(self.dir)
+        else:
+            self.destroy()
 
     def moveOnce(self, coords):
         self.rect = self.move_animator.goto(coords)

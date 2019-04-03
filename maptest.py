@@ -8,6 +8,7 @@ from objects import Object
 from actiontile import ActionTile
 from player import Player
 from enemy import Enemy
+from enemy import Snake
 from wall import Wall
 from wall import Finish
 from menu import Menu
@@ -37,6 +38,7 @@ class LevelRenderer(object):
         self.character_scale = 1
         self.wall_list = pygame.sprite.Group()
         self.enemygroup = pygame.sprite.Group()
+        self.snakegroup = pygame.sprite.Group()
         self.mygroup = pygame.sprite.Group()
         self.enemyammo = pygame.sprite.Group()
         self.waypoints = pygame.sprite.Group()
@@ -92,6 +94,7 @@ class LevelRenderer(object):
         self.render_tile_layer(self.screen)
         self.generate_maze(self.screen)
         self.render_object_layer(self.screen)
+
     def move_player(self, where):
         for player in self.mygroup:
             player.move(where)
@@ -150,9 +153,23 @@ class LevelRenderer(object):
         for coord in self.spawn_points:
             if (random.randint(0,6) == enemies_n):
                 e = Enemy(self.screen, path.join("images", "robot.png"), coord, self.character_scale, self.player, self.wall_list, self.enemyammo)
-                self.enemygroup.add(e)
-                self.mygroup.update()
-                enemies_n -= 1
+                if e.playerCheck(100):
+                    e.kill()
+                    del e
+                else:
+                    self.enemygroup.add(e)
+                    self.mygroup.update()
+                    enemies_n -= 1
+            elif (random.randint(1,4) == enemies_n):
+                e = Snake(self.screen, path.join("images", "snake.png"), coord, self.character_scale, self.player, self.wall_list, self.enemyammo)
+                if e.playerCheck(100):
+                    e.kill()
+                    del e
+                else:
+                    self.snakegroup.add(e)
+                    self.enemygroup.add(e)
+                    self.mygroup.update()
+                    enemies_n -= 1
 
 
     def render_image_layer(self, surface, layer):
@@ -185,12 +202,13 @@ class LevelRenderer(object):
         blast_amm = pygame.sprite.groupcollide(self.enemyammo, self.player.blastgroup, False, False, colli_kill_l)
         blast_enm = pygame.sprite.groupcollide(self.enemygroup, self.player.blastgroup, False, False, colli_kill_l)
         blast_wall = pygame.sprite.groupcollide(self.player.blastgroup, self.wall_list, False, False, colli_clip)
-        #pla_wall = pygame.sprite.groupcollide(self.mygroup, self.wall_list, False, False, colli_bounce)
-        for c in chr_coll:
-            c.destroy()
-            del c
-            ##  self.render_map(scr.bg)
-            pygame.display.flip()
+        #snake_wall = pygame.sprite.groupcollide(self.snakegroup, self.wall_list, False, False, colli_kill_l)
+        pla_wall = pygame.sprite.groupcollide(self.mygroup, self.wall_list, False, False, colli_bounce)
+        #for c in chr_coll:
+        #    c.destroy()
+        #    del c
+        #    ##  self.render_map(scr.bg)
+        #    pygame.display.flip()
         for u in pla_fin:
             next_level = True
         return next_level

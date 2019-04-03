@@ -11,49 +11,67 @@ from colliders import *
 import levelmanager
 from vision import Screen
 from menu import Menu
+import userevents
+import xml.etree.ElementTree as ET
 
+tree = ET.parse("settings.xml")
+root = tree.getroot().find("main")
+resolutionx = int(root.find("resolutionx").text)
+resolutiony = int(root.find("resolutiony").text)
+sounds = (root.find("sounds").text == "True")
+mixer_rate = int(root.find("mixer_rate").text)
+mixer_bitdepth = int(root.find("mixer_bitdepth").text)
+mixer_channels = int(root.find("mixer_channels").text)
+mixer_buffer = int(root.find("mixer_buffer").text)
+fps = int(root.find("fps").text)
+key_rate = int(root.find("key_rate").text)
+lives_left = int(root.find("lives_left").text)
+# override
+# sounds = False
 # init stuff
 running = True
-resolutionx = 800
-resolutiony = 600
+#sounds = False
+#resolutionx = 800
+#resolutiony = 600
 scr = Screen(resolutionx, resolutiony)
 screen = scr.screen
-pygame.mixer.init(8000, 8, 2, 1024)
-enemy_ch = pygame.mixer.Channel(0)
-player_ch = pygame.mixer.Channel(1)
-pew_sound = pygame.mixer.Sound("sounds/pew.wav")
-player_pew = pygame.mixer.Sound("sounds/wep.wav")
-blast = pygame.mixer.Sound("sounds/blast.wav")
-death = pygame.mixer.Sound("sounds/death.wav")
+if (sounds):
+    pygame.mixer.init(mixer_rate, mixer_bitdepth, mixer_channels, mixer_buffer)
+    enemy_ch = pygame.mixer.Channel(0)
+    player_ch = pygame.mixer.Channel(1)
+    pew_sound = pygame.mixer.Sound(path.join("sounds", "pew.wav"))
+    player_pew = pygame.mixer.Sound(path.join("sounds", "wep.wav"))
+    blast = pygame.mixer.Sound(path.join("sounds", "blast.wav"))
+    obj_death = pygame.mixer.Sound(path.join("sounds", "death.wav"))
+
 
 # setup framerate and keyboard repeat rate
 clk = pygame.time.Clock()
-pygame.key.set_repeat(100,100)
+pygame.key.set_repeat(key_rate,key_rate)
 pygame.display.update()
 
 # start menu
 kmapi = 0
-kmap_menuitems = {
-            "arrow-keys and z": 0,
-            "W,A,S,D and space": 1
-             }
+
 
 start_menuitems = {
         "New game": 0,
         "Quit": 1,
-        "Choose keymap": 2
+        "Sounds on": 2,
+        "Sounds off": 3
         }
 
-startmenu = Menu(scr, None)
+startmenu = Menu(scr)
 startmenu.menuitems = start_menuitems
-sml = startmenu.menuloop()
-if (sml == 1):
-    running = False
-    pygame.quit() 
-if (sml == 2):
-    kmenu = Menu(scr, None)
-    kmenu.menuitems = kmap_menuitems
-    kmapi = kmenu.menuloop()
+item = startmenu.menuloop()
+while (item>1):
+    item = startmenu.menuloop()
+if (item==1):
+    running=False
+if (item==2):
+    sounds = True
+if (item==3):
+    sounds = False
 
 # level inits
 level = levelmanager.LevelManager(scr, kmapi)
@@ -67,7 +85,23 @@ pygame.init()
 lives_left = 3
 start_again = False
 
-fps = 30
+#fps = 60
+
+# userevents setup
+player_shot = userevents.player_shot_event().type
+player_blast = userevents.player_blast_event().type
+death = userevents.death_event().type
+enemy_shot = userevents.enemy_shot_event().type
+player_died = userevents.player_died().type
+player_ran = userevents.player_ran().type
+player_blast = userevents.player_blast().type
+
+def bars():
+    while(scr.load_animation()):
+        pygame.display.update()
+        clk.tick(fps)
+
+bars()
 
 while running:
     # uncomment to see coordinates
@@ -88,15 +122,15 @@ while running:
                 break
             if (k[K_ESCAPE]):
                 # menu
-                print("menu called")
-                M = Menu(scr, tiled_map.player)
+                M = Menu(scr)
                 menureturn = M.menuloop()
-                if (menureturn == 0):
+                if (menureturn == 1):
                    running = False
                    pygame.quit() 
                    break
                 if (menureturn == 2):
                     # next level
+                    bars()
                     scr = Screen(resolutionx, resolutiony)
                     screen = screen
                     tiled_map = level.next(tiled_map.player.get_pos())
@@ -107,28 +141,35 @@ while running:
             # send keyups too
             k = pygame.key.get_pressed()
             tiled_map.player.read_keys(k)
-        if (e.type == USEREVENT+1):
-            player_ch.play(player_pew)
-        if (e.type == USEREVENT+2):
-            player_ch.play(blast)
-        if (e.type == USEREVENT+3):
-            enemy_ch.play(death)
-        if (e.type == USEREVENT+4):
-            enemy_ch.play(pew_sound)
+        if (sounds):
+                if (e.type == player_shot):
+                    player_ch.play(player_pew)
+                if (e.type == player_blast):
+                    player_ch.play(blast)
+                if (e.type == death):
+                    enemy_ch.play(obj_death)
+                if (e.type == enemy_shot):
+                    enemy_ch.play(pew_sound)
+        if (e.type == player_died):
+            # player dead
+            bars()
+            lives_left -= 1
+            start_again = True
+            scr.top_msg.set_message("Level " + str(level.xy) + " Lifes: " + str(lives_left))
     if (not tiled_map.player.can_blast):
-        scr.bottom_msg.setBusy(2)
+        scr.bottom_msg.setBusy(1)
+    if (not tiled_map.player.can_run):
+        scr.bottom_msg.setBusy(0)
     if (tiled_map.player.can_blast):
-        scr.bottom_msg.setAvailable(2)
-    if (len(tiled_map.mygroup.sprites()) < 1):
-        # player dead
-        lives_left -= 1
-        start_again = True
-        scr.top_msg.set_message("Level " + str(level.xy) + " Lifes: " + str(lives_left))
+        scr.bottom_msg.setAvailable(1)
+    if (tiled_map.player.can_run):
+        scr.bottom_msg.setAvailable(0)
+    #if (len(tiled_map.mygroup.sprites()) < 1):
     # update level and if level is complete, load next one
     if (tiled_map.update_level() or start_again):
             # next level
+            bars()
             start_again = False
-            pygame.time.wait(500)
             xy = tiled_map.player.get_pos()
             scr = Screen(resolutionx, resolutiony)
             screen = screen
@@ -137,7 +178,8 @@ while running:
             pygame.display.flip()
             scr.top_msg.set_message("Level " + str(level.xy) + " Lifes: " + str(lives_left))
     if (lives_left < 0):
-        M = Menu(screen, tiled_map.player)
+        #pygame.time.wait(500)
+        M = Menu(screen)
         M.menuitems = {"try again?": 0,
                         "quit": 1
                         }
@@ -147,4 +189,4 @@ while running:
             lives_left = 3
         if (mr == 1):
             pygame.quit()
-clk.tick(fps)
+    clk.tick(fps)

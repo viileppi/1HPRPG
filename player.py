@@ -8,6 +8,7 @@ from ammo import deltaAmmo
 from ammo import Blast
 from os import path
 from los import Cast
+import userevents
 
 class Player(Object):
     def __init__(self, screen, image, coords, size, wallgroup, keymap_i):
@@ -17,8 +18,8 @@ class Player(Object):
         for w in self.wallgroup.sprites():
             self.wall_list.append(w.rect)
         self.speed = 2
+        self.default_s = self.speed
         self.ammo_speed = 3
-        self.clk = time.Clock()
         self.ammo_image = path.join("images", "ammo.png")
         self.ammogroup = pygame.sprite.Group()
         self.blastgroup = pygame.sprite.Group()
@@ -26,9 +27,13 @@ class Player(Object):
         self.aimy = lambda y : y * self.speed
         self.cooldown = 250
         self.blast_cool = 2000
+        self.run_cool = 3000
+        self.run_time = 750
         self.shoot_start = pygame.time.get_ticks() - self.cooldown
         self.blast_start = pygame.time.get_ticks() - self.blast_cool
+        self.run_start = pygame.time.get_ticks() - self.run_cool
         self.can_blast = True
+        self.can_run = True
         self.old_dir = (1,0)
         self.cast = Cast(self.screen, self.wall_list, self)
         self.keymap_i = keymap_i
@@ -45,7 +50,8 @@ class Player(Object):
                     }
         self.keya = {
                     K_f: deltaAmmo, 
-                    K_d: Blast
+                    K_d: Blast,
+                    K_s: "run"
                     }
 
     def turnaround(self, p):
@@ -75,7 +81,7 @@ class Player(Object):
                     pew = self.keya[k](self.screen, self.ammo_image, ammo_start, ammo_dir, self.ammo_speed)
                     self.ammogroup.add(pew)
                     self.shoot_start = pygame.time.get_ticks()
-                    pygame.event.post(pygame.event.Event(pygame.USEREVENT + 1))
+                    pygame.event.post(userevents.player_shot_event())
                 self.dir = (0,0)
             if (pressed[k] and self.keya[k] == Blast):
                 if (((pygame.time.get_ticks() - self.blast_start) > self.blast_cool)):
@@ -83,13 +89,30 @@ class Player(Object):
                     self.blastgroup.add(blast)
                     self.blast_start = pygame.time.get_ticks()
                     self.can_blast = False
-                    pygame.event.post(pygame.event.Event(pygame.USEREVENT + 2))
+                    pygame.event.post(userevents.player_blast_event())
+            if (pressed[k] and self.keya[k] == "run"):
+                if (((pygame.time.get_ticks() - self.run_start) > self.run_cool)):
+                    self.run_start = pygame.time.get_ticks()
+                    self.dir = (self.dir[0] * 2, self.dir[1] * 2)
+                    self.can_run = False
         if (not self.can_blast and ((pygame.time.get_ticks() - self.blast_start) > self.blast_cool)):
             self.can_blast = True
+        if (not self.can_run and ((pygame.time.get_ticks() - self.run_start) > self.run_cool)):
+            self.can_run = True
+        if (((pygame.time.get_ticks() - self.run_start) < self.run_time)):
+            self.dir = (self.dir[0] * 2, self.dir[1] * 2)
 
     def change_keymap(self, keymap_i):
         self.keymap_i = keymap_i
         self.keyh = keymap.keymaps[self.keymap_i]["keyh"]
         self.keyv = keymap.keymaps[self.keymap_i]["keyv"]
         self.keya = keymap.keymaps[self.keymap_i]["keya"]
+
+    def destroy(self):
+        self.dir = (0,0)
+        self.alive = False
+        self.kill()
+        del self
+        pygame.event.post(userevents.player_died())
+
 

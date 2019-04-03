@@ -4,8 +4,11 @@ import pygame
 from ammo import Ammo
 from ammo import deltaAmmo
 from los import LOS
+from los import Cast
 from os import path
 from pygame.math import Vector2
+import random
+import userevents
 
 class Enemy(objects.Object):
     def __init__(self, screen, image, coords, size, player, wall_group, ammogroup):
@@ -30,9 +33,12 @@ class Enemy(objects.Object):
         self.cooldown = 500
         self.image_backup = self.image.copy()
         self.divider = self.rect.height
-        if (self.player.rect.colliderect(self.player.rect.inflate(100,100))):
-            # in case enemy spawns too close of player
-            self.destroy()
+
+    def playerCheck(self, dist):
+        if (self.rect.colliderect(self.player.rect.inflate(dist,dist))):
+            return True
+        else:
+            return False
 
     def seek(self):
         if (self.seen_player):
@@ -47,7 +53,7 @@ class Enemy(objects.Object):
                     pew = deltaAmmo(self.screen, self.ammo_image, e, p, self.ammo_speed)
                     self.ammogroup.add(pew)
                     self.shoot_start = pygame.time.get_ticks()
-                    pygame.event.post(pygame.event.Event(pygame.USEREVENT + 4))
+                    pygame.event.post(userevents.enemy_shot_event())
         self.walked += 1
         if (self.walked > self.walk_dist):
             self.turnaround(0)
@@ -70,20 +76,73 @@ class Enemy(objects.Object):
         self.move((self.where[0] * self.speed, self.where[1] * self.speed))
 
     def update(self):
-        if (self.ready):
+        if (self.alive):
+            if (self.ready):
+                self.seen_player = self.los.draw(self.get_pos())
+                self.seek()
+                self.rect = self.move_animator.goto(self.where)
+            else:
+                dt = pygame.time.get_ticks()
+                dh = (self.boot_start+self.boot_time) - dt
+                self.move_animator.goto((0,0))
+                for i in range(8, self.rect.height, 8):
+                    pygame.draw.line(self.screen, 
+                            pygame.Color("black"), 
+                            (self.rect.x, self.rect.y + i), 
+                            (self.rect.width + self.rect.x, self.rect.y + i), 
+                            int(self.divider/5))
+                self.divider = max(1, self.divider-1)
+                if (dh <= 0):
+                    self.ready = True
+
+class Snake(Enemy):
+    def __init__(self, screen, image, coords, size, player, wall_group, ammogroup):
+        Enemy.__init__(self, screen, image, coords, size, player, wall_group, ammogroup)
+        self.speed = 2
+        self.walk_dist = 200
+        self.wall_list = []
+        for w in self.wall_group.sprites():
+            self.wall_list.append(w.rect)
+        self.cast = Cast(self.screen, self.wall_list, self)
+        self.where = (1,0)
+        self.attack_cool = 1000
+        self.attack_start = pygame.time.get_ticks()
+        self.turns = [
+                        (0,1), 
+                        (1,0), 
+                        (1,1),
+                        (0,-1), 
+                        (-1,0),
+                        (-1,-1)
+                        ]
+        self.dir_div = 0
+
+    def seek(self):
+        if (self.seen_player):
+            self.seen_player = False
+            p = self.player.get_pos()
+            e = self.get_pos()
+            x = p[0] - e[0] 
+            y = p[1] - e[1]
+            x = min(1, max(-1, x))
+            y = min(1, max(-1, y))
+            self.where = (x,y)
+
+    def turnaround(self, p):
+        pass
+
+
+    def update(self):
+        c = self.cast.test(self.where)
+        self.where = (self.where[0] * c[0], self.where[1] * c[1])
+        if (c != (1,1)):
+            self.where = self.turns[self.dir_div%len(self.turns)]
+            self.dir_div += 1
+        self.rect = self.move_animator.goto(self.where)
+
+        if (self.attack_start + self.attack_cool) < pygame.time.get_ticks():
+            #self.where = (self.where[0]*-1, self.where[1]*-1)
             self.seen_player = self.los.draw(self.get_pos())
-            self.seek()
-            self.rect = self.move_animator.goto(self.where)
-        else:
-            dt = pygame.time.get_ticks()
-            dh = (self.boot_start+self.boot_time) - dt
-            self.move_animator.goto((0,0))
-            for i in range(8, self.rect.height, 8):
-                pygame.draw.line(self.screen, 
-                        pygame.Color("black"), 
-                        (self.rect.x, self.rect.y + i), 
-                        (self.rect.width + self.rect.x, self.rect.y + i), 
-                        int(self.divider/5))
-            self.divider = max(1, self.divider-1)
-            if (dh <= 0):
-                self.ready = True
+            self.attack_start = pygame.time.get_ticks()
+        self.seek()
+

@@ -39,7 +39,7 @@ class HotKeys:
 
     def setBusy(self, item):
         self.pos = 0
-        self.icons[item].fill(pygame.Color("red"))
+        self.icons[item].fill(pygame.Color("black"))
         for icon in self.icons:
             self.image.blit(icon, (self.pos, 0))
             self.pos += icon.get_width() + self.spacing
