@@ -11,8 +11,8 @@ from los import Cast
 import userevents
 
 class Player(Object):
-    def __init__(self, screen, image, coords, size, wallgroup, keymap_i):
-        Object.__init__(self, screen, image, coords, size)
+    def __init__(self, screen, image, coords, wallgroup, keymap_i):
+        Object.__init__(self, screen, image, coords)
         self.wallgroup = wallgroup
         self.wall_list = []
         for w in self.wallgroup.sprites():

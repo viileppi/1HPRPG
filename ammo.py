@@ -7,7 +7,7 @@ import objects
 class Ammo(objects.Object):
     
     def __init__(self, screen, image, coords, direction, speed):
-        objects.Object.__init__(self, screen, image, coords, 1)
+        objects.Object.__init__(self, screen, image, coords)
         self.speed = speed
         self.length = 2000
         self.start = pygame.time.get_ticks()

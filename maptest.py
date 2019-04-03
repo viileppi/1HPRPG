@@ -35,7 +35,6 @@ class LevelRenderer(object):
         for y in range(1,3):
             for x in range(1,5):
                 self.keypoints.append((int(self.fifth*x), int(self.third*y)))
-        self.character_scale = 1
         self.wall_list = pygame.sprite.Group()
         self.enemygroup = pygame.sprite.Group()
         self.snakegroup = pygame.sprite.Group()
@@ -44,7 +43,7 @@ class LevelRenderer(object):
         self.waypoints = pygame.sprite.Group()
         self.mygroup.empty()
         self.player_keymap_i = player_keymap_i
-        self.player = Player(self.screen, path.join("images", "player.png"), player_pos, self.character_scale, self.wall_list, self.player_keymap_i)
+        self.player = Player(self.screen, path.join("images", "player.png"), player_pos, self.wall_list, self.player_keymap_i)
         self.mygroup.add(self.player)
         self.xy = xy
         self.spawn_points = []
@@ -152,7 +151,7 @@ class LevelRenderer(object):
         enemies_n = random.randint(1, 6)
         for coord in self.spawn_points:
             if (random.randint(0,6) == enemies_n):
-                e = Enemy(self.screen, path.join("images", "robot.png"), coord, self.character_scale, self.player, self.wall_list, self.enemyammo)
+                e = Enemy(self.screen, path.join("images", "robot.png"), coord, self.player, self.wall_list, self.enemyammo)
                 if e.playerCheck(100):
                     e.kill()
                     del e
@@ -161,7 +160,7 @@ class LevelRenderer(object):
                     self.mygroup.update()
                     enemies_n -= 1
             elif (random.randint(1,4) == enemies_n):
-                e = Snake(self.screen, path.join("images", "snake.png"), coord, self.character_scale, self.player, self.wall_list, self.enemyammo)
+                e = Snake(self.screen, path.join("images", "snake.png"), coord, self.player, self.wall_list, self.enemyammo)
                 if e.playerCheck(100):
                     e.kill()
                     del e

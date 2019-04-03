@@ -11,9 +11,9 @@ import random
 import userevents
 
 class Enemy(objects.Object):
-    def __init__(self, screen, image, coords, size, player, wall_group, ammogroup):
+    def __init__(self, screen, image, coords, player, wall_group, ammogroup):
         """ image should be a spritesheet of square sprites """
-        objects.Object.__init__(self, screen, image, coords, size)
+        objects.Object.__init__(self, screen, image, coords)
         self.forward = True
         self.speed = 2
         self.walked = 0
@@ -96,8 +96,8 @@ class Enemy(objects.Object):
                     self.ready = True
 
 class Snake(Enemy):
-    def __init__(self, screen, image, coords, size, player, wall_group, ammogroup):
-        Enemy.__init__(self, screen, image, coords, size, player, wall_group, ammogroup)
+    def __init__(self, screen, image, coords, player, wall_group, ammogroup):
+        Enemy.__init__(self, screen, image, coords, player, wall_group, ammogroup)
         self.speed = 2
         self.walk_dist = 200
         self.wall_list = []
