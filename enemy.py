@@ -9,15 +9,29 @@ from os import path
 from pygame.math import Vector2
 import random
 import userevents
+import xml.etree.ElementTree as ET
 
 class Enemy(objects.Object):
     def __init__(self, screen, image, coords, player, wall_group, ammogroup):
         """ image should be a spritesheet of square sprites """
         objects.Object.__init__(self, screen, image, coords)
+
+        tree = ET.parse("settings.xml")
+        root = tree.getroot().find("enemy")
+        fps = int(tree.getroot().find("main").find("fps").text)
+        self.speed = int(root.find("speed").text) * (fps/60)
+        self.ammo_speed = int(root.find("ammo_speed").text) * speed
+        self.walk_dist = int(root.find("walk_dist").text)
+        self.boot_time = int(root.find("boot_time").text)
+        self.cooldown = int(root.find("cooldown").text)
+        # self.speed = 2
+        # self.walk_dist = 100
+        # self.ammo_speed = 3
+        # self.boot_time = 1000
+        # self.cooldown = 500
+
         self.forward = True
-        self.speed = 2
         self.walked = 0
-        self.walk_dist = 100
         self.where = (1,0)
         self.player = player
         self.wall_group = wall_group
@@ -28,9 +42,6 @@ class Enemy(objects.Object):
         self.ready = False
         self.shoot_start = pygame.time.get_ticks()
         self.boot_start = pygame.time.get_ticks()
-        self.ammo_speed = 3
-        self.boot_time = 1000
-        self.cooldown = 500
         self.image_backup = self.image.copy()
         self.divider = self.rect.height
 
