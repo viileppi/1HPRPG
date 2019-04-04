@@ -1,0 +1,26 @@
+<data>
+  <key name="up">
+    <value>273</value>
+  </key>
+  <key name="down">
+    <value>274</value>
+  </key>
+  <key name="right">
+    <value>275</value>
+  </key>
+  <key name="left">
+    <value>276</value>
+  </key>
+  <key name="fire">
+    <value>102</value>
+  </key>
+  <key name="blast">
+    <value>100</value>
+  </key>
+  <key name="run">
+    <value>115</value>
+  </key>
+  <key name="trap">
+    <value>97</value>
+  </key>
+</data>

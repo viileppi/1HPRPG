@@ -11,8 +11,10 @@ from colliders import *
 import levelmanager
 from vision import Screen
 from menu import Menu
+from menu import KeySetup
 import userevents
 import xml.etree.ElementTree as ET
+import copy
 
 tree = ET.parse("settings.xml")
 root = tree.getroot().find("main")
@@ -58,7 +60,8 @@ start_menuitems = {
         "New game": 0,
         "Quit": 1,
         "Sounds on": 2,
-        "Sounds off": 3
+        "Sounds off": 3,
+        "Choose keymap": 4
         }
 
 startmenu = Menu(scr)
@@ -66,19 +69,23 @@ startmenu.menuitems = start_menuitems
 item = startmenu.menuloop()
 while (item>1):
     item = startmenu.menuloop()
+    print(item)
+    if (item==2):
+        sounds = True
+    if (item==3):
+        sounds = False
+    if (item==4):
+        foo = KeySetup(scr)
+        bar = foo.menuloop()
 if (item==1):
     running=False
-if (item==2):
-    sounds = True
-if (item==3):
-    sounds = False
-
 # level inits
 level = levelmanager.LevelManager(scr, kmapi)
-tiled_map = level.current_level
+maze = level.current_level
+backup_maze = copy.copy(maze)
 
 # map is rendered on background image
-tiled_map.render_map(scr.bg)
+maze.render_map(scr.bg)
 
 # set some variables
 pygame.init()
@@ -115,7 +122,7 @@ while running:
         if (e.type == KEYDOWN):
             k = pygame.key.get_pressed()
             # send keypresses to player
-            tiled_map.player.read_keys(k)
+            maze.player.read_keys(k)
             if (k[K_BACKSPACE]):
                 running = False
                 pygame.quit()
@@ -129,18 +136,19 @@ while running:
                    pygame.quit() 
                    break
                 if (menureturn == 2):
-                    # next level
+                    # restart level
                     bars()
                     scr = Screen(resolutionx, resolutiony)
                     screen = screen
-                    tiled_map = level.next(tiled_map.player.get_pos())
-                    tiled_map.render_map(scr.bg)
+                    maze = backup_maze
+                    backup_maze = copy.copy(maze)
+                    maze.render_map(scr.bg)
                     pygame.display.flip()
                     scr.top_msg.set_message("Level " + str(level.xy) + " Lifes: " + str(lives_left))
         if (e.type == KEYUP):
             # send keyups too
             k = pygame.key.get_pressed()
-            tiled_map.player.read_keys(k)
+            maze.player.read_keys(k)
         if (sounds):
                 if (e.type == player_shot):
                     player_ch.play(player_pew)
@@ -156,25 +164,26 @@ while running:
             lives_left -= 1
             start_again = True
             scr.top_msg.set_message("Level " + str(level.xy) + " Lifes: " + str(lives_left))
-    if (not tiled_map.player.can_blast):
+    if (not maze.player.can_blast):
         scr.bottom_msg.setBusy(1)
-    if (not tiled_map.player.can_run):
+    if (not maze.player.can_run):
         scr.bottom_msg.setBusy(0)
-    if (tiled_map.player.can_blast):
+    if (maze.player.can_blast):
         scr.bottom_msg.setAvailable(1)
-    if (tiled_map.player.can_run):
+    if (maze.player.can_run):
         scr.bottom_msg.setAvailable(0)
-    #if (len(tiled_map.mygroup.sprites()) < 1):
+    #if (len(maze.mygroup.sprites()) < 1):
     # update level and if level is complete, load next one
-    if (tiled_map.update_level() or start_again):
+    if (maze.update_level() or start_again):
             # next level
             bars()
             start_again = False
-            xy = tiled_map.player.get_pos()
+            xy = maze.player.get_pos()
             scr = Screen(resolutionx, resolutiony)
             screen = screen
-            tiled_map = level.next(xy)
-            tiled_map.render_map(scr.bg)
+            maze = level.next(xy)
+            backup_maze = copy.copy(maze)
+            maze.render_map(scr.bg)
             pygame.display.flip()
             scr.top_msg.set_message("Level " + str(level.xy) + " Lifes: " + str(lives_left))
     if (lives_left < 0):

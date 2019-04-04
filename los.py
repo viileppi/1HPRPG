@@ -11,12 +11,15 @@ class LOS(pygame.sprite.Sprite):
         # uncomment to see line of sight
         self.debug = False
 
+    def colli(self, l, r):
+        return pygame.sprite.collide_mask(l, r)
+
     def draw(self, enemy):
         if (self.debug):
             self.rect = pygame.draw.line(self.screen, pygame.Color("red"), enemy, self.player.get_pos(), 1)
         else:
             self.rect = pygame.draw.line(self.surf, pygame.Color("black"), enemy, self.player.get_pos(), 1)
-        c = pygame.sprite.spritecollideany(self, self.walls)
+        c = pygame.sprite.spritecollideany(self, self.walls)#, self.colli)
         if (c != None):
             return False
         else:
@@ -30,7 +33,7 @@ class Cast(pygame.sprite.Sprite):
         self.player = player
         self.surf = self.screen.copy()
         self.pos = self.player.get_pos()
-        self.ray_size = 10
+        self.ray_size = 3
         self.color = pygame.Color("red")
         #self.left = (self.pos[0] - self.ray_len, self.pos[1])
         #self.right = (self.pos[0] + self.ray_len, self.pos[1])

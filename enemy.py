@@ -19,8 +19,8 @@ class Enemy(objects.Object):
         tree = ET.parse("settings.xml")
         root = tree.getroot().find("enemy")
         fps = int(tree.getroot().find("main").find("fps").text)
-        self.speed = int(root.find("speed").text) * (fps/60)
-        self.ammo_speed = int(root.find("ammo_speed").text) * speed
+        self.speed = int(root.find("speed").text) * (fps/100)
+        self.ammo_speed = int(root.find("ammo_speed").text) * self.speed
         self.walk_dist = int(root.find("walk_dist").text)
         self.boot_time = int(root.find("boot_time").text)
         self.cooldown = int(root.find("cooldown").text)
@@ -108,23 +108,24 @@ class Enemy(objects.Object):
 
 class Snake(Enemy):
     def __init__(self, screen, image, coords, player, wall_group, ammogroup):
+        # snake should paralyze and not kill the player! TODOTODOTODO
+        # snakes could spawn randomly from dead enemies
         Enemy.__init__(self, screen, image, coords, player, wall_group, ammogroup)
-        self.speed = 2
-        self.walk_dist = 200
+        # self.speed = 2
+        # self.walk_dist = 200
         self.wall_list = []
         for w in self.wall_group.sprites():
             self.wall_list.append(w.rect)
         self.cast = Cast(self.screen, self.wall_list, self)
-        self.where = (1,0)
-        self.attack_cool = 1000
+        self.where = (1,1)
+        self.attack_cool = self.boot_time
+        self.speed * self.speed * 2
         self.attack_start = pygame.time.get_ticks()
         self.turns = [
-                        (0,1), 
-                        (1,0), 
-                        (1,1),
-                        (0,-1), 
-                        (-1,0),
-                        (-1,-1)
+                        (-self.speed,self.speed), 
+                        (-self.speed,-self.speed), 
+                        (self.speed,-self.speed),
+                        (self.speed,self.speed), 
                         ]
         self.dir_div = 0
 
@@ -137,7 +138,7 @@ class Snake(Enemy):
             y = p[1] - e[1]
             x = min(1, max(-1, x))
             y = min(1, max(-1, y))
-            self.where = (x,y)
+            self.where = (x*self.speed,y*self.speed)
 
     def turnaround(self, p):
         pass
