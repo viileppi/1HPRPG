@@ -93,7 +93,7 @@ class Player(Object):
             if (pressed[k] and self.keya[k] == deltaAmmo):
                 if (((pygame.time.get_ticks() - self.shoot_start) > self.cooldown)):
                     ammo_dir = (self.rect.centerx - self.old_dir[0] * -100, self.rect.centery - self.old_dir[1] * -100)
-                    ammo_start = (self.rect.centerx - self.old_dir[0] * -10, self.rect.centery - self.old_dir[1] * -10)
+                    ammo_start = (self.rect.centerx - self.old_dir[0] * -5, self.rect.centery - self.old_dir[1] * -5)
                     pew = self.keya[k](self.screen, self.ammo_image, ammo_start, ammo_dir, self.ammo_speed)
                     self.ammogroup.add(pew)
                     self.shoot_start = pygame.time.get_ticks()

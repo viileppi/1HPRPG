@@ -159,16 +159,16 @@ class LevelRenderer(object):
                     self.enemygroup.add(e)
                     self.mygroup.update()
                     enemies_n -= 1
-            elif (random.randint(1,4) == enemies_n):
-                e = Snake(self.screen, path.join("images", "snake.png"), coord, self.player, self.wall_list, self.enemyammo)
-                if e.playerCheck(100):
-                    e.kill()
-                    del e
-                else:
-                    self.snakegroup.add(e)
-                    self.enemygroup.add(e)
-                    self.mygroup.update()
-                    enemies_n -= 1
+            #elif (random.randint(1,4) == enemies_n):
+            #    e = Snake(self.screen, path.join("images", "snake.png"), coord, self.player, self.wall_list, self.enemyammo)
+            #    if e.playerCheck(100):
+            #        e.kill()
+            #        del e
+            #    else:
+            #        self.snakegroup.add(e)
+            #        self.enemygroup.add(e)
+            #        self.mygroup.update()
+            #        enemies_n -= 1
 
 
     def render_image_layer(self, surface, layer):
@@ -179,15 +179,15 @@ class LevelRenderer(object):
         player_fired = len(self.player.ammogroup.sprites())
         next_level = False
         self.enemygroup.update()
-        self.wall_list.draw(self.screen)
         self.wall_list.update()
         self.mygroup.update()
-        self.waypoints.draw(self.screen)
         self.player.ammogroup.update()
-        self.player.ammogroup.draw(self.screen)
         self.player.blastgroup.update()
-        self.player.blastgroup.draw(self.screen)
         self.enemyammo.update()
+        self.wall_list.draw(self.screen)
+        self.waypoints.draw(self.screen)
+        self.player.ammogroup.draw(self.screen)
+        #self.player.blastgroup.draw(self.screen)
         self.enemyammo.draw(self.screen)
         chr_coll = pygame.sprite.groupcollide(self.mygroup, self.enemygroup, True, True, colli_kill_both)
         amm_coll = pygame.sprite.groupcollide(self.enemygroup, self.player.ammogroup, True, True, colli_kill_both)

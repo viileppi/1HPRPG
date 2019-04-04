@@ -113,12 +113,43 @@ bars()
 while running:
     # uncomment to see coordinates
     # pygame.display.set_caption(str(enemy.rect) + str(player.rect))
+    if (maze.update_level() or start_again):
+            # next level
+            bars()
+            start_again = False
+            xy = maze.player.get_pos()
+            scr = Screen(resolutionx, resolutiony)
+            screen = screen
+            maze = level.next(xy)
+            backup_maze = copy.copy(maze)
+            maze.render_map(scr.bg)
+            pygame.display.flip()
+            scr.top_msg.set_message("Level " + str(level.xy) + " Lifes: " + str(lives_left))
+    if (lives_left < 0):
+        #pygame.time.wait(500)
+        M = Menu(screen)
+        M.menuitems = {"try again?": 0,
+                        "quit": 1
+                        }
+        mr = M.menuloop()
+        if (mr == 0):
+            start_again = True
+            lives_left = 3
+        if (mr == 1):
+            pygame.quit()
 
-    pygame.display.update()
-    scr.update()
     # get events and move player
     EventList = pygame.event.get() 
     for e in EventList:
+        if (sounds):
+                if (e.type == player_shot):
+                    player_ch.play(player_pew)
+                if (e.type == player_blast):
+                    player_ch.play(blast)
+                if (e.type == death):
+                    enemy_ch.play(obj_death)
+                if (e.type == enemy_shot):
+                    enemy_ch.play(pew_sound)
         if (e.type == KEYDOWN):
             k = pygame.key.get_pressed()
             # send keypresses to player
@@ -149,15 +180,6 @@ while running:
             # send keyups too
             k = pygame.key.get_pressed()
             maze.player.read_keys(k)
-        if (sounds):
-                if (e.type == player_shot):
-                    player_ch.play(player_pew)
-                if (e.type == player_blast):
-                    player_ch.play(blast)
-                if (e.type == death):
-                    enemy_ch.play(obj_death)
-                if (e.type == enemy_shot):
-                    enemy_ch.play(pew_sound)
         if (e.type == player_died):
             # player dead
             bars()
@@ -174,28 +196,6 @@ while running:
         scr.bottom_msg.setAvailable(0)
     #if (len(maze.mygroup.sprites()) < 1):
     # update level and if level is complete, load next one
-    if (maze.update_level() or start_again):
-            # next level
-            bars()
-            start_again = False
-            xy = maze.player.get_pos()
-            scr = Screen(resolutionx, resolutiony)
-            screen = screen
-            maze = level.next(xy)
-            backup_maze = copy.copy(maze)
-            maze.render_map(scr.bg)
-            pygame.display.flip()
-            scr.top_msg.set_message("Level " + str(level.xy) + " Lifes: " + str(lives_left))
-    if (lives_left < 0):
-        #pygame.time.wait(500)
-        M = Menu(screen)
-        M.menuitems = {"try again?": 0,
-                        "quit": 1
-                        }
-        mr = M.menuloop()
-        if (mr == 0):
-            start_again = True
-            lives_left = 3
-        if (mr == 1):
-            pygame.quit()
+    pygame.display.update()
+    scr.update()
     clk.tick(fps)

@@ -12,14 +12,16 @@ class Wall(pygame.sprite.Sprite):
         self.image.fill(self.color)
 
     def update(self):
+        pass
+
+    def draw(self, screen):
+        #pygame.draw.line(self.image, self.color, self.start, self.end, 16)
         r = self.screen.blit(
                 self.image, 
                 self.rect, 
                 self.rect
                 )
 
-    def draw(self, screen):
-        pygame.draw.line(self.image, self.color, self.start, self.end, 16)
 
 class Finish(Wall):
     def __init__(self, screen, start, end):

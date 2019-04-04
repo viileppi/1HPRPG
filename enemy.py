@@ -3,6 +3,7 @@ import objects
 import pygame
 from ammo import Ammo
 from ammo import deltaAmmo
+from ammo import Blast
 from los import LOS
 from los import Cast
 from os import path
@@ -44,6 +45,18 @@ class Enemy(objects.Object):
         self.boot_start = pygame.time.get_ticks()
         self.image_backup = self.image.copy()
         self.divider = self.rect.height
+
+    def destroy(self):
+        if (random.randint(0, 5) > 3):
+            e = Snake(self.screen, path.join("images", "snake.png"), (self.rect[0],self.rect[1]), self.player, self.wall_group, self.ammogroup)
+            self.groups()[0].add(e)
+        self.dir = (0,0)
+        self.alive = False
+        self.kill()
+        del self
+        pygame.event.post(userevents.death_event())
+
+
 
     def playerCheck(self, dist):
         if (self.rect.colliderect(self.player.rect.inflate(dist,dist))):
@@ -121,6 +134,7 @@ class Snake(Enemy):
         self.attack_cool = self.boot_time
         self.speed * self.speed * 2
         self.attack_start = pygame.time.get_ticks()
+        self.creation_time = pygame.time.get_ticks()
         self.turns = [
                         (-self.speed,self.speed), 
                         (-self.speed,-self.speed), 
@@ -128,6 +142,17 @@ class Snake(Enemy):
                         (self.speed,self.speed), 
                         ]
         self.dir_div = 0
+
+    def destroy(self):
+        if (self.creation_time + self.boot_time) < pygame.time.get_ticks():
+            self.dir = (0,0)
+            self.alive = False
+            self.kill()
+            del self
+            pygame.event.post(userevents.death_event())
+        else:
+            # TODO snake shouldn't die right after the spawn...
+            print("snake not ready!")
 
     def seek(self):
         if (self.seen_player):

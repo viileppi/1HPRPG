@@ -21,7 +21,7 @@ class Animator(pygame.sprite.Sprite):
         self.target = (0,0)
         self.facing_right = True
         self.step_multi = 0
-        self.doblit = True
+        self.doblit = False
         self.frames = []
         self.frames_flip = []
         s = pygame.Surface((self.rect.width, self.rect.height), pygame.SRCALPHA)
