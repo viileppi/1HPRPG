@@ -31,7 +31,7 @@ class Screen:
         # self.bg = pygame.image.load(path.join("images", "alpha_fill.png")).convert_alpha()
         self.bg = pygame.Surface((self.gamearea.get_width(), self.gamearea.get_height()))
         self.bg.fill(pygame.Color("black"))
-        self.top_msg = HUD((8,0), self.top_h, Color("yellow"), "Level 0")
+        self.top_msg = HUD((8,0), self.top_h, Color("yellow"), "Score: 0")
         gun = pygame.image.load(path.join("images", "gun.png")).convert_alpha()
         run = pygame.image.load(path.join("images", "run.png")).convert_alpha()
         blast = pygame.image.load(path.join("images", "blast.png")).convert_alpha()

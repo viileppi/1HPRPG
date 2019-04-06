@@ -22,14 +22,14 @@
   <vision>
     <top_h>48</top_h>
     <bottom_h>32</bottom_h>
-    <fullscreen>False</fullscreen>
+    <fullscreen>True</fullscreen>
   </vision>
   <enemy>
-    <speed>6</speed>
+    <speed>2</speed>
     <walk_dist>150</walk_dist>
     <ammo_speed>1</ammo_speed>
     <boot_time>1500</boot_time>
-    <cooldown>500</cooldown>
+    <cooldown>2000</cooldown>
   </enemy>
   <player>
     <speed>8</speed>

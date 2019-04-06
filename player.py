@@ -12,7 +12,7 @@ import userevents
 import xml.etree.ElementTree as ET
 
 class Player(Object):
-    def __init__(self, screen, image, coords, wallgroup, keymap_i):
+    def __init__(self, screen, image, coords, wallgroup):
         Object.__init__(self, screen, image, coords)
         self.wallgroup = wallgroup
         self.wall_list = []
@@ -39,16 +39,16 @@ class Player(Object):
         self.ammo_image = path.join("images", "ammo.png")
         self.ammogroup = pygame.sprite.Group()
         self.blastgroup = pygame.sprite.Group()
-        self.aimx = lambda x : x * self.speed
-        self.aimy = lambda y : y * self.speed
+        self.aimx = lambda x : x #* self.speed
+        self.aimy = lambda y : y #* self.speed
         self.shoot_start = pygame.time.get_ticks() - self.cooldown
         self.blast_start = pygame.time.get_ticks() - self.blast_cool
         self.run_start = pygame.time.get_ticks() - self.run_cool
         self.can_blast = True
         self.can_run = True
+        self.run_speed = self.speed * 2
         self.old_dir = (1,0)
         self.cast = Cast(self.screen, self.wall_list, self)
-        self.keymap_i = keymap_i
         tree = ET.parse("keymap.xml")
         root = tree.getroot()
         kd = {}
@@ -80,10 +80,10 @@ class Player(Object):
         y = 0
         for k, v in self.keyh.items():
             if (pressed[k]):
-                x = self.keyh[k]
+                x = self.keyh[k] * self.speed
         for k, v in self.keyv.items():
             if (pressed[k]):
-                y = self.keyv[k]
+                y = self.keyv[k] * self.speed
         self.dir = (x,y)
         if (self.dir != (0,0)):
             self.old_dir = self.dir
@@ -116,13 +116,10 @@ class Player(Object):
         if (not self.can_run and ((pygame.time.get_ticks() - self.run_start) > self.run_cool)):
             self.can_run = True
         if (((pygame.time.get_ticks() - self.run_start) < self.run_time)):
-            self.dir = (self.dir[0] * 2, self.dir[1] * 2)
-
-    def change_keymap(self, keymap_i):
-        self.keymap_i = keymap_i
-        self.keyh = keymap.keymaps[self.keymap_i]["keyh"]
-        self.keyv = keymap.keymaps[self.keymap_i]["keyv"]
-        self.keya = keymap.keymaps[self.keymap_i]["keya"]
+            #self.dir = (self.dir[0] * 2, self.dir[1] * 2)
+            self.speed = self.run_speed
+        else:
+            self.speed = self.run_speed/2
 
     def destroy(self):
         self.dir = (0,0)
