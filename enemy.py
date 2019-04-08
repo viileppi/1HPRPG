@@ -33,7 +33,7 @@ class Enemy(objects.Object):
         # self.cooldown = 500
         self.forward = True
         self.walked = 0
-        self.where = (1,0)
+        self.where = (self.speed,0)
         self.player = player
         self.wall_group = wall_group
         self.wall_list = []
@@ -77,7 +77,8 @@ class Enemy(objects.Object):
 
     def seek(self):
         if (self.seen_player):
-            self.where = (0,0)
+            #self.where = (0,0)
+            self.rect = self.move_animator.goto((0,0))
             p = self.player.get_pos()
             e = self.get_pos()
             # v1 = Vector2(p)
@@ -89,36 +90,38 @@ class Enemy(objects.Object):
                     self.ammogroup.add(pew)
                     self.shoot_start = pygame.time.get_ticks()
                     pygame.event.post(userevents.enemy_shot_event())
-        self.walked += 1
-        if (self.walked > self.walk_dist):
-            self.turnaround(0)
-            self.walked = 0
-
+        else:
+            c = self.cast.test(self.where)
+            self.where = (self.where[0] * c[0], self.where[1] * c[1])
+            self.rect = self.move_animator.goto(self.where)
+            if (c[0] == 0) or (c[1] == 0):
+                self.dir_div += 1
+                self.where = self.turns[self.dir_div%len(self.turns)]
 
     def turnaround(self, point):
-        self.forward = not self.forward
+        # self.forward = not self.forward
         # self.walked = 1
-        if (self.where == (1,0)):
-            self.where = (0,1)
-        elif (self.where == (0,1)):
-            self.where = (-1,0)
-        elif (self.where == (0,-1)):
-            self.where = (1,0)
-        elif (self.where == (-1,0)):
-            self.where = (0,-1)
-        elif (self.where == (0,0)):
-            self.where = (1,0)
+        #if (self.where == (1,0)):
+        #    self.where = (0,1)
+        #elif (self.where == (0,1)):
+        #    self.where = (-1,0)
+        #elif (self.where == (0,-1)):
+        #    self.where = (1,0)
+        #elif (self.where == (-1,0)):
+        #    self.where = (0,-1)
+        #elif (self.where == (0,0)):
+        #    self.where = (1,0)
         #self.move((self.where[0] * self.speed, self.where[1] * self.speed))
-        self.where = (self.where[0] * self.speed, self.where[1] * self.speed)
-        c = self.cast.test(self.where)
-        self.where = (self.where[0] * c[0], self.where[1] * c[1])
+        #self.where = (self.where[0] * self.speed, self.where[1] * self.speed)
+        #c = self.cast.test(self.where)
+        #self.where = (self.where[0] * c[0], self.where[1] * c[1])
+        pass
 
     def update(self):
         if (self.alive):
             if (self.ready):
                 self.seen_player = self.los.draw(self.get_pos())
                 self.seek()
-                self.rect = self.move_animator.goto((self.where[0] * self.speed, self.where[1] * self.speed))
             else:
                 dt = pygame.time.get_ticks()
                 dh = (self.boot_start+self.boot_time) - dt

@@ -39,14 +39,14 @@ class LevelRenderer(object):
             for x in range(1,5):
                 self.keypoints.append((int(self.fifth*x), int(self.third*y)))
         self.wall_list = pygame.sprite.Group()
+        self.enemy_walls = pygame.sprite.Group()
         self.enemygroup = pygame.sprite.Group()
         self.snakegroup = pygame.sprite.Group()
         self.mygroup = pygame.sprite.Group()
         self.enemyammo = pygame.sprite.Group()
         self.waypoints = pygame.sprite.Group()
         self.mygroup.empty()
-        self.player_keymap_i = player_keymap_i
-        self.player = Player(self.screen, path.join("images", "player_noblur.png"), player_pos, self.wall_list, self.player_keymap_i)
+        self.player = Player(self.screen, path.join("images", "player_noblur.png"), player_pos, self.wall_list)
         self.mygroup.add(self.player)
         self.xy = xy
         self.spawn_points = []
@@ -110,15 +110,20 @@ class LevelRenderer(object):
         for line in self.borders:
             w = Wall(self.screen, line[0], line[1])
             self.wall_list.add(w)
+            self.enemy_walls.add(w)
         # manually add exits
         w = Finish(self.screen, (self.fifth*2, 0), (self.fifth*3, 0))
         self.waypoints.add(w)
+        self.enemy_walls.add(w)
         w = Finish(self.screen, (self.fifth*2, self.height - self.offset), (self.fifth*3, self.height - self.offset))
         self.waypoints.add(w)
+        self.enemy_walls.add(w)
         w = Finish(self.screen, (0, self.third), (0, self.third*2))
         self.waypoints.add(w)
+        self.enemy_walls.add(w)
         w = Finish(self.screen, (self.width - self.offset, self.third), (self.width - self.offset, self.third*2))
         self.waypoints.add(w)
+        self.enemy_walls.add(w)
         self.wall_list.draw(surface)
         self.waypoints.draw(surface)
         self.player.wall_list = self.wall_list
@@ -148,12 +153,13 @@ class LevelRenderer(object):
             w = Wall(self.screen, item, end)
             i += 2
             self.wall_list.add(w)
+            self.enemy_walls.add(w)
         self.wall_list.draw(surface)
         i = 0
         for coord in self.spawn_points:
             point = (xy>>i)&3
             if (point == 1):
-                e = Enemy(self.screen, self.robot_image, coord, self.player, self.wall_list, self.enemyammo, self.difficulty)
+                e = Enemy(self.screen, self.robot_image, coord, self.player, self.enemy_walls, self.enemyammo, self.difficulty)
                 if e.playerCheck(100):
                     e.kill()
                     del e
