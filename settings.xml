@@ -25,10 +25,10 @@
     <fullscreen>False</fullscreen>
   </vision>
   <enemy>
-    <speed>6</speed>
+    <speed>8</speed>
     <walk_dist>150</walk_dist>
     <ammo_speed>1</ammo_speed>
-    <boot_time>1500</boot_time>
+    <boot_time>2000</boot_time>
     <cooldown>500</cooldown>
   </enemy>
   <player>

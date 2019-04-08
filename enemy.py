@@ -104,7 +104,7 @@ class Enemy(objects.Object):
             if (self.ready):
                 self.seen_player = self.los.draw(self.get_pos())
                 self.seek()
-                self.rect = self.move_animator.goto(self.where)
+                self.rect = self.move_animator.goto((self.where[0] * self.speed, self.where[1] * self.speed))
             else:
                 dt = pygame.time.get_ticks()
                 dh = (self.boot_start+self.boot_time) - dt

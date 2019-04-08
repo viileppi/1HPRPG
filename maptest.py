@@ -43,7 +43,7 @@ class LevelRenderer(object):
         self.waypoints = pygame.sprite.Group()
         self.mygroup.empty()
         self.player_keymap_i = player_keymap_i
-        self.player = Player(self.screen, path.join("images", "player.png"), player_pos, self.wall_list, self.player_keymap_i)
+        self.player = Player(self.screen, path.join("images", "player_noblur.png"), player_pos, self.wall_list, self.player_keymap_i)
         self.mygroup.add(self.player)
         self.xy = xy
         self.spawn_points = []
