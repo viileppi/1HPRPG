@@ -36,6 +36,7 @@ class Enemy(objects.Object):
         self.where = (self.speed,0)
         self.player = player
         self.wall_group = wall_group
+        self.ray_shrink = (-24,-8)
         self.wall_list = []
         for w in self.wall_group.sprites():
             self.wall_list.append(w.rect)
@@ -145,6 +146,7 @@ class Snake(Enemy):
         self.wall_list = []
         for w in self.wall_group.sprites():
             self.wall_list.append(w.rect)
+        self.ray_shrink = (0,-24)
         self.cast = Cast(self.screen, self.wall_list, self)
         self.where = (1,1)
         self.attack_cool = self.boot_time

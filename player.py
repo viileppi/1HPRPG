@@ -48,6 +48,7 @@ class Player(Object):
         self.can_run = True
         self.run_speed = self.speed * 2
         self.old_dir = (1,0)
+        self.ray_shrink = (-24,-8)
         self.cast = Cast(self.screen, self.wall_list, self)
         tree = ET.parse("keymap.xml")
         root = tree.getroot()
