@@ -3,8 +3,6 @@ from os import listdir
 from os import path
 import pygame
 from pygame.locals import *
-import pytmx
-from pytmx.util_pygame import load_pygame
 import maptest
 from ammo import Ammo 
 from colliders import *
@@ -32,6 +30,7 @@ lives_left = int(root.find("lives_left").text)
 # sounds = False
 # init stuff
 running = True
+score = 0
 #sounds = False
 #resolutionx = 800
 #resolutiony = 600
@@ -80,7 +79,7 @@ while (item>1):
 if (item==1):
     running=False
 # level inits
-level = levelmanager.LevelManager(scr, kmapi)
+level = levelmanager.LevelManager(scr)
 maze = level.current_level
 backup_maze = copy.copy(maze)
 
@@ -124,7 +123,7 @@ while running:
             backup_maze = copy.copy(maze)
             maze.render_map(scr.bg)
             pygame.display.flip()
-            scr.top_msg.set_message("Level " + str(level.xy) + " Lifes: " + str(lives_left))
+            scr.top_msg.set_message("Level " + str(level.xy) + " Lifes: " + str(lives_left) + " Score: " + str(score))
     if (lives_left < 0):
         #pygame.time.wait(500)
         M = Menu(screen)
@@ -148,6 +147,9 @@ while running:
                     player_ch.play(blast)
                 if (e.type == death):
                     enemy_ch.play(obj_death)
+                    # add score
+                    score += 100
+                    scr.top_msg.set_message("Level " + str(level.xy) + " Lifes: " + str(lives_left) + " Score: " + str(score))
                 if (e.type == enemy_shot):
                     enemy_ch.play(pew_sound)
         if (e.type == KEYDOWN):
@@ -175,7 +177,7 @@ while running:
                     backup_maze = copy.copy(maze)
                     maze.render_map(scr.bg)
                     pygame.display.flip()
-                    scr.top_msg.set_message("Level " + str(level.xy) + " Lifes: " + str(lives_left))
+                    scr.top_msg.set_message("Level " + str(level.xy) + " Lifes: " + str(lives_left) + " Score: " + str(score))
         if (e.type == KEYUP):
             # send keyups too
             k = pygame.key.get_pressed()
@@ -185,7 +187,7 @@ while running:
             bars()
             lives_left -= 1
             start_again = True
-            scr.top_msg.set_message("Level " + str(level.xy) + " Lifes: " + str(lives_left))
+            scr.top_msg.set_message("Level " + str(level.xy) + " Lifes: " + str(lives_left) + " Score: " + str(score))
     if (not maze.player.can_blast):
         scr.bottom_msg.setBusy(1)
     if (not maze.player.can_run):

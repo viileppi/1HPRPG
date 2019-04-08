@@ -19,11 +19,14 @@ class LevelRenderer(object):
     Super simple way to render a tiled map
     """
 
-    def __init__(self, screen, xy, player_pos, player_keymap_i):
+    def __init__(self, screen, xy, player_pos, levels_played):
 
         # self.size will be the pixel size of the map
         # this value is used later to render the entire map to a pygame surface
+        self.levels_played = levels_played
+        self.difficulty = 1 + self.levels_played / 2
         self.pew_playing = 0
+        self.robot_image = path.join("images", "robot.png") 
         self.screen = screen.gamearea
         self.menuscreen = screen
         self.width = self.screen.get_width()
@@ -92,7 +95,7 @@ class LevelRenderer(object):
 
         self.render_tile_layer(self.screen)
         self.generate_maze(self.screen)
-        self.render_object_layer(self.screen)
+        #self.render_object_layer(self.screen)
 
     def move_player(self, where):
         for player in self.mygroup:
@@ -146,12 +149,25 @@ class LevelRenderer(object):
             i += 2
             self.wall_list.add(w)
         self.wall_list.draw(surface)
+        i = 0
+        for coord in self.spawn_points:
+            point = (xy>>i)&3
+            if (point == 1):
+                e = Enemy(self.screen, self.robot_image, coord, self.player, self.wall_list, self.enemyammo, self.difficulty)
+                if e.playerCheck(100):
+                    e.kill()
+                    del e
+                else:
+                    self.enemygroup.add(e)
+                    self.mygroup.update()
+            i += 2
+
 
     def render_object_layer(self, surface):
         enemies_n = random.randint(1, 6)
         for coord in self.spawn_points:
             if (random.randint(0,6) == enemies_n):
-                e = Enemy(self.screen, path.join("images", "robot.png"), coord, self.player, self.wall_list, self.enemyammo)
+                e = Enemy(self.screen, path.join("images", "robot.png"), coord, self.player, self.wall_list, self.enemyammo, self.difficulty)
                 if e.playerCheck(100):
                     e.kill()
                     del e

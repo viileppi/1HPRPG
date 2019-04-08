@@ -33,10 +33,8 @@ class Cast(pygame.sprite.Sprite):
         self.player = player
         self.surf = self.screen.copy()
         self.pos = self.player.get_pos()
-        self.ray_size = 4
+        self.ray_size = 1
         self.color = pygame.Color("red")
-        self.size = self.player.mask.get_size()
-        self.size = (self.player.rect.width - self.size[0], self.player.rect.height - self.size[1])
         #self.left = (self.pos[0] - self.ray_len, self.pos[1])
         #self.right = (self.pos[0] + self.ray_len, self.pos[1])
         #self.up = (self.pos[0], self.pos[1] - self.ray_len)
@@ -49,7 +47,7 @@ class Cast(pygame.sprite.Sprite):
         # ray_len = (1+abs(to[1])) * self.ray_size
         #ray_len = self.ray_size * (1+abs(to[1])/2)
         #ray_rect = self.player.rect.inflate(-self.ray_size, 0)
-        ray_rect = self.player.rect.inflate(self.size)
+        ray_rect = self.player.rect #.inflate(-self.size[0], -self.size[1])
         ray_rect.move_ip(to[0] * self.ray_size, to[1] * self.ray_size)
         #self.ray = pygame.draw.rect(self.screen, self.color, ray_rect)
 

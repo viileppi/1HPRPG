@@ -13,29 +13,32 @@ import userevents
 import xml.etree.ElementTree as ET
 
 class Enemy(objects.Object):
-    def __init__(self, screen, image, coords, player, wall_group, ammogroup):
+    def __init__(self, screen, image, coords, player, wall_group, ammogroup, difficulty):
         """ image should be a spritesheet of square sprites """
         objects.Object.__init__(self, screen, image, coords)
-
+        self.difficulty = min(12, max(2, difficulty))
         tree = ET.parse("settings.xml")
         root = tree.getroot().find("enemy")
         fps = int(tree.getroot().find("main").find("fps").text)
-        self.speed = int(root.find("speed").text) * (fps/100)
-        self.ammo_speed = int(root.find("ammo_speed").text) * self.speed
+        self.speed = int(root.find("speed").text) * (fps/100) * self.difficulty
+        self.ammo_speed = int(root.find("ammo_speed").text) * (self.speed/2)
         self.walk_dist = int(root.find("walk_dist").text)
         self.boot_time = int(root.find("boot_time").text)
-        self.cooldown = int(root.find("cooldown").text)
+        self.cooldown = int(root.find("cooldown").text) / self.difficulty
+        self.cooldown = max(100, self.cooldown)
         # self.speed = 2
         # self.walk_dist = 100
         # self.ammo_speed = 3
         # self.boot_time = 1000
         # self.cooldown = 500
-
         self.forward = True
         self.walked = 0
         self.where = (1,0)
         self.player = player
         self.wall_group = wall_group
+        self.wall_list = []
+        for w in self.wall_group.sprites():
+            self.wall_list.append(w.rect)
         self.ammo_image = path.join("images", "ammo.png")
         self.ammogroup = ammogroup
         self.los = LOS(self.screen, self.get_pos(), self.player, self.wall_group)
@@ -45,10 +48,18 @@ class Enemy(objects.Object):
         self.boot_start = pygame.time.get_ticks()
         self.image_backup = self.image.copy()
         self.divider = self.rect.height
+        self.cast = Cast(self.screen, self.wall_list, self)
+        self.turns = [
+                        (-self.speed,0), 
+                        (0,-self.speed), 
+                        (self.speed,0),
+                        (0,self.speed), 
+                        ]
+        self.dir_div = 0
 
     def destroy(self):
         if (random.randint(0, 5) > 3):
-            e = Snake(self.screen, path.join("images", "snake.png"), (self.rect[0],self.rect[1]), self.player, self.wall_group, self.ammogroup)
+            e = Snake(self.screen, path.join("images", "snake.png"), (self.rect[0],self.rect[1]), self.player, self.wall_group, self.ammogroup, self.difficulty)
             self.groups()[0].add(e)
         self.dir = (0,0)
         self.alive = False
@@ -97,7 +108,10 @@ class Enemy(objects.Object):
             self.where = (0,-1)
         elif (self.where == (0,0)):
             self.where = (1,0)
-        self.move((self.where[0] * self.speed, self.where[1] * self.speed))
+        #self.move((self.where[0] * self.speed, self.where[1] * self.speed))
+        self.where = (self.where[0] * self.speed, self.where[1] * self.speed)
+        c = self.cast.test(self.where)
+        self.where = (self.where[0] * c[0], self.where[1] * c[1])
 
     def update(self):
         if (self.alive):
@@ -118,12 +132,11 @@ class Enemy(objects.Object):
                 self.divider = max(1, self.divider-1)
                 if (dh <= 0):
                     self.ready = True
-
 class Snake(Enemy):
-    def __init__(self, screen, image, coords, player, wall_group, ammogroup):
+    def __init__(self, screen, image, coords, player, wall_group, ammogroup, difficulty):
         # snake should paralyze and not kill the player! TODOTODOTODO
         # snakes could spawn randomly from dead enemies
-        Enemy.__init__(self, screen, image, coords, player, wall_group, ammogroup)
+        Enemy.__init__(self, screen, image, coords, player, wall_group, ammogroup, difficulty)
         # self.speed = 2
         # self.walk_dist = 200
         self.wall_list = []
