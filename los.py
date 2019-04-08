@@ -1,24 +1,29 @@
 import pygame
+import colliders
 
 class LOS(pygame.sprite.Sprite):
     def __init__(self, screen, enemy, source, walls):
         pygame.sprite.Sprite.__init__(self)
         self.screen = screen
         self.source = source
-        self.walls = walls
+        #self.walls = walls
+        self.walls = self.source.wallgroup
         self.surf = self.screen.copy()
-        self.rect = pygame.draw.line(self.surf, pygame.Color("black"), enemy, self.source.get_pos(), 1)
-        # uncomment to see line of sight
-        self.debug = False
+        self.color = pygame.Color("red")
+        self.rect = pygame.draw.line(self.surf, self.color, enemy, self.source.get_pos(), 1)
+        self.image = pygame.Surface((self.rect.width, self.rect.height))
 
     def colli(self, l, r):
         return pygame.sprite.collide_mask(l, r)
 
     def draw(self, enemy):
-        if (self.debug):
-            self.rect = pygame.draw.line(self.screen, pygame.Color("red"), enemy, self.source.get_pos(), 1)
-        else:
-            self.rect = pygame.draw.line(self.surf, pygame.Color("black"), enemy, self.source.get_pos(), 1)
+        self.rect = pygame.draw.line(self.surf, self.color, enemy, self.source.get_pos(), 1)
+        #self.image = pygame.Surface((self.rect.width, self.rect.height))
+
+        #self.mask = pygame.mask.from_surface(self.surf)
+        #self.image = pygame.Surface((self.rect.width, self.rect.height))
+        #print(c)
+        #return False
         c = pygame.sprite.spritecollideany(self, self.walls)#, self.colli)
         if (c != None):
             return False
@@ -34,7 +39,8 @@ class Cast(pygame.sprite.Sprite):
         self.ray_shrink = self.source.ray_shrink
         self.surf = self.screen.copy()
         self.pos = self.source.get_pos()
-        self.ray_size = int(self.source.speed/2)
+        #self.ray_size = int(self.source.speed/2)
+        self.ray_size = 3
         self.color = pygame.Color("red")
         #self.left = (self.pos[0] - self.ray_len, self.pos[1])
         #self.right = (self.pos[0] + self.ray_len, self.pos[1])
@@ -53,7 +59,7 @@ class Cast(pygame.sprite.Sprite):
         #ray_rect = self.source.rect.inflate(-24,-8)
         #self.ray_rect.move_ip(to[0] * self.ray_size, to[1] * self.ray_size)
         ray_rect.move_ip(to[0] * self.ray_size, to[1] * self.ray_size)
-        ray = pygame.draw.rect(self.screen, self.color, ray_rect)
+        #ray = pygame.draw.rect(self.screen, self.color, ray_rect)
 
         if (ray_rect.collidelist(self.walls) == -1):
             return (1,1)

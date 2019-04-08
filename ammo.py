@@ -36,7 +36,7 @@ class deltaAmmo(Ammo):
     def __init__(self, screen, image, coords, direction, speed):
         Ammo.__init__(self, screen, image, coords, direction, speed)
         # overrides for testing
-        self.length = 4000
+        #self.length = 4000
         self.speed = speed
         # from
         # self.v1 = Vector2(self.get_pos())
@@ -57,18 +57,21 @@ class deltaAmmo(Ammo):
 
 
     def update(self):
-        # destroy ammo if it's been alive for longer than self.length
-        if ((pygame.time.get_ticks() - self.start) < self.length):
+        # destroy ammo if it goes off the screen
+        if (
+                (self.rect.x < 0) or (self.rect.x > self.screen_w) or
+                (self.rect.y < 0) or (self.rect.y > self.screen_h)
+                ):
+            self.dir = (0,0)
+            self.destroy()
             # doesn't use animator for movement
+        else:
             self.rect.move_ip(self.v4)
             r = self.screen.blit(
                     self.image, 
                     self.rect, 
                     self.rect
                     )
-        else:
-            self.dir = (0,0)
-            self.destroy()
 
 class Blast(pygame.sprite.Sprite):
     """ short-range ammo in all directions """
