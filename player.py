@@ -19,6 +19,7 @@ class Player(Object):
         self.wall_list = []
         for w in self.wallgroup.sprites():
             self.wall_list.append(w.rect)
+        self.walls = self.wall_list
         """ # old settings for sanity
         self.speed = 2
         self.ammo_speed = 3
@@ -75,8 +76,14 @@ class Player(Object):
     def turnaround(self, p):
         pass
 
+    def updateWallgroup(self):
+        self.wall_list = []
+        for w in self.wallgroup.sprites():
+            self.wall_list.append(w.rect)
+        self.walls = self.wall_list
+        self.cast = Cast(self)
+
     def read_keys(self, pressed):
-        self.cast.walls = self.wall_list
         self.dir = (0,0)
         x = 0
         y = 0

@@ -35,7 +35,8 @@ class Enemy(objects.Object):
         self.walked = 0
         self.where = (self.speed,0)
         self.player = self.source.player
-        self.wallgroup = self.source.wallgroup
+        self.enemy_walls = self.source.enemy_walls
+        self.wallgroup = self.enemy_walls
         self.enemyammo = self.source.enemyammo
         self.ray_shrink = (-24,-8)
         self.wall_list = []
@@ -196,7 +197,7 @@ class Snake(Enemy):
 
         if (self.attack_start + self.attack_cool) < pygame.time.get_ticks():
             #self.where = (self.where[0]*-1, self.where[1]*-1)
-            self.seen_player = self.los.draw(self.get_pos())
+            self.seen_player = self.los.draw()
             self.attack_start = pygame.time.get_ticks()
         self.seek()
 

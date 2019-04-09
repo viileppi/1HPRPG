@@ -90,6 +90,8 @@ class LevelRenderer(object):
 
         self.render_tile_layer(self.screen)
         self.generate_maze(self.screen)
+        self.player.wallgroup = self.wallgroup
+        self.player.updateWallgroup()
         #self.render_object_layer(self.screen)
 
     def move_player(self, where):
@@ -121,7 +123,6 @@ class LevelRenderer(object):
         self.enemy_walls.add(w)
         self.wallgroup.draw(surface)
         self.waypoints.draw(surface)
-        self.player.wallgroup = self.wallgroup
 
     def generate_maze(self, surface):
         i = 0
@@ -151,11 +152,12 @@ class LevelRenderer(object):
             self.enemy_walls.add(w)
         self.wallgroup.draw(surface)
         i = 0
+        mask = xy&3
         for coord in self.spawn_points:
             point = (xy>>i)&3
-            if (point == 1):
+            if (point == mask):
                 e = Enemy(self, self.robot_image, coord, self.difficulty)
-                if e.playerCheck(100):
+                if e.playerCheck(200):
                     e.kill()
                     del e
                 else:
