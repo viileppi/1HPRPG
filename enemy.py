@@ -21,7 +21,7 @@ class Enemy(objects.Object):
         root = tree.getroot().find("enemy")
         fps = int(tree.getroot().find("main").find("fps").text)
         self.speed = int(root.find("speed").text) * (fps/100) * self.difficulty
-        self.ammo_speed = int(root.find("ammo_speed").text) * (self.speed/2)
+        self.ammo_speed = int(root.find("ammo_speed").text) * (self.speed)
         self.walk_dist = int(root.find("walk_dist").text)
         self.boot_time = int(root.find("boot_time").text)
         self.cooldown = int(root.find("cooldown").text) / self.difficulty
@@ -32,6 +32,7 @@ class Enemy(objects.Object):
         # self.boot_time = 1000
         # self.cooldown = 500
         self.forward = True
+        self.attackbehaviour = random.randint(0,1)
         self.walked = 0
         self.where = (self.speed,0)
         self.player = self.source.player
@@ -84,15 +85,23 @@ class Enemy(objects.Object):
             self.rect = self.move_animator.goto((0,0))
             p = self.player.get_pos()
             e = self.get_pos()
-            # v1 = Vector2(p)
-            # v2 = Vector2(e)
-            # v3 = v1 - v2
-            # print(v3.normalize())
             if (((pygame.time.get_ticks() - self.shoot_start) > self.cooldown)):
                     pew = deltaAmmo(self, self.ammo_image, e, p, self.ammo_speed)
                     self.ammogroup.add(pew)
                     self.shoot_start = pygame.time.get_ticks()
                     pygame.event.post(userevents.enemy_shot_event())
+            elif (self.attackbehaviour == 1):
+                print("shooting walking menace")
+                v1 = Vector2(p)
+                v2 = Vector2(e)
+                v3 = v1 - v2
+                v3 = v3.normalize()
+                c = self.cast.test(v3)
+                self.where = (v3[0] * c[0] * self.speed, v3[1] * c[1] * self.speed)
+                self.rect = self.move_animator.goto(self.where)
+                if (c[0] == 0) or (c[1] == 0):
+                    self.dir_div += 1
+                    self.where = self.turns[self.dir_div%len(self.turns)]
         else:
             c = self.cast.test(self.where)
             self.where = (self.where[0] * c[0], self.where[1] * c[1])

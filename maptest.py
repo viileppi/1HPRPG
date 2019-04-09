@@ -19,7 +19,8 @@ class LevelRenderer(object):
         # self.size will be the pixel size of the map
         # this value is used later to render the entire map to a pygame surface
         self.levels_played = levels_played
-        self.difficulty = 1 + self.levels_played / 2
+        self.difficulty = 1 + self.levels_played / 4
+        print(self.difficulty)
         self.pew_playing = 0
         self.robot_image = path.join("images", "robot.png") 
         self.screen = screen.gamearea
@@ -152,17 +153,19 @@ class LevelRenderer(object):
             self.enemy_walls.add(w)
         self.wallgroup.draw(surface)
         i = 0
+        enemies = int(3 + self.difficulty)
         mask = xy&3
         for coord in self.spawn_points:
             point = (xy>>i)&3
             if (point == mask):
                 e = Enemy(self, self.robot_image, coord, self.difficulty)
-                if e.playerCheck(200):
+                if (e.playerCheck(200)) or (enemies < 0):
                     e.kill()
                     del e
                 else:
                     self.enemygroup.add(e)
                     self.mygroup.update()
+                    enemies -= 1
             i += 2
 
 
