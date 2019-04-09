@@ -41,6 +41,7 @@ class LevelRenderer(object):
         self.mygroup = pygame.sprite.Group()
         self.enemyammo = pygame.sprite.Group()
         self.waypoints = pygame.sprite.Group()
+        self.corpsegroup = pygame.sprite.Group()
         self.mygroup.empty()
         self.player = Player(self, path.join("images", "player_noblur.png"), player_pos)
         self.mygroup.add(self.player)
@@ -202,6 +203,7 @@ class LevelRenderer(object):
         next_level = False
         self.enemygroup.update()
         self.wallgroup.update()
+        self.corpsegroup.update()
         self.mygroup.update()
         self.player.ammogroup.update()
         self.player.blastgroup.update()
@@ -212,6 +214,7 @@ class LevelRenderer(object):
         #self.player.blastgroup.draw(self.screen)
         self.enemyammo.draw(self.screen)
         chr_coll = pygame.sprite.groupcollide(self.mygroup, self.enemygroup, True, True, colli_kill_both)
+        #amm_coll = pygame.sprite.groupcollide(self.enemygroup, self.player.ammogroup, True, True, colli_kill_both)
         amm_coll = pygame.sprite.groupcollide(self.enemygroup, self.player.ammogroup, True, True, colli_kill_both)
         amm_enem = pygame.sprite.groupcollide(self.mygroup, self.enemyammo, True, True, colli_kill_both)
         amm_wall = pygame.sprite.groupcollide(self.player.ammogroup, self.wallgroup, False, False, colli_kill_l)

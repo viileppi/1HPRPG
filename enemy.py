@@ -7,6 +7,7 @@ from ammo import Blast
 from los import LOS
 from los import Cast
 from os import path
+from corpse import Corpse
 from pygame.math import Vector2
 import random
 import userevents
@@ -16,6 +17,7 @@ class Enemy(objects.Object):
     def __init__(self, source, image, coords, difficulty):
         """ image should be a spritesheet of square sprites """
         objects.Object.__init__(self, source, image, coords)
+        self.death_image = path.join("images", "robot_death.png")
         self.difficulty = min(12, max(2, difficulty))
         tree = ET.parse("settings.xml")
         root = tree.getroot().find("enemy")
@@ -62,6 +64,8 @@ class Enemy(objects.Object):
         self.dir_div = 0
 
     def destroy(self):
+        corpse = Corpse(self)
+        self.source.corpsegroup.add(corpse)
         if (random.randint(0, 5) > 3):
             e = Snake(self, path.join("images", "snake.png"), (self.rect[0],self.rect[1]), self.difficulty)
             self.groups()[0].add(e)

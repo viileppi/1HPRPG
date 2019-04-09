@@ -52,7 +52,7 @@ class Cast(pygame.sprite.Sprite):
         #self.up = (self.pos[0], self.pos[1] - self.ray_len)
         #self.down = (self.pos[0], self.pos[1] + self.ray_len)
 
-    def test(self, to):
+    def test_old(self, to):
         self.pos = self.source.get_pos()
         ray_rect = self.source.rect.inflate(self.ray_shrink[0], self.ray_shrink[1])
         # ray_w = self.ray_w + abs(int(self.ray_w * to[0]))
@@ -66,8 +66,18 @@ class Cast(pygame.sprite.Sprite):
         ray_rect.move_ip(to[0] * self.ray_size, to[1] * self.ray_size)
         #ray = pygame.draw.rect(self.screen, self.color, ray_rect)
 
-        if (ray_rect.collidelist(self.walls) == -1):
+        if (ray_rect.collidelist(self.walls, ) == -1):
             return (1,1)
         else:
+            return (to[0] - to[0],to[1] - to[1])
+
+    def test(self, to):
+        self.pos = self.source.rect
+        self.source.rect.move_ip((to[0]*2, to[1]*2))
+        if (pygame.sprite.spritecollideany(self.source, self.source.wallgroup) == None):
+            self.source.rect = self.pos
+            return (1,1)
+        else:
+            self.source.rect = self.pos
             return (to[0] - to[0],to[1] - to[1])
 

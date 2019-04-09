@@ -40,11 +40,12 @@ class Screen:
         self.line_w = 1
 
     def update(self):
-        self.screen.blit(self.bg, (0,self.top_h))
         self.top_msg.update()
         self.screen.blit(self.top_msg.background, (0,0))
         self.screen.blit(self.top_msg.image, (0,0))
         self.screen.blit(self.bottom_msg.image, (self.bottom_h, self.height - self.bottom_h))
+        #self.screen.blit(self.bg, (0,self.top_h))
+        self.gamearea.blit(self.bg, self.area_rect, self.area_rect)
 
     def update_menu(self):
         pass
