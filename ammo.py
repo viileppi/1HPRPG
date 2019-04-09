@@ -6,8 +6,9 @@ import objects
 
 class Ammo(objects.Object):
     
-    def __init__(self, screen, image, coords, direction, speed):
-        objects.Object.__init__(self, screen, image, coords)
+    def __init__(self, source, image, coords, direction, speed):
+        objects.Object.__init__(self, source, image, coords)
+        self.source = source
         self.speed = speed
         self.length = 2000
         self.start = pygame.time.get_ticks()
@@ -33,8 +34,8 @@ class Ammo(objects.Object):
 
 class deltaAmmo(Ammo):
     """ interpolates to given coordinate by given speed """
-    def __init__(self, screen, image, coords, direction, speed):
-        Ammo.__init__(self, screen, image, coords, direction, speed)
+    def __init__(self, source, image, coords, direction, speed):
+        Ammo.__init__(self, source, image, coords, direction, speed)
         # overrides for testing
         #self.length = 4000
         self.speed = speed
@@ -75,10 +76,10 @@ class deltaAmmo(Ammo):
 
 class Blast(pygame.sprite.Sprite):
     """ short-range ammo in all directions """
-    def __init__(self, screen, source, radius):
+    def __init__(self, source, radius):
         pygame.sprite.Sprite.__init__(self)
-        self.screen = screen
         self.source = source
+        self.screen = self.source.screen
         self.radius = radius
         self.deltaR = 2
         self.speed = 2

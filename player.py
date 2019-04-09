@@ -12,9 +12,10 @@ import userevents
 import xml.etree.ElementTree as ET
 
 class Player(Object):
-    def __init__(self, screen, image, coords, wallgroup):
-        Object.__init__(self, screen, image, coords)
-        self.wallgroup = wallgroup
+    def __init__(self, source, image, coords):
+        Object.__init__(self, source, image, coords)
+        self.source = source
+        self.wallgroup = self.source.wallgroup
         self.wall_list = []
         for w in self.wallgroup.sprites():
             self.wall_list.append(w.rect)
@@ -49,7 +50,7 @@ class Player(Object):
         self.run_speed = self.speed * 2
         self.old_dir = (1,0)
         self.ray_shrink = (-24,-8)
-        self.cast = Cast(self.screen, self.wall_list, self)
+        self.cast = Cast(self)
         tree = ET.parse("keymap.xml")
         root = tree.getroot()
         kd = {}
@@ -75,7 +76,7 @@ class Player(Object):
         pass
 
     def read_keys(self, pressed):
-        self.cast.walls = self.wall_list.sprites()
+        self.cast.walls = self.wall_list
         self.dir = (0,0)
         x = 0
         y = 0
@@ -95,14 +96,14 @@ class Player(Object):
                 if (((pygame.time.get_ticks() - self.shoot_start) > self.cooldown)):
                     ammo_dir = (self.rect.centerx - self.old_dir[0] * -100, self.rect.centery - self.old_dir[1] * -100)
                     ammo_start = (self.rect.centerx - self.old_dir[0] * -5, self.rect.centery - self.old_dir[1] * -5)
-                    pew = self.keya[k](self.screen, self.ammo_image, ammo_start, ammo_dir, self.ammo_speed)
+                    pew = self.keya[k](self, self.ammo_image, ammo_start, ammo_dir, self.ammo_speed)
                     self.ammogroup.add(pew)
                     self.shoot_start = pygame.time.get_ticks()
                     pygame.event.post(userevents.player_shot_event())
                 self.dir = (0,0)
             if (pressed[k] and self.keya[k] == Blast):
                 if (((pygame.time.get_ticks() - self.blast_start) > self.blast_cool)):
-                    blast = self.keya[k](self.screen, self, self.blast_radius)
+                    blast = self.keya[k](self, self.blast_radius)
                     self.blastgroup.add(blast)
                     self.blast_start = pygame.time.get_ticks()
                     self.can_blast = False

@@ -2,40 +2,45 @@ import pygame
 import colliders
 
 class LOS(pygame.sprite.Sprite):
-    def __init__(self, screen, enemy, source, walls):
+    def __init__(self, source):
         pygame.sprite.Sprite.__init__(self)
-        self.screen = screen
         self.source = source
+        self.screen = self.source.screen
         #self.walls = walls
-        self.walls = self.source.wallgroup
+        self.wallgroup = self.source.wallgroup
+        self.walls = []
+        for w in self.source.wallgroup.sprites():
+            self.walls.append(w.rect)
         self.surf = self.screen.copy()
         self.color = pygame.Color("red")
-        self.rect = pygame.draw.line(self.surf, self.color, enemy, self.source.get_pos(), 1)
+        self.rect = pygame.draw.line(self.surf, self.color, self.source.player.get_pos(), self.source.get_pos(), 1)
         self.image = pygame.Surface((self.rect.width, self.rect.height))
 
     def colli(self, l, r):
         return pygame.sprite.collide_mask(l, r)
 
-    def draw(self, enemy):
-        self.rect = pygame.draw.line(self.surf, self.color, enemy, self.source.get_pos(), 1)
+    def draw(self):
+        self.rect = pygame.draw.line(self.surf, self.color, self.source.get_pos(), self.source.player.get_pos(), 1)
         #self.image = pygame.Surface((self.rect.width, self.rect.height))
 
         #self.mask = pygame.mask.from_surface(self.surf)
         #self.image = pygame.Surface((self.rect.width, self.rect.height))
         #print(c)
         #return False
-        c = pygame.sprite.spritecollideany(self, self.walls)#, self.colli)
+        c = pygame.sprite.spritecollideany(self, self.wallgroup)#, self.colli)
         if (c != None):
             return False
         else:
             return True
 
 class Cast(pygame.sprite.Sprite):
-    def __init__(self, screen, walls, source):
+    def __init__(self, source):
         pygame.sprite.Sprite.__init__(self)
-        self.screen = screen
-        self.walls = walls
         self.source = source
+        self.walls = []
+        for w in self.source.wallgroup.sprites():
+            self.walls.append(w.rect)
+        self.screen = source.screen
         self.ray_shrink = self.source.ray_shrink
         self.surf = self.screen.copy()
         self.pos = self.source.get_pos()

@@ -13,9 +13,9 @@ import userevents
 import xml.etree.ElementTree as ET
 
 class Enemy(objects.Object):
-    def __init__(self, screen, image, coords, player, wall_group, ammogroup, difficulty):
+    def __init__(self, source, image, coords, difficulty):
         """ image should be a spritesheet of square sprites """
-        objects.Object.__init__(self, screen, image, coords)
+        objects.Object.__init__(self, source, image, coords)
         self.difficulty = min(12, max(2, difficulty))
         tree = ET.parse("settings.xml")
         root = tree.getroot().find("enemy")
@@ -34,22 +34,23 @@ class Enemy(objects.Object):
         self.forward = True
         self.walked = 0
         self.where = (self.speed,0)
-        self.player = player
-        self.wall_group = wall_group
+        self.player = self.source.player
+        self.wallgroup = self.source.wallgroup
+        self.enemyammo = self.source.enemyammo
         self.ray_shrink = (-24,-8)
         self.wall_list = []
-        for w in self.wall_group.sprites():
+        for w in self.wallgroup.sprites():
             self.wall_list.append(w.rect)
         self.ammo_image = path.join("images", "ammo.png")
-        self.ammogroup = ammogroup
-        self.los = LOS(self.screen, self.get_pos(), self.player, self.wall_group)
+        self.ammogroup = self.source.enemyammo
+        self.los = LOS(self)
         self.seen_player = False
         self.ready = False
         self.shoot_start = pygame.time.get_ticks()
         self.boot_start = pygame.time.get_ticks()
         self.image_backup = self.image.copy()
         self.divider = self.rect.height
-        self.cast = Cast(self.screen, self.wall_list, self)
+        self.cast = Cast(self)
         self.turns = [
                         (-self.speed,0), 
                         (0,-self.speed), 
@@ -60,7 +61,7 @@ class Enemy(objects.Object):
 
     def destroy(self):
         if (random.randint(0, 5) > 3):
-            e = Snake(self.screen, path.join("images", "snake.png"), (self.rect[0],self.rect[1]), self.player, self.wall_group, self.ammogroup, self.difficulty)
+            e = Snake(self, path.join("images", "snake.png"), (self.rect[0],self.rect[1]), self.difficulty)
             self.groups()[0].add(e)
         self.dir = (0,0)
         self.alive = False
@@ -87,7 +88,7 @@ class Enemy(objects.Object):
             # v3 = v1 - v2
             # print(v3.normalize())
             if (((pygame.time.get_ticks() - self.shoot_start) > self.cooldown)):
-                    pew = deltaAmmo(self.screen, self.ammo_image, e, p, self.ammo_speed)
+                    pew = deltaAmmo(self, self.ammo_image, e, p, self.ammo_speed)
                     self.ammogroup.add(pew)
                     self.shoot_start = pygame.time.get_ticks()
                     pygame.event.post(userevents.enemy_shot_event())
@@ -121,7 +122,7 @@ class Enemy(objects.Object):
     def update(self):
         if (self.alive):
             if (self.ready):
-                self.seen_player = self.los.draw(self.get_pos())
+                self.seen_player = self.los.draw()
                 self.seek()
             else:
                 dt = pygame.time.get_ticks()
@@ -137,17 +138,15 @@ class Enemy(objects.Object):
                 if (dh <= 0):
                     self.ready = True
 class Snake(Enemy):
-    def __init__(self, screen, image, coords, player, wall_group, ammogroup, difficulty):
+    def __init__(self, source, image, coords, difficulty):
         # snake should paralyze and not kill the player! TODOTODOTODO
         # snakes could spawn randomly from dead enemies
-        Enemy.__init__(self, screen, image, coords, player, wall_group, ammogroup, difficulty)
+        Enemy.__init__(self, source, image, coords, difficulty)
         # self.speed = 2
         # self.walk_dist = 200
-        self.wall_list = []
-        for w in self.wall_group.sprites():
-            self.wall_list.append(w.rect)
+
         self.ray_shrink = (0,-24)
-        self.cast = Cast(self.screen, self.wall_list, self)
+        self.cast = Cast(self)
         self.where = (1,1)
         self.attack_cool = self.boot_time
         self.speed * self.speed * 2

@@ -1,17 +1,12 @@
 # -*- coding: UTF-8 -*-     
 import pygame
 from pygame.locals import *
-from os import listdir
 from os import path
 from colliders import *
-from objects import Object
-from actiontile import ActionTile
 from player import Player
 from enemy import Enemy
-from enemy import Snake
 from wall import Wall
 from wall import Finish
-from menu import Menu
 import random
 
 class LevelRenderer(object):
@@ -38,7 +33,7 @@ class LevelRenderer(object):
         for y in range(1,3):
             for x in range(1,5):
                 self.keypoints.append((int(self.fifth*x), int(self.third*y)))
-        self.wall_list = pygame.sprite.Group()
+        self.wallgroup = pygame.sprite.Group()
         self.enemy_walls = pygame.sprite.Group()
         self.enemygroup = pygame.sprite.Group()
         self.snakegroup = pygame.sprite.Group()
@@ -46,7 +41,7 @@ class LevelRenderer(object):
         self.enemyammo = pygame.sprite.Group()
         self.waypoints = pygame.sprite.Group()
         self.mygroup.empty()
-        self.player = Player(self.screen, path.join("images", "player_noblur.png"), player_pos, self.wall_list)
+        self.player = Player(self, path.join("images", "player_noblur.png"), player_pos)
         self.mygroup.add(self.player)
         self.xy = xy
         self.spawn_points = []
@@ -109,7 +104,7 @@ class LevelRenderer(object):
         surface_blit = surface.blit
         for line in self.borders:
             w = Wall(self.screen, line[0], line[1])
-            self.wall_list.add(w)
+            self.wallgroup.add(w)
             self.enemy_walls.add(w)
         # manually add exits
         w = Finish(self.screen, (self.fifth*2, 0), (self.fifth*3, 0))
@@ -124,9 +119,9 @@ class LevelRenderer(object):
         w = Finish(self.screen, (self.width - self.offset, self.third), (self.width - self.offset, self.third*2))
         self.waypoints.add(w)
         self.enemy_walls.add(w)
-        self.wall_list.draw(surface)
+        self.wallgroup.draw(surface)
         self.waypoints.draw(surface)
-        self.player.wall_list = self.wall_list
+        self.player.wallgroup = self.wallgroup
 
     def generate_maze(self, surface):
         i = 0
@@ -152,14 +147,14 @@ class LevelRenderer(object):
                 end = (item[0] + self.fifth,item[1])
             w = Wall(self.screen, item, end)
             i += 2
-            self.wall_list.add(w)
+            self.wallgroup.add(w)
             self.enemy_walls.add(w)
-        self.wall_list.draw(surface)
+        self.wallgroup.draw(surface)
         i = 0
         for coord in self.spawn_points:
             point = (xy>>i)&3
             if (point == 1):
-                e = Enemy(self.screen, self.robot_image, coord, self.player, self.enemy_walls, self.enemyammo, self.difficulty)
+                e = Enemy(self, self.robot_image, coord, self.difficulty)
                 if e.playerCheck(100):
                     e.kill()
                     del e
@@ -173,7 +168,7 @@ class LevelRenderer(object):
         enemies_n = random.randint(1, 6)
         for coord in self.spawn_points:
             if (random.randint(0,6) == enemies_n):
-                e = Enemy(self.screen, path.join("images", "robot.png"), coord, self.player, self.wall_list, self.enemyammo, self.difficulty)
+                e = Enemy(self.screen, path.join("images", "robot.png"), coord, self.player, self.wallgroup, self.enemyammo, self.difficulty)
                 if e.playerCheck(100):
                     e.kill()
                     del e
@@ -182,7 +177,7 @@ class LevelRenderer(object):
                     self.mygroup.update()
                     enemies_n -= 1
             #elif (random.randint(1,4) == enemies_n):
-            #    e = Snake(self.screen, path.join("images", "snake.png"), coord, self.player, self.wall_list, self.enemyammo)
+            #    e = Snake(self.screen, path.join("images", "snake.png"), coord, self.player, self.wallgroup, self.enemyammo)
             #    if e.playerCheck(100):
             #        e.kill()
             #        del e
@@ -201,12 +196,12 @@ class LevelRenderer(object):
         player_fired = len(self.player.ammogroup.sprites())
         next_level = False
         self.enemygroup.update()
-        self.wall_list.update()
+        self.wallgroup.update()
         self.mygroup.update()
         self.player.ammogroup.update()
         self.player.blastgroup.update()
         self.enemyammo.update()
-        self.wall_list.draw(self.screen)
+        self.wallgroup.draw(self.screen)
         self.waypoints.draw(self.screen)
         self.player.ammogroup.draw(self.screen)
         #self.player.blastgroup.draw(self.screen)
@@ -214,17 +209,17 @@ class LevelRenderer(object):
         chr_coll = pygame.sprite.groupcollide(self.mygroup, self.enemygroup, True, True, colli_kill_both)
         amm_coll = pygame.sprite.groupcollide(self.enemygroup, self.player.ammogroup, True, True, colli_kill_both)
         amm_enem = pygame.sprite.groupcollide(self.mygroup, self.enemyammo, True, True, colli_kill_both)
-        amm_wall = pygame.sprite.groupcollide(self.player.ammogroup, self.wall_list, False, False, colli_kill_l)
-        ea_wall = pygame.sprite.groupcollide(self.enemyammo, self.wall_list, False, False, colli_kill_l)
-        enm_wall = pygame.sprite.groupcollide(self.enemygroup, self.wall_list, False, False, colli_bounce)
+        amm_wall = pygame.sprite.groupcollide(self.player.ammogroup, self.wallgroup, False, False, colli_kill_l)
+        ea_wall = pygame.sprite.groupcollide(self.enemyammo, self.wallgroup, False, False, colli_kill_l)
+        enm_wall = pygame.sprite.groupcollide(self.enemygroup, self.wallgroup, False, False, colli_bounce)
         enm_wal2 = pygame.sprite.groupcollide(self.enemygroup, self.waypoints, False, False, colli_bounce)
         pla_fin = pygame.sprite.groupcollide(self.mygroup, self.waypoints, False, False, colli_basic)
         amm_amm = pygame.sprite.groupcollide(self.enemyammo, self.player.ammogroup, True, True)
         blast_amm = pygame.sprite.groupcollide(self.enemyammo, self.player.blastgroup, False, False, colli_kill_l)
         blast_enm = pygame.sprite.groupcollide(self.enemygroup, self.player.blastgroup, False, False, colli_kill_l)
-        blast_wall = pygame.sprite.groupcollide(self.player.blastgroup, self.wall_list, False, False, colli_clip)
-        #snake_wall = pygame.sprite.groupcollide(self.snakegroup, self.wall_list, False, False, colli_kill_l)
-        pla_wall = pygame.sprite.groupcollide(self.mygroup, self.wall_list, False, False, colli_bounce)
+        blast_wall = pygame.sprite.groupcollide(self.player.blastgroup, self.wallgroup, False, False, colli_clip)
+        #snake_wall = pygame.sprite.groupcollide(self.snakegroup, self.wallgroup, False, False, colli_kill_l)
+        pla_wall = pygame.sprite.groupcollide(self.mygroup, self.wallgroup, False, False, colli_bounce)
         #for c in chr_coll:
         #    c.destroy()
         #    del c

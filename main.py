@@ -1,11 +1,7 @@
 #!/usr/bin/env python3
-from os import listdir
 from os import path
 import pygame
 from pygame.locals import *
-import maptest
-from ammo import Ammo 
-from colliders import *
 import levelmanager
 from vision import Screen
 from menu import Menu
@@ -58,17 +54,16 @@ kmapi = 0
 start_menuitems = {
         "New game": 0,
         "Quit": 1,
-        "Sounds on": 2,
-        "Sounds off": 3,
-        "Choose keymap": 4
         }
+#            "Sounds on": 2,
+#            "Sounds off": 3,
+#            "Choose keymap": 4
 
 startmenu = Menu(scr)
 startmenu.menuitems = start_menuitems
 item = startmenu.menuloop()
 while (item>1):
     item = startmenu.menuloop()
-    print(item)
     if (item==2):
         sounds = True
     if (item==3):
