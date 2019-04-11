@@ -134,6 +134,9 @@ class Player(Object):
             self.speed = self.run_speed/2
 
     def destroy(self):
+        self.source.player_items["speed"] = self.speed
+        self.source.player_items["blast_radius"] = self.blast_radius
+        self.source.player_items["shots_n"] = self.spawner.shots_n
         self.dir = (0,0)
         self.alive = False
         self.kill()
