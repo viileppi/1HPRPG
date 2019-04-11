@@ -102,7 +102,7 @@ class Player(Object):
             testdir = self.cast.test(self.dir)
             self.dir = (self.dir[0] * testdir[0], self.dir[1] * testdir[1])
         for k, v in self.keya.items():
-            if (pressed[k]): # and self.keya[k] == deltaAmmo):
+            if (pressed[k]) and (self.keya[k] == self.spawner.cast): # and self.keya[k] == deltaAmmo):
                 ammo_dir = (self.rect.centerx - self.old_dir[0] * -100, self.rect.centery - self.old_dir[1] * -100)
                 #ammo_start = (self.rect.centerx - self.old_dir[0] * -5, self.rect.centery - self.old_dir[1] * -5)
                 #pew = self.keya[k](self, self.ammo_image, ammo_start, ammo_dir, self.ammo_speed)

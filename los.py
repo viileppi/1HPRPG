@@ -64,7 +64,7 @@ class Cast(pygame.sprite.Sprite):
         #ray_rect = self.source.rect.inflate(-24,-8)
         #self.ray_rect.move_ip(to[0] * self.ray_size, to[1] * self.ray_size)
         ray_rect.move_ip(to[0] * self.ray_size, to[1] * self.ray_size)
-        #ray = pygame.draw.rect(self.screen, self.color, ray_rect)
+        ray = pygame.draw.rect(self.screen, self.color, ray_rect)
 
         if (ray_rect.collidelist(self.walls, ) == -1):
             return (1,1)

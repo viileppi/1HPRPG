@@ -54,6 +54,7 @@ kmapi = 0
 start_menuitems = {
         "New game": 0,
         "Quit": 1,
+        "Choose keymap": 2
         }
 #            "Sounds on": 2,
 #            "Sounds off": 3,
@@ -65,10 +66,6 @@ item = startmenu.menuloop()
 while (item>1):
     item = startmenu.menuloop()
     if (item==2):
-        sounds = True
-    if (item==3):
-        sounds = False
-    if (item==4):
         foo = KeySetup(scr)
         bar = foo.menuloop()
 if (item==1):
@@ -129,6 +126,7 @@ while running:
         if (mr == 0):
             start_again = True
             lives_left = 3
+            level.levels_played = 1
         if (mr == 1):
             pygame.quit()
 
