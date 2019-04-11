@@ -51,7 +51,7 @@ class Player(Object):
         self.can_run = True
         self.run_speed = self.speed * 2
         self.old_dir = (1,0)
-        self.ray_shrink = (-24,-8)
+        self.ray_shrink = (-12,-6)
         self.cast = Cast(self)
         tree = ET.parse("keymap.xml")
         root = tree.getroot()
@@ -85,6 +85,11 @@ class Player(Object):
             self.wall_list.append(w.rect)
         self.walls = self.wall_list
         self.cast = Cast(self)
+    
+    def read_keyups(self, pressed):
+        # TODO
+        pass
+
 
     def read_keys(self, pressed):
         self.dir = (0,0)

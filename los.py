@@ -17,7 +17,7 @@ class LOS(pygame.sprite.Sprite):
         self.image = pygame.Surface((self.rect.width, self.rect.height))
 
     def colli(self, l, r):
-        return pygame.sprite.collide_mask(l, r)
+        return pygame.sprite.collide_mask(l, r) == None
 
     def draw(self):
         self.rect = pygame.draw.line(self.surf, self.color, self.source.get_pos(), self.source.player.get_pos(), 1)
@@ -52,6 +52,9 @@ class Cast(pygame.sprite.Sprite):
         #self.up = (self.pos[0], self.pos[1] - self.ray_len)
         #self.down = (self.pos[0], self.pos[1] + self.ray_len)
 
+    def colli(self, l, r):
+        return (pygame.sprite.collide_mask(l, r) == None)
+
     def test_old(self, to):
         self.pos = self.source.get_pos()
         ray_rect = self.source.rect.inflate(self.ray_shrink[0], self.ray_shrink[1])
@@ -73,7 +76,10 @@ class Cast(pygame.sprite.Sprite):
 
     def test(self, to):
         self.pos = self.source.rect
-        self.source.rect.move_ip((to[0]*2, to[1]*2))
+        #ray_rect = self.source.rect.inflate(self.ray_shrink[0], self.ray_shrink[1])
+        ray_rect = self.source.rect
+        ray_rect.move_ip((to[0]*2, to[1]*2))
+        #ray = pygame.draw.rect(self.screen, self.color, ray_rect)
         if (pygame.sprite.spritecollideany(self.source, self.source.wallgroup) == None):
             self.source.rect = self.pos
             return (1,1)

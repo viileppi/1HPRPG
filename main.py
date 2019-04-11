@@ -127,6 +127,7 @@ while running:
             start_again = True
             lives_left = 3
             level.levels_played = 1
+            score = 0
         if (mr == 1):
             pygame.quit()
 

@@ -106,7 +106,7 @@ class Blast(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.source = source
         self.screen = self.source.screen
-        self.radius = radius
+        self.radius = min(120, radius)
         self.deltaR = 2
         self.speed = 2
         self.blast_w = 2

@@ -46,7 +46,7 @@ class Enemy(objects.Object):
         self.enemy_walls = self.source.enemy_walls
         self.wallgroup = self.enemy_walls
         self.enemyammo = self.source.enemyammo
-        self.ray_shrink = (-24,-8)
+        self.ray_shrink = (-12,-4)
         self.wall_list = []
         for w in self.wallgroup.sprites():
             self.wall_list.append(w.rect)
@@ -166,7 +166,7 @@ class Snake(Enemy):
         # self.speed = 2
         # self.walk_dist = 200
         self.death_image = path.join("images", "snake.png")
-        self.ray_shrink = (0,-24)
+        self.ray_shrink = (0,-12)
         self.cast = Cast(self)
         self.where = (1,1)
         self.attack_cool = self.boot_time
