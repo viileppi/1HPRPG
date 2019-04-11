@@ -32,6 +32,32 @@ class Ammo(objects.Object):
             self.dir = (0,0)
             self.destroy()
 
+class Spawner:
+    def __init__(self, source, shots_n):
+        self.source = source
+        self.cooldown = self.source.cooldown
+        self.shoot_start = pygame.time.get_ticks() - self.cooldown
+        self.ammo_image = self.source.ammo_image
+        self.ammo_speed = self.source.ammo_speed
+        self.shots_n = shots_n
+        self.shot_list = []
+        self.screen = self.source.screen
+        self.ammogroup = self.source.ammogroup
+
+    def cast(self, direction):
+        r = False
+        p = direction
+        #e = self.get_pos()
+        e = (self.source.rect.centerx - self.source.old_dir[0] * -5, self.source.rect.centery - self.source.old_dir[1] * -5)
+        if (((pygame.time.get_ticks() - self.shoot_start) > self.cooldown)):
+            if (len(self.ammogroup.sprites()) < self.shots_n):
+                pew = deltaAmmo(self, self.ammo_image, e, p, self.ammo_speed)
+                self.ammogroup.add(pew)
+                self.shot_list.append(pew)
+                self.shoot_start = pygame.time.get_ticks()
+                r = True
+        return r
+
 class deltaAmmo(Ammo):
     """ interpolates to given coordinate by given speed """
     def __init__(self, source, image, coords, direction, speed):

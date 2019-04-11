@@ -8,6 +8,7 @@ from enemy import Enemy
 from wall import Wall
 from wall import Finish
 import random
+import item
 
 class LevelRenderer(object):
     """
@@ -35,6 +36,7 @@ class LevelRenderer(object):
             for x in range(1,5):
                 self.keypoints.append((int(self.fifth*x), int(self.third*y)))
         self.wallgroup = pygame.sprite.Group()
+        self.itemgroup = pygame.sprite.Group()
         self.enemy_walls = pygame.sprite.Group()
         self.enemygroup = pygame.sprite.Group()
         self.snakegroup = pygame.sprite.Group()
@@ -44,7 +46,9 @@ class LevelRenderer(object):
         self.corpsegroup = pygame.sprite.Group()
         self.mygroup.empty()
         self.player = Player(self, path.join("images", "player_noblur.png"), player_pos)
+        self.player_items = {"speed": self.player.speed, "blast_radius": self.player.blast_radius, "shots_n": self.player.spawner.shots_n }
         self.mygroup.add(self.player)
+        self.gave_item = False
         self.xy = xy
         self.spawn_points = []
         for item in self.keypoints:
@@ -208,6 +212,8 @@ class LevelRenderer(object):
         self.player.ammogroup.update()
         self.player.blastgroup.update()
         self.enemyammo.update()
+        self.itemgroup.update()
+        self.itemgroup.draw(self.screen)
         self.wallgroup.draw(self.screen)
         self.waypoints.draw(self.screen)
         self.player.ammogroup.draw(self.screen)
@@ -219,22 +225,26 @@ class LevelRenderer(object):
         amm_enem = pygame.sprite.groupcollide(self.mygroup, self.enemyammo, True, True, colli_kill_both)
         amm_wall = pygame.sprite.groupcollide(self.player.ammogroup, self.wallgroup, False, False, colli_kill_l)
         ea_wall = pygame.sprite.groupcollide(self.enemyammo, self.wallgroup, False, False, colli_kill_l)
-        enm_wall = pygame.sprite.groupcollide(self.enemygroup, self.wallgroup, False, False, colli_bounce)
-        enm_wal2 = pygame.sprite.groupcollide(self.enemygroup, self.waypoints, False, False, colli_bounce)
+        #enm_wall = pygame.sprite.groupcollide(self.enemygroup, self.wallgroup, False, False, colli_bounce)
+        #enm_wal2 = pygame.sprite.groupcollide(self.enemygroup, self.waypoints, False, False, colli_bounce)
         pla_fin = pygame.sprite.groupcollide(self.mygroup, self.waypoints, False, False, colli_basic)
         amm_amm = pygame.sprite.groupcollide(self.enemyammo, self.player.ammogroup, True, True)
         blast_amm = pygame.sprite.groupcollide(self.enemyammo, self.player.blastgroup, False, False, colli_kill_l)
         blast_enm = pygame.sprite.groupcollide(self.enemygroup, self.player.blastgroup, False, False, colli_kill_l)
         blast_wall = pygame.sprite.groupcollide(self.player.blastgroup, self.wallgroup, False, False, colli_clip)
+        pla_item = pygame.sprite.groupcollide(self.itemgroup, self.mygroup, False, False, colli_kill_l)
         #snake_wall = pygame.sprite.groupcollide(self.snakegroup, self.wallgroup, False, False, colli_kill_l)
-        pla_wall = pygame.sprite.groupcollide(self.mygroup, self.wallgroup, False, False, colli_bounce)
+        #pla_wall = pygame.sprite.groupcollide(self.mygroup, self.wallgroup, False, False, colli_bounce)
         #for c in chr_coll:
         #    c.destroy()
         #    del c
         #    ##  self.render_map(scr.bg)
         #    pygame.display.flip()
+        for item in pla_item:
+            self.player_items = item.levelUp(self.player)
         for u in pla_fin:
             next_level = True
+            self.player_items = {"speed": self.player.speed, "blast_radius": self.player.blast_radius, "shots_n": self.player.spawner.shots_n }
         return next_level
 
 

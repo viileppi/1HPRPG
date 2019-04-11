@@ -12,12 +12,18 @@ from pygame.math import Vector2
 import random
 import userevents
 import xml.etree.ElementTree as ET
+from item import Item
 
 class Enemy(objects.Object):
     def __init__(self, source, image, coords, difficulty):
         """ image should be a spritesheet of square sprites """
+        self.kindof = random.randint(0,1)
+        if (self.kindof == 1):
+            image = path.join("images", "android.png")
+            self.death_image = path.join("images", "android.png")
+        else:
+            self.death_image = path.join("images", "robot_death.png")
         objects.Object.__init__(self, source, image, coords)
-        self.death_image = path.join("images", "robot_death.png")
         self.difficulty = min(12, max(2, difficulty))
         tree = ET.parse("settings.xml")
         root = tree.getroot().find("enemy")
@@ -34,7 +40,6 @@ class Enemy(objects.Object):
         # self.boot_time = 1000
         # self.cooldown = 500
         self.forward = True
-        self.attackbehaviour = random.randint(0,1)
         self.walked = 0
         self.where = (self.speed,0)
         self.player = self.source.player
@@ -66,9 +71,12 @@ class Enemy(objects.Object):
     def destroy(self):
         corpse = Corpse(self)
         self.source.corpsegroup.add(corpse)
-        if (random.randint(0, 5) > 3):
+        if (random.randint(0, 5) > 3) and (self.kindof == 0):
             e = Snake(self, path.join("images", "snake.png"), (self.rect[0],self.rect[1]), self.difficulty)
             self.groups()[0].add(e)
+        elif (random.randint(0, 5) > 3):
+            i = Item(self)
+            self.source.itemgroup.add(i)
         self.dir = (0,0)
         self.alive = False
         self.kill()
@@ -94,8 +102,7 @@ class Enemy(objects.Object):
                     self.ammogroup.add(pew)
                     self.shoot_start = pygame.time.get_ticks()
                     pygame.event.post(userevents.enemy_shot_event())
-            elif (self.attackbehaviour == 1):
-                print("shooting walking menace")
+            elif (self.kindof == 1):
                 v1 = Vector2(p)
                 v2 = Vector2(e)
                 v3 = v1 - v2
@@ -158,7 +165,7 @@ class Snake(Enemy):
         Enemy.__init__(self, source, image, coords, difficulty)
         # self.speed = 2
         # self.walk_dist = 200
-
+        self.death_image = path.join("images", "snake.png")
         self.ray_shrink = (0,-24)
         self.cast = Cast(self)
         self.where = (1,1)
