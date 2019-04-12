@@ -23,6 +23,13 @@ class LevelManager:
         self.start_left = (self.current_level.fifth*0.33, self.current_level.height/2)
         self.start_right = (self.current_level.fifth*4.33, self.current_level.height/2)
 
+    def again(self):
+        notfound = True
+        player_items = self.current_level.player_items
+        self.current_level = maptest.LevelRenderer(self.screen, self.xy, self.player_start, self.difficulty)
+        self.current_level.player.set_items(player_items)
+        return self.current_level
+
     def next(self, xy):
         # del self.current_level
         notfound = True
@@ -42,6 +49,7 @@ class LevelManager:
             else:
                 start = self.start_top
                 self.xy = (self.xy[0], self.xy[1] + 1)
+        self.player_start = start
         self.current_level = maptest.LevelRenderer(self.screen, self.xy, start, self.difficulty)
         self.current_level.player.set_items(player_items)
         return self.current_level

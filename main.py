@@ -104,10 +104,21 @@ bars()
 while running:
     # uncomment to see coordinates
     # pygame.display.set_caption(str(enemy.rect) + str(player.rect))
-    if (maze.update_level() or start_again):
-            # next level
+    if (start_again):
             bars()
             start_again = False
+            xy = maze.xy
+            scr = Screen(resolutionx, resolutiony)
+            screen = screen
+            maze = level.again()
+            level.difficulty = max(1, int(score/1000))
+            backup_maze = copy.copy(maze)
+            maze.render_map(scr.bg)
+            pygame.display.flip()
+            scr.top_msg.set_message("Level " + str(level.xy) + " Lifes: " + str(lives_left) + " Score: " + str(score))
+    if (maze.update_level()):
+            # next level
+            bars()
             xy = maze.player.get_pos()
             scr = Screen(resolutionx, resolutiony)
             screen = screen
