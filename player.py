@@ -4,7 +4,7 @@ from objects import Object
 from pygame.locals import *
 from pygame import key
 from pygame import time
-#from ammo import deltaAmmo
+from ammo import deltaAmmo
 from ammo import Spawner
 from ammo import Blast
 from os import path
@@ -44,8 +44,8 @@ class Player(Object):
         self.blastgroup = pygame.sprite.Group()
         self.aimx = lambda x : x #* self.speed
         self.aimy = lambda y : y #* self.speed
-        self.shoot_start = pygame.time.get_ticks() - self.cooldown
-        self.blast_start = pygame.time.get_ticks() - self.blast_cool
+        #self.shoot_start = pygame.time.get_ticks() - self.cooldown
+        #self.blast_start = pygame.time.get_ticks() - self.blast_cool
         self.run_start = pygame.time.get_ticks() - self.run_cool
         self.can_blast = True
         self.can_run = True
@@ -55,7 +55,8 @@ class Player(Object):
         self.cast = Cast(self)
         tree = ET.parse("keymap.xml")
         root = tree.getroot()
-        self.spawner = Spawner(self, 1)
+        self.ammo_spawner = Spawner(self, deltaAmmo, self.cooldown, self.ammo_speed, self.ammo_image, 1, self.ammogroup)
+        self.blast_spawner = Spawner(self, Blast, self.blast_cool, 1, self.ammo_image, 1, self.blastgroup)
         kd = {}
         for keycode in root.findall("key"):
             value = int(keycode.find("value").text)
@@ -69,10 +70,18 @@ class Player(Object):
                     kd["up"]: self.aimy(-1),
                     kd["down"]: self.aimy(1)
                     }
+        self.keyux = {
+                    kd["right"]: self.aimx(0),
+                    kd["left"]: self.aimx(0)
+                    }
+        self.keyuy = {
+                    kd["up"]: self.aimy(0),
+                    kd["down"]: self.aimy(0)
+                    }
         self.keya = {
                     #kd["fire"]: deltaAmmo, 
-                    kd["fire"]: self.spawner.cast, 
-                    kd["blast"]: Blast,
+                    kd["fire"]: self.ammo_spawner.cast, 
+                    kd["blast"]: self.blast_spawner.cast,
                     kd["run"]: "run"
                     }
 
@@ -88,11 +97,27 @@ class Player(Object):
     
     def read_keyups(self, pressed):
         # TODO
-        pass
+        x = self.dir[0]
+        y = self.dir[1]
+        for k, v in self.keyux.items():
+            if (pressed[k]):
+                x = self.keyux[k]
+        for k, v in self.keyuy.items():
+            if (pressed[k]):
+                y = self.keyuy[k]
+        self.dir = (x,y)
+
+    def update(self):
+        if (self.alive):
+            testdir = self.cast.test(self.dir)
+            self.dir = (self.dir[0] * testdir[0], self.dir[1] * testdir[1])
+            self.rect = self.move_animator.goto(self.dir)
+        else:
+            self.destroy()
 
 
     def read_keys(self, pressed):
-        self.dir = (0,0)
+        #self.dir = (0,0)
         x = 0
         y = 0
         for k, v in self.keyh.items():
@@ -101,27 +126,21 @@ class Player(Object):
         for k, v in self.keyv.items():
             if (pressed[k]):
                 y = self.keyv[k] * self.speed
-        self.dir = (x,y)
         if (self.dir != (0,0)):
             self.old_dir = self.dir
-            testdir = self.cast.test(self.dir)
-            self.dir = (self.dir[0] * testdir[0], self.dir[1] * testdir[1])
+        self.dir = (x,y)
+        #testdir = self.cast.test(self.dir)
+        #self.dir = (self.dir[0] * testdir[0], self.dir[1] * testdir[1])
         for k, v in self.keya.items():
-            if (pressed[k]) and (self.keya[k] == self.spawner.cast): # and self.keya[k] == deltaAmmo):
+            if (pressed[k]) and (self.keya[k] == self.ammo_spawner.cast):
                 ammo_dir = (self.rect.centerx - self.old_dir[0] * -100, self.rect.centery - self.old_dir[1] * -100)
-                #ammo_start = (self.rect.centerx - self.old_dir[0] * -5, self.rect.centery - self.old_dir[1] * -5)
-                #pew = self.keya[k](self, self.ammo_image, ammo_start, ammo_dir, self.ammo_speed)
-                if (self.spawner.cast(ammo_dir)):
-                    #self.ammogroup.add(pew)
-                    self.shoot_start = pygame.time.get_ticks()
+                if (self.ammo_spawner.cast(ammo_dir)):
                     pygame.event.post(userevents.player_shot_event())
-                    self.dir = (0,0)
-            if (pressed[k] and self.keya[k] == Blast):
-                if (((pygame.time.get_ticks() - self.blast_start) > self.blast_cool)):
-                    blast = self.keya[k](self, self.blast_radius)
-                    self.blastgroup.add(blast)
-                    self.blast_start = pygame.time.get_ticks()
-                    self.can_blast = False
+                self.dir = (0,0)
+            if (pressed[k] and self.keya[k] == self.blast_spawner.cast):
+                #ammo_dir = (self.rect.centerx - self.old_dir[0] * -100, self.rect.centery - self.old_dir[1] * -100)
+                ammo_dir = self.blast_radius
+                if (self.blast_spawner.cast(ammo_dir)):
                     pygame.event.post(userevents.player_blast_event())
             if (pressed[k] and self.keya[k] == "run"):
                 if (((pygame.time.get_ticks() - self.run_start) > self.run_cool)):
@@ -141,7 +160,7 @@ class Player(Object):
     def destroy(self):
         self.source.player_items["speed"] = self.speed
         self.source.player_items["blast_radius"] = self.blast_radius
-        self.source.player_items["shots_n"] = self.spawner.shots_n
+        self.source.player_items["shots_n"] = self.ammo_spawner.shots_n
         self.dir = (0,0)
         self.alive = False
         self.kill()
@@ -150,6 +169,6 @@ class Player(Object):
 
     def set_items(self, items):
         self.speed = items["speed"]
-        self.spawner.shots_n = items["shots_n"]
+        self.ammo_spawner.shots_n = items["shots_n"]
         self.blast_radius = items["blast_radius"]
 

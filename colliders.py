@@ -63,7 +63,7 @@ def colli_clip(l, r):
     if (sprite.collide_rect(l, r)):
         x = min(0.5, max(-0.5, l.rect[0] - r.rect[0]))
         y = min(0.5, max(-0.5, l.rect[1] - r.rect[1]))
-        l.source.moveOnce((x,y))
+        l.source.source.moveOnce((x,y))
         return True
     else:
         return False

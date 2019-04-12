@@ -19,7 +19,8 @@ class Item(pygame.sprite.Sprite):
         self.rect.y = self.source.rect.y
         self.items = {  "speed": self.source.player.speed,
                         "blast_radius": self.source.player.blast_radius,
-                        "shots_n": self.source.player.spawner.shots_n
+                        "shots_n": self.source.player.ammo_spawner.shots_n,
+                        "blasts_n": self.source.player.blast_spawner.shots_n
                     }
 
     def destroy(self):
@@ -39,9 +40,14 @@ class Item(pygame.sprite.Sprite):
             target.speed += 2
             self.items["speed"] = target.speed
         if self.kindof == 1:
-            target.blast_radius += 32
-            self.items["blast_radius"] = target.blast_radius
+            # we don't want too large blast but we want more blasts
+            if (target.blast_radius < 100):
+                target.blast_radius += 16
+                self.items["blast_radius"] = target.blast_radius
+            else:
+                target.blast_spawner.shots_n += 1
+                self.items["blasts_n"] = target.blast_spawner.shots_n
         if self.kindof == 2:
-            target.spawner.shots_n += 1
-            self.items["shots_n"] = target.spawner.shots_n
+            target.ammo_spawner.shots_n += 1
+            self.items["shots_n"] = target.ammo_spawner.shots_n
         return self.items

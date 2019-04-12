@@ -33,25 +33,25 @@ class Ammo(objects.Object):
             self.destroy()
 
 class Spawner:
-    def __init__(self, source, shots_n):
+    def __init__(self, source, spawnable, cooldown, speed, image, shots_n, group):
         self.source = source
-        self.cooldown = self.source.cooldown
+        self.spawnable = spawnable
+        self.cooldown = cooldown
         self.shoot_start = pygame.time.get_ticks() - self.cooldown
-        self.ammo_image = self.source.ammo_image
-        self.ammo_speed = self.source.ammo_speed
+        self.ammo_image = image
+        self.ammo_speed = speed
         self.shots_n = shots_n
         self.shot_list = []
         self.screen = self.source.screen
-        self.ammogroup = self.source.ammogroup
+        self.ammogroup = group
 
     def cast(self, direction):
         r = False
-        p = direction
-        #e = self.get_pos()
-        e = (self.source.rect.centerx - self.source.old_dir[0] * -5, self.source.rect.centery - self.source.old_dir[1] * -5)
+        where = direction
+        pos = (self.source.rect.centerx - self.source.old_dir[0] * -5, self.source.rect.centery - self.source.old_dir[1] * -5)
         if (((pygame.time.get_ticks() - self.shoot_start) > self.cooldown)):
             if (len(self.ammogroup.sprites()) < self.shots_n):
-                pew = deltaAmmo(self, self.ammo_image, e, p, self.ammo_speed)
+                pew = self.spawnable(self, self.ammo_image, pos, where, self.ammo_speed)
                 self.ammogroup.add(pew)
                 self.shot_list.append(pew)
                 self.shoot_start = pygame.time.get_ticks()
@@ -102,22 +102,26 @@ class deltaAmmo(Ammo):
 
 class Blast(pygame.sprite.Sprite):
     """ short-range ammo in all directions """
-    def __init__(self, source, radius):
+    #def __init__(self, source, image, coords, direction, speed):
+    def __init__(self, source, image, coords, direction, speed):
+        print("blast")
         pygame.sprite.Sprite.__init__(self)
         self.source = source
         self.screen = self.source.screen
-        self.radius = min(120, radius)
+        self.radius = 64
+        self.coords = (int(coords[0]), int(coords[1]))
         self.deltaR = 2
-        self.speed = 2
+        self.speed = int(speed)
         self.blast_w = 2
         self.color = pygame.Color("red")
-        self.rect = pygame.draw.circle(self.screen, self.color, self.source.get_pos(), self.deltaR, self.blast_w)
+        #self.rect = pygame.draw.circle(self.screen, self.color, self.coords, self.deltaR, self.blast_w)
+        self.rect = pygame.draw.circle(self.screen, self.color, self.source.source.get_pos(), self.deltaR, self.blast_w)
         self.image = pygame.Surface((self.rect.width, self.rect.height))
 
     def update(self):
         self.deltaR += int(self.radius/(self.deltaR*2)+1)
         if (self.deltaR < self.radius):
-            self.rect = pygame.draw.circle(self.screen, self.color, self.source.get_pos(), self.deltaR, self.blast_w)
+            self.rect = pygame.draw.circle(self.screen, self.color, self.source.source.get_pos(), self.deltaR, self.blast_w)
         else:
             self.destroy()
 

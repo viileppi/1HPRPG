@@ -22,6 +22,15 @@ class Wall(pygame.sprite.Sprite):
                 self.rect
                 )
 
+    def get_pos(self):
+        return self.rect.center
+
+    def too_close(self, to):
+        v1 = pygame.math.Vector2(self.get_pos())
+        v2 = pygame.math.Vector2(to.get_pos())
+        v3 = v1.distance_to(v2)
+        return v3 < 200
+
 
 class Finish(Wall):
     def __init__(self, screen, start, end):

@@ -15,13 +15,11 @@ class LevelRenderer(object):
     Super simple way to render a tiled map
     """
 
-    def __init__(self, screen, xy, player_pos, levels_played):
+    def __init__(self, screen, xy, player_pos, difficulty):
 
         # self.size will be the pixel size of the map
         # this value is used later to render the entire map to a pygame surface
-        self.levels_played = levels_played
-        self.difficulty = 1 + self.levels_played / 4
-        print(self.difficulty)
+        self.difficulty = difficulty
         self.pew_playing = 0
         self.robot_image = path.join("images", "robot.png") 
         self.screen = screen.gamearea
@@ -46,7 +44,7 @@ class LevelRenderer(object):
         self.corpsegroup = pygame.sprite.Group()
         self.mygroup.empty()
         self.player = Player(self, path.join("images", "player_noblur.png"), player_pos)
-        self.player_items = {"speed": self.player.speed, "blast_radius": self.player.blast_radius, "shots_n": self.player.spawner.shots_n }
+        self.player_items = {"speed": self.player.speed, "blast_radius": self.player.blast_radius, "shots_n": self.player.ammo_spawner.shots_n }
         self.mygroup.add(self.player)
         self.gave_item = False
         self.xy = xy
@@ -116,16 +114,32 @@ class LevelRenderer(object):
             self.enemy_walls.add(w)
         # manually add exits
         w = Finish(self.screen, (self.fifth*2, 0), (self.fifth*3, 0))
-        self.waypoints.add(w)
+        if (w.too_close(self.player)):
+            w = Wall(self.screen, w.start, w.end)
+            self.wallgroup.add(w)
+        else:
+            self.waypoints.add(w)
         self.enemy_walls.add(w)
         w = Finish(self.screen, (self.fifth*2, self.height - self.offset), (self.fifth*3, self.height - self.offset))
-        self.waypoints.add(w)
+        if (w.too_close(self.player)):
+            w = Wall(self.screen, w.start, w.end)
+            self.wallgroup.add(w)
+        else:
+            self.waypoints.add(w)
         self.enemy_walls.add(w)
         w = Finish(self.screen, (0, self.third), (0, self.third*2))
-        self.waypoints.add(w)
+        if (w.too_close(self.player)):
+            w = Wall(self.screen, w.start, w.end)
+            self.wallgroup.add(w)
+        else:
+            self.waypoints.add(w)
         self.enemy_walls.add(w)
         w = Finish(self.screen, (self.width - self.offset, self.third), (self.width - self.offset, self.third*2))
-        self.waypoints.add(w)
+        if (w.too_close(self.player)):
+            w = Wall(self.screen, w.start, w.end)
+            self.wallgroup.add(w)
+        else:
+            self.waypoints.add(w)
         self.enemy_walls.add(w)
         self.wallgroup.draw(surface)
         self.waypoints.draw(surface)
@@ -137,7 +151,6 @@ class LevelRenderer(object):
         for i in range(2):
             xy = xy*7
             xy += 12627
-        print(xy)
         for item in self.keypoints:
             post = (xy>>i)&3
             # north
@@ -244,7 +257,7 @@ class LevelRenderer(object):
             self.player_items = item.levelUp(self.player)
         for u in pla_fin:
             next_level = True
-            self.player_items = {"speed": self.player.speed, "blast_radius": self.player.blast_radius, "shots_n": self.player.spawner.shots_n }
+            self.player_items = {"speed": self.player.speed, "blast_radius": self.player.blast_radius, "shots_n": self.player.ammo_spawner.shots_n, "blasts_n": self.player.blast_spawner.shots_n }
         return next_level
 
 

@@ -112,6 +112,7 @@ while running:
             scr = Screen(resolutionx, resolutiony)
             screen = screen
             maze = level.next(xy)
+            level.difficulty = max(1, int(score/1000))
             backup_maze = copy.copy(maze)
             maze.render_map(scr.bg)
             pygame.display.flip()
@@ -126,8 +127,8 @@ while running:
         if (mr == 0):
             start_again = True
             lives_left = 3
-            level.levels_played = 1
             score = 0
+            level.difficulty = 1
         if (mr == 1):
             pygame.quit()
 
