@@ -158,6 +158,10 @@ while running:
                     scr.top_msg.set_message("Level " + str(level.xy) + " Lifes: " + str(lives_left) + " Score: " + str(score))
                 if (e.type == enemy_shot):
                     enemy_ch.play(pew_sound)
+        if (e.type == QUIT):
+            running = False
+            pygame.quit()
+            break
         if (e.type == KEYDOWN):
             k = pygame.key.get_pressed()
             # send keypresses to player
