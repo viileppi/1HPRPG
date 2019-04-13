@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from os import path
+import time
 import pygame
 from pygame.locals import *
 import levelmanager
@@ -27,6 +28,13 @@ lives_left = int(root.find("lives_left").text)
 # init stuff
 running = True
 score = 0
+## these settings are for 8bitdo sfc30
+has_joystick = False
+pygame.joystick.init()
+if (pygame.joystick.get_count() > 0):
+    joypad = pygame.joystick.Joystick(0)
+    joypad.init()
+    has_joystick = True
 #sounds = False
 #resolutionx = 800
 #resolutiony = 600
@@ -60,16 +68,16 @@ start_menuitems = {
 #            "Sounds off": 3,
 #            "Choose keymap": 4
 
-startmenu = Menu(scr)
-startmenu.menuitems = start_menuitems
-item = startmenu.menuloop()
-while (item>1):
-    item = startmenu.menuloop()
-    if (item==2):
-        foo = KeySetup(scr)
-        bar = foo.menuloop()
-if (item==1):
-    running=False
+#startmenu = Menu(scr)
+#startmenu.menuitems = start_menuitems
+#item = startmenu.menuloop()
+#while (item>1):
+#    item = startmenu.menuloop()
+#    if (item==2):
+#        foo = KeySetup(scr)
+#        bar = foo.menuloop()
+#if (item==1):
+#    running=False
 # level inits
 level = levelmanager.LevelManager(scr)
 maze = level.current_level
@@ -129,19 +137,21 @@ while running:
             pygame.display.flip()
             scr.top_msg.set_message("Level " + str(level.xy) + " Lifes: " + str(lives_left) + " Score: " + str(score))
     if (lives_left < 0):
-        #pygame.time.wait(500)
-        M = Menu(screen)
-        M.menuitems = {"try again?": 0,
-                        "quit": 1
-                        }
-        mr = M.menuloop()
-        if (mr == 0):
-            start_again = True
-            lives_left = 3
-            score = 0
-            level.difficulty = 1
-        if (mr == 1):
-            pygame.quit()
+        pygame.time.wait(500)
+        #M = Menu(screen)
+        #M.menuitems = {"try again?": 0,
+        #                "quit": 1
+        #                }
+        #mr = M.menuloop()
+        #if (mr == 0):
+        #    start_again = True
+        #    lives_left = 3
+        #    score = 0
+        #    level.difficulty = 1
+        #if (mr == 1):
+        #    pygame.quit()
+        running = False
+        pygame.quit()
 
     # get events and move player
     EventList = pygame.event.get() 
@@ -162,10 +172,27 @@ while running:
             running = False
             pygame.quit()
             break
+        if (e.type == JOYBUTTONDOWN) or (e.type == JOYAXISMOTION):
+            scr.top_msg.set_message("oh joy")
+            start = joypad.get_button(11)
+            select = joypad.get_button(10)
+            x_button = joypad.get_button(3)
+            y_button = joypad.get_button(4)
+            a_button = joypad.get_button(0)
+            b_button = joypad.get_button(1)
+            if (start):
+                running = False
+                pygame.quit()
+                break
+            else:
+                jp = {0: a_button, 1: b_button, 3: x_button, 4: y_button}
+                x_axis = joypad.get_axis(0)
+                y_axis = joypad.get_axis(1)
+                maze.player.read_keys(None, (x_axis, y_axis), jp)
         if (e.type == KEYDOWN):
             k = pygame.key.get_pressed()
             # send keypresses to player
-            maze.player.read_keys(k)
+            maze.player.read_keys(k, None, None)
             if (k[K_BACKSPACE]):
                 running = False
                 pygame.quit()
@@ -191,7 +218,7 @@ while running:
         if (e.type == KEYUP):
             # send keyups too
             k = pygame.key.get_pressed()
-            maze.player.read_keys(k)
+            maze.player.read_keys(k, None, None)
         if (e.type == player_died):
             # player dead
             bars()
@@ -211,3 +238,4 @@ while running:
     pygame.display.update()
     scr.update()
     clk.tick(fps)
+time.sleep(2)

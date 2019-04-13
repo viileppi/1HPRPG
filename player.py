@@ -70,19 +70,14 @@ class Player(Object):
                     kd["up"]: self.aimy(-1),
                     kd["down"]: self.aimy(1)
                     }
-        self.keyux = {
-                    kd["right"]: self.aimx(0),
-                    kd["left"]: self.aimx(0)
-                    }
-        self.keyuy = {
-                    kd["up"]: self.aimy(0),
-                    kd["down"]: self.aimy(0)
-                    }
         self.keya = {
-                    #kd["fire"]: deltaAmmo, 
                     kd["fire"]: self.ammo_spawner.cast, 
                     kd["blast"]: self.blast_spawner.cast,
                     kd["run"]: "run"
+                    }
+        self.joymap = {
+                    "fire": self.ammo_spawner.cast,
+                    "blast": self.blast_spawner.cast
                     }
 
     def turnaround(self, p):
@@ -95,18 +90,6 @@ class Player(Object):
         self.walls = self.wall_list
         self.cast = Cast(self)
     
-    def read_keyups(self, pressed):
-        # TODO
-        x = self.dir[0]
-        y = self.dir[1]
-        for k, v in self.keyux.items():
-            if (pressed[k]):
-                x = self.keyux[k]
-        for k, v in self.keyuy.items():
-            if (pressed[k]):
-                y = self.keyuy[k]
-        self.dir = (x,y)
-
     def update(self):
         if (self.alive):
             testdir = self.cast.test(self.dir)
@@ -116,46 +99,54 @@ class Player(Object):
             self.destroy()
 
 
-    def read_keys(self, pressed):
-        #self.dir = (0,0)
+    def read_keys(self, pressed, joyaxis, joypressed):
         x = 0
         y = 0
-        for k, v in self.keyh.items():
-            if (pressed[k]):
-                x = self.keyh[k] * self.speed
-        for k, v in self.keyv.items():
-            if (pressed[k]):
-                y = self.keyv[k] * self.speed
-        if (self.dir != (0,0)):
-            self.old_dir = self.dir
-        self.dir = (x,y)
-        #testdir = self.cast.test(self.dir)
-        #self.dir = (self.dir[0] * testdir[0], self.dir[1] * testdir[1])
-        for k, v in self.keya.items():
-            if (pressed[k]) and (self.keya[k] == self.ammo_spawner.cast):
-                ammo_dir = (self.rect.centerx - self.old_dir[0] * -100, self.rect.centery - self.old_dir[1] * -100)
-                if (self.ammo_spawner.cast(ammo_dir)):
-                    pygame.event.post(userevents.player_shot_event())
-                self.dir = (0,0)
-            if (pressed[k] and self.keya[k] == self.blast_spawner.cast):
-                #ammo_dir = (self.rect.centerx - self.old_dir[0] * -100, self.rect.centery - self.old_dir[1] * -100)
-                ammo_dir = self.blast_radius
-                if (self.blast_spawner.cast(ammo_dir)):
-                    pygame.event.post(userevents.player_blast_event())
-            if (pressed[k] and self.keya[k] == "run"):
-                if (((pygame.time.get_ticks() - self.run_start) > self.run_cool)):
-                    self.run_start = pygame.time.get_ticks()
-                    self.dir = (self.dir[0] * 2, self.dir[1] * 2)
-                    self.can_run = False
-        if (not self.can_blast and ((pygame.time.get_ticks() - self.blast_start) > self.blast_cool)):
-            self.can_blast = True
-        if (not self.can_run and ((pygame.time.get_ticks() - self.run_start) > self.run_cool)):
-            self.can_run = True
-        if (((pygame.time.get_ticks() - self.run_start) < self.run_time)):
-            #self.dir = (self.dir[0] * 2, self.dir[1] * 2)
-            self.speed = self.run_speed
+        # read EITHER keyboard
+        if (joyaxis == None):
+            for k, v in self.keyh.items():
+                if (pressed[k]):
+                    x = self.keyh[k]
+            for k, v in self.keyv.items():
+                if (pressed[k]):
+                    y = self.keyv[k]
+        # OR read joypad
         else:
-            self.speed = self.run_speed/2
+            x = joyaxis[0]
+            y = joyaxis[1]
+        if ((x,y) != (0,0)):
+            self.old_dir = (x,y)
+        self.dir = (x * self.speed,y * self.speed)
+        if (joypressed == None):
+            for k, v in self.keya.items():
+                if (pressed[k]) and (self.keya[k] == self.ammo_spawner.cast):
+                    self.shoot()
+                if (pressed[k] and self.keya[k] == self.blast_spawner.cast):
+                    self.blast()
+        else:
+            if (joypressed[1]):
+                # b-button
+                self.shoot()
+            if (joypressed[0]):
+                # a-button
+                self.blast()
+            if (joypressed[3]):
+                # x-button
+                pass
+            if (joypressed[4]):
+                # y-button
+                pass
+
+    def blast(self):
+        ammo_dir = self.blast_radius
+        if (self.blast_spawner.cast(ammo_dir)):
+            pygame.event.post(userevents.player_blast_event())
+
+    def shoot(self):
+        ammo_dir = (self.rect.centerx - self.old_dir[0] * -100, self.rect.centery - self.old_dir[1] * -100)
+        if (self.ammo_spawner.cast(ammo_dir)):
+            pygame.event.post(userevents.player_shot_event())
+        self.dir = (0,0)
 
     def destroy(self):
         self.source.player_items["speed"] = self.speed
