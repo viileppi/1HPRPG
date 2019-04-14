@@ -33,6 +33,7 @@ class Player(Object):
         root = tree.getroot().find("player")
         fps = int(tree.getroot().find("main").find("fps").text)
         self.speed = int(root.find("speed").text) * (fps/100)
+        self.velocity = 0.4
         self.ammo_speed = float(root.find("ammo_speed").text) * self.speed
         self.cooldown = int(root.find("cooldown").text)
         self.blast_cool = int(root.find("blast_cool").text)
@@ -51,11 +52,12 @@ class Player(Object):
         self.can_run = True
         self.run_speed = self.speed * 2
         self.old_dir = (1,0)
+        self.old_ammo_dir = (0,0)
         self.ray_shrink = (-12,-6)
         self.cast = Cast(self)
         tree = ET.parse("keymap.xml")
         root = tree.getroot()
-        self.ammo_spawner = Spawner(self, deltaAmmo, self.cooldown, self.ammo_speed, self.ammo_image, 1, self.ammogroup)
+        self.ammo_spawner = Spawner(self, deltaAmmo, self.cooldown, self.ammo_speed, self.ammo_image, 10, self.ammogroup)
         self.blast_spawner = Spawner(self, Blast, self.blast_cool, 1, self.ammo_image, 1, self.blastgroup)
         kd = {}
         for keycode in root.findall("key"):
@@ -91,13 +93,9 @@ class Player(Object):
         self.cast = Cast(self)
     
     def update(self):
-        if (self.alive):
-            testdir = self.cast.test(self.dir)
-            self.dir = (self.dir[0] * testdir[0], self.dir[1] * testdir[1])
-            self.rect = self.move_animator.goto(self.dir)
-        else:
-            self.destroy()
-
+        testdir = self.cast.test(self.dir)
+        self.dir = (self.dir[0] * testdir[0], self.dir[1] * testdir[1])
+        self.rect = self.move_animator.goto(self.dir)
 
     def read_keys(self, pressed, joyaxis, joypressed):
         x = 0
@@ -114,9 +112,14 @@ class Player(Object):
         else:
             x = joyaxis[0]
             y = joyaxis[1]
-        if ((x,y) != (0,0)):
-            self.old_dir = (x,y)
-        self.dir = (x * self.speed,y * self.speed)
+        v1 = pygame.math.Vector2(x,y)
+        v2 = pygame.math.Vector2(self.old_dir)
+        new_dir = v2.lerp(v1, self.velocity)
+        if (new_dir != (0,0)):
+            self.old_dir = new_dir
+        if ((x,y) == (0,0)):
+            new_dir = (0,0)
+        self.dir = (new_dir[0] * self.speed, new_dir[1] * self.speed)
         if (joypressed == None):
             for k, v in self.keya.items():
                 if (pressed[k]) and (self.keya[k] == self.ammo_spawner.cast):
@@ -147,6 +150,8 @@ class Player(Object):
         if (self.ammo_spawner.cast(ammo_dir)):
             pygame.event.post(userevents.player_shot_event())
         self.dir = (0,0)
+        self.old_ammo_dir = ammo_dir
+
 
     def destroy(self):
         self.source.player_items["speed"] = self.speed

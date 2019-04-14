@@ -45,7 +45,7 @@ class Cast(pygame.sprite.Sprite):
         self.surf = self.screen.copy()
         self.pos = self.source.get_pos()
         #self.ray_size = int(self.source.speed/2)
-        self.ray_size = 3
+        self.ray_size = 2
         self.color = pygame.Color("red")
         #self.left = (self.pos[0] - self.ray_len, self.pos[1])
         #self.right = (self.pos[0] + self.ray_len, self.pos[1])
@@ -67,7 +67,7 @@ class Cast(pygame.sprite.Sprite):
         #ray_rect = self.source.rect.inflate(-24,-8)
         #self.ray_rect.move_ip(to[0] * self.ray_size, to[1] * self.ray_size)
         ray_rect.move_ip(to[0] * self.ray_size, to[1] * self.ray_size)
-        ray = pygame.draw.rect(self.screen, self.color, ray_rect)
+        #ray = pygame.draw.rect(self.screen, self.color, ray_rect)
 
         if (ray_rect.collidelist(self.walls, ) == -1):
             return (1,1)
