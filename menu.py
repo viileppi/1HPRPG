@@ -30,9 +30,17 @@ class Menu(vision.Screen):
                          }
         self.index = 0
         print(len(self.menuitems))
+        self.has_joystick = False
+        pygame.joystick.init()
+        if (pygame.joystick.get_count() > 0):
+            self.joypad = pygame.joystick.Joystick(0)
+            self.joypad.init()
+            self.has_joystick = True
 
     def menuloop(self):
         running = True
+        start = 0
+        b_button = 0
         while running:
             # render menu
             y_offset = 0
@@ -49,15 +57,20 @@ class Menu(vision.Screen):
             # evaluate keypresses
             EventList = pygame.event.get() 
             for e in EventList:
+                if (e.type == JOYAXISMOTION):
+                    self.index = int(self.index + self.joypad.get_axis(1)) % len(self.menuitems)
+                if (e.type == JOYBUTTONDOWN):
+                    start = self.joypad.get_button(11)
+                    b_button = self.joypad.get_button(1)
                 if (e.type == KEYDOWN):
                     k = pygame.key.get_pressed()
-                    if (k[K_ESCAPE]):
+                    if (k[K_ESCAPE] or start):
                         running = False
                     if (k[K_UP]):
                         self.index = (self.index - 1) % len(self.menuitems)
                     if (k[K_DOWN]):
                         self.index = (self.index + 1) % len(self.menuitems)
-                    if (k[K_RETURN]):
+                    if (k[K_RETURN] or b_button):
                         running = False
                         return self.index
 

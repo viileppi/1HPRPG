@@ -112,6 +112,7 @@ bars()
 while running:
     # uncomment to see coordinates
     # pygame.display.set_caption(str(enemy.rect) + str(player.rect))
+    start = 0
     if (start_again):
             bars()
             start_again = False
@@ -173,14 +174,13 @@ while running:
             pygame.quit()
             break
         if (e.type == JOYBUTTONDOWN) or (e.type == JOYAXISMOTION):
-            scr.top_msg.set_message("oh joy")
             start = joypad.get_button(11)
             select = joypad.get_button(10)
             x_button = joypad.get_button(3)
             y_button = joypad.get_button(4)
             a_button = joypad.get_button(0)
             b_button = joypad.get_button(1)
-            if (start):
+            if (start and select):
                 running = False
                 pygame.quit()
                 break
@@ -197,7 +197,7 @@ while running:
                 running = False
                 pygame.quit()
                 break
-            if (k[K_ESCAPE]):
+            if (k[K_ESCAPE] or start):
                 # menu
                 M = Menu(scr)
                 menureturn = M.menuloop()
