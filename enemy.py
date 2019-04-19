@@ -4,6 +4,7 @@ import pygame
 from ammo import Ammo
 from ammo import deltaAmmo
 from ammo import Blast
+from ammo import Spawner
 from los import LOS
 from los import Cast
 from os import path
@@ -33,12 +34,13 @@ class Enemy(objects.Object):
         self.walk_dist = int(root.find("walk_dist").text)
         self.boot_time = int(root.find("boot_time").text)
         self.cooldown = int(root.find("cooldown").text) / self.difficulty
-        self.cooldown = max(100, self.cooldown)
+        #self.cooldown = max(100, self.cooldown)
         # self.speed = 2
         # self.walk_dist = 100
         # self.ammo_speed = 3
         # self.boot_time = 1000
         # self.cooldown = 500
+        self.old_dir = (1,0)
         self.forward = True
         self.walked = 0
         self.where = (self.speed,0)
@@ -67,6 +69,8 @@ class Enemy(objects.Object):
                         (0,self.speed), 
                         ]
         self.dir_div = 0
+        self.shot_no = random.randint(1,4)
+        self.ammo_spawner = Spawner(self, deltaAmmo, self.cooldown, self.ammo_speed, self.ammo_image, self.shot_no, self.ammogroup)
 
     def destroy(self):
         corpse = Corpse(self)
@@ -97,11 +101,14 @@ class Enemy(objects.Object):
             self.rect = self.move_animator.goto((0,0))
             p = self.player.get_pos()
             e = self.get_pos()
-            if (((pygame.time.get_ticks() - self.shoot_start) > self.cooldown)):
-                    pew = deltaAmmo(self, self.ammo_image, e, p, self.ammo_speed)
-                    self.ammogroup.add(pew)
-                    self.shoot_start = pygame.time.get_ticks()
-                    pygame.event.post(userevents.enemy_shot_event())
+            #if (((pygame.time.get_ticks() - self.shoot_start) > self.cooldown)):
+            #        pew = deltaAmmo(self, self.ammo_image, e, p, self.ammo_speed)
+            #        self.ammogroup.add(pew)
+            #        self.shoot_start = pygame.time.get_ticks()
+            #        pygame.event.post(userevents.enemy_shot_event())
+            if (self.ammo_spawner.cast(p)):
+                pygame.event.post(userevents.player_shot_event())
+                pygame.event.post(userevents.enemy_shot_event())
             elif (self.kindof == 1):
                 v1 = Vector2(p)
                 v2 = Vector2(e)
@@ -116,6 +123,7 @@ class Enemy(objects.Object):
         else:
             c = self.cast.test(self.where)
             self.where = (self.where[0] * c[0], self.where[1] * c[1])
+            self.old_dir = self.where
             self.rect = self.move_animator.goto(self.where)
             if (c[0] == 0) or (c[1] == 0):
                 self.dir_div += 1

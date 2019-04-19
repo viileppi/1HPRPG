@@ -57,7 +57,7 @@ class Player(Object):
         self.cast = Cast(self)
         tree = ET.parse("keymap.xml")
         root = tree.getroot()
-        self.ammo_spawner = Spawner(self, deltaAmmo, self.cooldown, self.ammo_speed, self.ammo_image, 10, self.ammogroup)
+        self.ammo_spawner = Spawner(self, deltaAmmo, self.cooldown, self.ammo_speed, self.ammo_image, 1, self.ammogroup)
         self.blast_spawner = Spawner(self, Blast, self.blast_cool, 1, self.ammo_image, 1, self.blastgroup)
         kd = {}
         for keycode in root.findall("key"):
@@ -112,9 +112,10 @@ class Player(Object):
         else:
             x = joyaxis[0]
             y = joyaxis[1]
-        v1 = pygame.math.Vector2(x,y)
-        v2 = pygame.math.Vector2(self.old_dir)
-        new_dir = v2.lerp(v1, self.velocity)
+        #v1 = pygame.math.Vector2(x,y)
+        #v2 = pygame.math.Vector2(self.old_dir)
+        #new_dir = v2.lerp(v1, self.velocity)
+        new_dir = (x,y)
         if (new_dir != (0,0)):
             self.old_dir = new_dir
         if ((x,y) == (0,0)):
