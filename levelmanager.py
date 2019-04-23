@@ -17,22 +17,29 @@ class LevelManager:
         self.screen = screen
         self.player_start = (int(root.find("player_startx").text),int(root.find("player_starty").text))
         self.xy = (int(root.find("start_x").text),int(root.find("start_y").text))
+        self.origin = self.xy
         self.current_level = maptest.LevelRenderer(self.screen, self.xy, self.player_start, self.difficulty) 
         self.start_top = (self.current_level.width/2, self.current_level.third/2)
         self.start_bottom = (self.current_level.width/2, self.current_level.third*2.33)
         self.start_left = (self.current_level.fifth*0.33, self.current_level.height/2)
         self.start_right = (self.current_level.fifth*4.33, self.current_level.height/2)
 
+    def bars(self):
+        while(self.screen.load_animation()):
+            pygame.display.update()
+            pygame.time.wait(20)
+
     def again(self):
-        notfound = True
         player_items = self.current_level.player_items
         self.current_level = maptest.LevelRenderer(self.screen, self.xy, self.player_start, self.difficulty)
         self.current_level.player.set_items(player_items)
         return self.current_level
 
-    def next(self, xy):
+    def next(self, score):
         # del self.current_level
+        self.difficulty = max(1, int(score/1000))
         notfound = True
+        xy = self.current_level.player.get_pos()
         player_items = self.current_level.player_items
         if (xy[0] < self.screen.width/7):
             start = self.start_right
@@ -52,5 +59,6 @@ class LevelManager:
         self.player_start = start
         self.current_level = maptest.LevelRenderer(self.screen, self.xy, start, self.difficulty)
         self.current_level.player.set_items(player_items)
+        self.bars()
         return self.current_level
 

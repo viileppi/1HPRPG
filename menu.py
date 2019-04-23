@@ -39,8 +39,8 @@ class Menu(vision.Screen):
 
     def menuloop(self):
         running = True
-        start = 0
-        b_button = 0
+        start = False
+        b_button = False
         while running:
             # render menu
             y_offset = 0
@@ -60,10 +60,12 @@ class Menu(vision.Screen):
                 if (e.type == JOYAXISMOTION):
                     self.index = int(self.index + self.joypad.get_axis(1)) % len(self.menuitems)
                 if (e.type == JOYBUTTONDOWN):
-                    start = self.joypad.get_button(11)
-                    b_button = self.joypad.get_button(1)
+                    start = self.joypad.get_button(11) == 1
+                    b_button = self.joypad.get_button(1) == 1
                 if (e.type == KEYDOWN):
                     k = pygame.key.get_pressed()
+
+                if (e.type == KEYDOWN) or (e.type == JOYBUTTONDOWN):
                     if (k[K_ESCAPE] or start):
                         running = False
                     if (k[K_UP]):
