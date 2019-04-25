@@ -29,7 +29,7 @@ class Enemy(objects.Object):
         tree = ET.parse("settings.xml")
         root = tree.getroot().find("enemy")
         fps = int(tree.getroot().find("main").find("fps").text)
-        self.speed = int(root.find("speed").text) * (fps/100) * self.difficulty
+        self.speed = int(root.find("speed").text) * self.difficulty
         self.ammo_speed = int(root.find("ammo_speed").text) * (self.speed)
         self.walk_dist = int(root.find("walk_dist").text)
         self.boot_time = int(root.find("boot_time").text)

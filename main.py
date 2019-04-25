@@ -112,7 +112,7 @@ while running:
 
     if (lives_left < 0):
         pygame.time.wait(500)
-        M = Menu(screen)
+        M = Menu(scr.screen)
         M.menuitems = ["try again?",
                         "quit"
                         ]

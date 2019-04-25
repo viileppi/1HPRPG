@@ -32,7 +32,7 @@ class Player(Object):
         tree = ET.parse("settings.xml")
         root = tree.getroot().find("player")
         fps = int(tree.getroot().find("main").find("fps").text)
-        self.speed = int(root.find("speed").text) * (fps/100)
+        self.speed = int(root.find("speed").text)
         self.velocity = 0.4
         self.ammo_speed = float(root.find("ammo_speed").text) * self.speed
         self.cooldown = int(root.find("cooldown").text)
