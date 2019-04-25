@@ -5,6 +5,7 @@ from pygame import color
 from pygame.locals import *
 import keymap
 import xml.etree.ElementTree as ET
+from readkeys import KeyReader
 
 class Menu(vision.Screen):
     """ menu sub-screen """
@@ -22,14 +23,13 @@ class Menu(vision.Screen):
         self.chosen = color.Color("pink")
         self.message = font.Font(None, self.fontsize)
         self.pos = (self.fontsize,self.fontsize)
-        self.menuitems = {
-                            "continue": 0,
-                            "quit": 1,
-                            "restart level": 2,
-                            "Choose keymap": 3
-                         }
+        self.keyreader = KeyReader()
+        self.menuitems = [
+                            "continue",
+                            "quit",
+                            "Choose keymap"
+                         ]
         self.index = 0
-        print(len(self.menuitems))
         self.has_joystick = False
         pygame.joystick.init()
         if (pygame.joystick.get_count() > 0):
@@ -44,16 +44,17 @@ class Menu(vision.Screen):
         while running:
             # render menu
             y_offset = 0
-            for v, k in self.menuitems.items():
-                if (k == self.index):
-                    txt = self.message.render(v, False, self.chosen)
+            for i in range(len(self.menuitems)):
+                if (i == self.index):
+                    txt = self.message.render(self.menuitems[i], False, self.chosen)
                 else:
-                    txt = self.message.render(v, False, self.color)
+                    txt = self.message.render(self.menuitems[i], False, self.color)
                 r = self.screen.blit(
                     txt, 
                     (self.pos[0], self.pos[1] + y_offset), 
                     )
                 y_offset += self.fontsize
+
             # evaluate keypresses
             EventList = pygame.event.get() 
             for e in EventList:
@@ -64,17 +65,16 @@ class Menu(vision.Screen):
                     b_button = self.joypad.get_button(1) == 1
                 if (e.type == KEYDOWN):
                     k = pygame.key.get_pressed()
+                    keys = self.keyreader.readKeyDwn(k)
+                    self.index = (self.index + keys[0][1]) % len(self.menuitems)
+                    #self.tab = (self.tab + keys[0][0]) % len(self.tabs)
+                    action = keys[1]
 
-                if (e.type == KEYDOWN) or (e.type == JOYBUTTONDOWN):
-                    if (k[K_ESCAPE] or start):
+                    if (action == "menu"):
                         running = False
-                    if (k[K_UP]):
-                        self.index = (self.index - 1) % len(self.menuitems)
-                    if (k[K_DOWN]):
-                        self.index = (self.index + 1) % len(self.menuitems)
-                    if (k[K_RETURN] or b_button):
+                    if (action == "fire") or (action == "choose"):
                         running = False
-                        return self.index
+                        return self.menuitems[self.index]
 
             self.update_menu()
             pygame.display.update()

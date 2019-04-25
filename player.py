@@ -55,32 +55,8 @@ class Player(Object):
         self.old_ammo_dir = (0,0)
         self.ray_shrink = (-12,-6)
         self.cast = Cast(self)
-        tree = ET.parse("keymap.xml")
-        root = tree.getroot()
         self.ammo_spawner = Spawner(self, deltaAmmo, self.cooldown, self.ammo_speed, self.ammo_image, 1, self.ammogroup)
         self.blast_spawner = Spawner(self, Blast, self.blast_cool, 1, self.ammo_image, 1, self.blastgroup)
-        kd = {}
-        for keycode in root.findall("key"):
-            value = int(keycode.find("value").text)
-            name = keycode.get("name")
-            kd[name] = value
-        self.keyh = {
-                    kd["right"]: self.aimx(1),
-                    kd["left"]: self.aimx(-1),
-                    }
-        self.keyv = {
-                    kd["up"]: self.aimy(-1),
-                    kd["down"]: self.aimy(1)
-                    }
-        self.keya = {
-                    kd["fire"]: self.ammo_spawner.cast, 
-                    kd["blast"]: self.blast_spawner.cast,
-                    kd["run"]: "run"
-                    }
-        self.joymap = {
-                    "fire": self.ammo_spawner.cast,
-                    "blast": self.blast_spawner.cast
-                    }
 
     def turnaround(self, p):
         pass
@@ -97,49 +73,16 @@ class Player(Object):
         self.dir = (self.dir[0] * testdir[0], self.dir[1] * testdir[1])
         self.rect = self.move_animator.goto(self.dir)
 
-    def read_keys(self, pressed, joyaxis, joypressed):
-        x = 0
-        y = 0
-        # read EITHER keyboard
-        if (joyaxis == None):
-            for k, v in self.keyh.items():
-                if (pressed[k]):
-                    x = self.keyh[k]
-            for k, v in self.keyv.items():
-                if (pressed[k]):
-                    y = self.keyv[k]
-        # OR read joypad
-        else:
-            x = joyaxis[0]
-            y = joyaxis[1]
-        #v1 = pygame.math.Vector2(x,y)
-        #v2 = pygame.math.Vector2(self.old_dir)
-        #new_dir = v2.lerp(v1, self.velocity)
-        new_dir = (x,y)
+    def read_keys(self, keys):
+        new_dir = (keys[0])
         if (new_dir != (0,0)):
             self.old_dir = new_dir
-        if ((x,y) == (0,0)):
-            new_dir = (0,0)
         self.dir = (new_dir[0] * self.speed, new_dir[1] * self.speed)
-        if (joypressed == None):
-            for k, v in self.keya.items():
-                if (pressed[k]) and (self.keya[k] == self.ammo_spawner.cast):
-                    self.shoot()
-                if (pressed[k] and self.keya[k] == self.blast_spawner.cast):
-                    self.blast()
-        else:
-            if (joypressed[1]):
-                # b-button
-                self.shoot()
-            if (joypressed[0]):
-                # a-button
-                self.blast()
-            if (joypressed[3]):
-                # x-button
-                pass
-            if (joypressed[4]):
-                # y-button
-                pass
+        if (keys[1] == "fire"):
+            self.shoot()
+        if (keys[1] == "blast"):
+            self.blast()
+
 
     def blast(self):
         ammo_dir = self.blast_radius
@@ -147,7 +90,10 @@ class Player(Object):
             pygame.event.post(userevents.player_blast_event())
 
     def shoot(self):
-        ammo_dir = (self.rect.centerx - self.old_dir[0] * -100, self.rect.centery - self.old_dir[1] * -100)
+        if (self.dir == (0,0)):
+            ammo_dir = (self.rect.centerx - self.old_dir[0] * -100, self.rect.centery - self.old_dir[1] * -100)
+        else:
+            ammo_dir = (self.rect.centerx - self.dir[0] * -100, self.rect.centery - self.dir[1] * -100)
         if (self.ammo_spawner.cast(ammo_dir)):
             pygame.event.post(userevents.player_shot_event())
         self.dir = (0,0)

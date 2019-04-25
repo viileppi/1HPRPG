@@ -10,6 +10,8 @@ from menu import KeySetup
 import userevents
 import xml.etree.ElementTree as ET
 import copy
+from info import Info
+from readkeys import KeyReader
 
 # read settings
 tree = ET.parse("settings.xml")
@@ -29,14 +31,16 @@ lives_left = int(root.find("lives_left").text)
 running = True
 score = 0
 ## these settings are for 8bitdo sfc30
-has_joystick = False
+scr = Screen(resolutionx, resolutiony)
+screen = scr.screenhas_joystick = False
 pygame.joystick.init()
 if (pygame.joystick.get_count() > 0):
     joypad = pygame.joystick.Joystick(0)
     joypad.init()
     has_joystick = True
-scr = Screen(resolutionx, resolutiony)
-screen = scr.screen
+myKeyReader = KeyReader()
+keys = myKeyReader.readKeyDwn(pygame.key.get_pressed())
+
 if (sounds):
     pygame.mixer.init(mixer_rate, mixer_bitdepth, mixer_channels, mixer_buffer)
     enemy_ch = pygame.mixer.Channel(0)
@@ -78,21 +82,13 @@ def bars():
         pygame.display.update()
         clk.tick(fps)
 
-def nextLevel():
-    #scr = Screen(resolutionx, resolutiony)
-    #screen = screen
-    maze = level.next(score)
-    maze.render_map(scr.bg)
-    pygame.display.flip()
-    scr.top_msg.set_message("Level " + str(level.xy) + " Lifes: " + str(lives_left) + " Score: " + str(score))
-
 def menuCall():
     # menu
     M = Menu(scr)
     menureturn = M.menuloop()
     if (menureturn == 1):
        running = False
-       pygame.quit() 
+       pygame.event.post(pygame.event.Event(pygame.QUIT))
 
 bars()
 
@@ -117,20 +113,17 @@ while running:
     if (lives_left < 0):
         pygame.time.wait(500)
         M = Menu(screen)
-        M.menuitems = {"try again?": 0,
-                        "quit": 1
-                        }
+        M.menuitems = ["try again?",
+                        "quit"
+                        ]
         mr = M.menuloop()
-        if (mr == 0):
+        if (mr == "try again"):
             lives_left = 3
             score = 0
             level.difficulty = 1
             start_again = True
-        if (mr == 1):
-            pygame.quit()
-            pygame.display.quit()
-            running = False
-            break
+        if (mr == "quit"):
+            pygame.event.post(pygame.event.Event(pygame.QUIT))
 
     # get events and move player
     EventList = pygame.event.get() 
@@ -152,40 +145,20 @@ while running:
             pygame.quit()
             pygame.display.quit()
             break
-        if (e.type == JOYBUTTONDOWN) or (e.type == JOYAXISMOTION):
-            start = joypad.get_button(11)
-            select = joypad.get_button(10)
-            x_button = joypad.get_button(3)
-            y_button = joypad.get_button(4)
-            a_button = joypad.get_button(0)
-            b_button = joypad.get_button(1)
-            if (start * select == 1):
-                running = False
-                pygame.display.quit()
-                pygame.quit()
-                break
-            if (start):
-                menuCall()
-            else:
-                jp = {0: a_button, 1: b_button, 3: x_button, 4: y_button}
-                x_axis = joypad.get_axis(0)
-                y_axis = joypad.get_axis(1)
-                maze.player.read_keys(None, (x_axis, y_axis), jp)
-        if (e.type == KEYDOWN):
-            k = pygame.key.get_pressed()
-            # send keypresses to player
-            maze.player.read_keys(k, None, None)
-            if (k[K_BACKSPACE]):
-                running = False
-                pygame.display.quit()
-                pygame.quit()
-                break
-            if (k[K_ESCAPE]):
-                menuCall()
-        if (e.type == KEYUP):
-            # send keyups too
-            k = pygame.key.get_pressed()
-            maze.player.read_keys(k, None, None)
+        if (e.type == JOYAXISMOTION) or (e.type == JOYBUTTONDOWN):
+            keys = myKeyReader.readJoypad(joypad) 
+            maze.player.read_keys(keys)
+        if (e.type == KEYDOWN) or (e.type == KEYUP):
+            keys = myKeyReader.readKeyDwn(pygame.key.get_pressed())
+            maze.player.read_keys(keys)
+        if (keys[1] == "menu"):
+            M = Menu(scr.screen)
+            mr = M.menuloop()
+            if (mr == "quit"):
+               pygame.event.post(pygame.event.Event(pygame.QUIT))
+        #if (e.type == KEYUP):
+        #    keys = myKeyReader.readKeyDwn(pygame.key.get_pressed())
+        #    maze.player.read_keys(keys)
         if (e.type == player_died):
             # player dead
             bars()
