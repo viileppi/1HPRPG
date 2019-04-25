@@ -98,7 +98,8 @@ while running:
     start = 0
     if (start_again):
         start_again = False
-        maze = level.next(score)
+        #maze = level.next(score)
+        maze = level.again()
         maze.render_map(scr.bg)
         pygame.display.flip()
         scr.top_msg.set_message("Level " + str(level.xy) + " Lifes: " + str(lives_left) + " Score: " + str(score))
@@ -117,7 +118,7 @@ while running:
                         "quit"
                         ]
         mr = M.menuloop()
-        if (mr == "try again"):
+        if (mr == "try again?"):
             lives_left = 3
             score = 0
             level.difficulty = 1
