@@ -16,13 +16,12 @@ class Menu:
         self.width = self.rect.width
         self.height = self.rect.height
         self.mainmenu = Tab(self.screen)
-        self.mainmenu.menuitems = ["New game", "Quit", "Difficulty"]
+        self.mainmenu.menuitems = ["Main", "New game", "Quit", "Difficulty"]
         self.settings = Tab(self.screen)
-        self.settings.menuitems = ["Resolution", "Audio on/off", "Volume"]
+        self.settings.menuitems = ["Settings", "Resolution", "Audio on/off", "Volume"]
         self.help = Tab(self.screen)
-        self.settings.menuitems = ["foobar"]
+        self.help.menuitems = ["Help", "foobar"]
         self.items = [self.mainmenu, self.settings, self.help]
-        self.headers = ["Main", "Settings", "Help"]
         self.tab_index = 0
         self.keyreader = KeyReader()
         self.chosen = pygame.Color("white")
@@ -36,17 +35,17 @@ class Menu:
         #self.screen.fill(pygame.Color("black"))
         x_offset = 0
         x_active = 0
-        for i in range(len(self.headers)):
-            if (i == self.tab_index):
-                txt = self.message.render(self.headers[i], False, self.chosen)
-                x_active = x_offset
+        for i in range(len(self.items)):
+            if (i == self.tab_index) and (self.items[self.tab_index].index == 0):
+                txt = self.message.render(self.items[i].menuitems[0], False, self.chosen)
+                x_active = i
             else:
-                txt = self.message.render(self.headers[i], False, self.color)
+                txt = self.message.render(self.items[i].menuitems[0], False, self.color)
             r = self.screen.blit(
                 txt, 
                 (self.pos[0] + x_offset, self.pos[1]), 
                 )
-            x_offset += self.width/len(self.headers)
+            x_offset += len(self.items[i].menuitems[0]) * 24
         return x_active
 
 
@@ -60,7 +59,8 @@ class Menu:
                 if (e.type == KEYDOWN):
                     k = pygame.key.get_pressed()
                     keys = self.keyreader.readKeyDwn(k)
-                    self.tab_index = (self.tab_index + keys[0][0]) % len(self.items)
+                    if (tab.index == 0):
+                        self.tab_index = (self.tab_index + keys[0][0]) % len(self.items)
                     tab.index = (tab.index + keys[0][1]) % len(tab.menuitems)
                     #self.tab = (self.tab + keys[0][0]) % len(self.tabs)
                     action = keys[1]
@@ -110,7 +110,7 @@ class Tab:
     def draw(self, x_offset):
         # render menu
         y_offset = 32
-        for i in range(len(self.menuitems)):
+        for i in range(1, len(self.menuitems), 1):
             if (i == self.index):
                 txt = self.message.render(self.menuitems[i], False, self.chosen)
             else:

@@ -9,7 +9,7 @@
     <mixer_channels>2</mixer_channels>
     <mixer_buffer>128</mixer_buffer>
     <fps>60</fps>
-    <key_rate>60</key_rate>
+    <key_rate>30</key_rate>
     <lives_left>3</lives_left>
   </main>
   <levelmanager>
