@@ -15,12 +15,19 @@ class Menu:
         self.rect = self.screen.get_rect()
         self.width = self.rect.width
         self.height = self.rect.height
-        self.mainmenu = Tab(self.screen)
-        self.mainmenu.menuitems = ["Main", "New game", "Quit", "Difficulty"]
-        self.settings = Tab(self.screen)
-        self.settings.menuitems = ["Settings", "Resolution", "Audio on/off", "Volume"]
-        self.help = Tab(self.screen)
-        self.help.menuitems = ["Help", "foobar"]
+        self.mainmenu = Tab(self.screen, [["Main"], 
+            ["New game"], 
+            ["Quit"], 
+            ["Difficulty: ", "casual, ", "medium, ", "hard"]
+            ])
+        self.settings = Tab(self.screen, [["Settings"], 
+            ["Resolution: ", "320*240, ", "800*600"], 
+            ["Audio: ", "on, ", "off"], 
+            ["Volume: ", "10, ", "30, ", "60, ", "100"]
+            ])
+        self.help = Tab(self.screen, [["Help"], 
+            ["foobar"]
+            ])
         self.items = [self.mainmenu, self.settings, self.help]
         self.tab_index = 0
         self.keyreader = KeyReader()
@@ -30,6 +37,7 @@ class Menu:
         self.fontsize = int(self.height/15)
         self.message = font.Font(None, self.fontsize)        
         self.pos = (self.fontsize,self.fontsize)
+        self.clk = pygame.time.Clock()
 
     def header_draw(self):
         #self.screen.fill(pygame.Color("black"))
@@ -37,21 +45,22 @@ class Menu:
         x_active = 0
         for i in range(len(self.items)):
             if (i == self.tab_index) and (self.items[self.tab_index].index == 0):
-                txt = self.message.render(self.items[i].menuitems[0], False, self.chosen)
+                txt = self.items[i].menuitems[0].draw(True, 0)
                 x_active = i
             else:
-                txt = self.message.render(self.items[i].menuitems[0], False, self.color)
+                txt = self.items[i].menuitems[0].draw(False, 0)
             r = self.screen.blit(
                 txt, 
                 (self.pos[0] + x_offset, self.pos[1]), 
                 )
-            x_offset += len(self.items[i].menuitems[0]) * 24
+            x_offset += self.screen.get_width()/len(self.items)
         return x_active
 
 
     def menuloop(self):
         running = True
         while (running):
+            x_mod = 0
             tab = self.items[self.tab_index]
             # evaluate keypresses
             EventList = pygame.event.get() 
@@ -61,6 +70,8 @@ class Menu:
                     keys = self.keyreader.readKeyDwn(k)
                     if (tab.index == 0):
                         self.tab_index = (self.tab_index + keys[0][0]) % len(self.items)
+                    else:
+                        x_mod = keys[0][0]
                     tab.index = (tab.index + keys[0][1]) % len(tab.menuitems)
                     #self.tab = (self.tab + keys[0][0]) % len(self.tabs)
                     action = keys[1]
@@ -72,12 +83,13 @@ class Menu:
                         return tab.menuitems[tab.index]
             self.screen.fill(pygame.Color("black"))
             x_active = self.header_draw()
-            tab.draw(x_active)
+            tab.draw(x_active, x_mod)
+            self.clk.tick(12)
             pygame.display.update()
 
 class Tab:
     """ menu sub-screen """
-    def __init__(self, screen):
+    def __init__(self, screen, menuitems):
         #try:
         #    self.width = screen.width
         #    self.height = screen.height
@@ -96,9 +108,10 @@ class Tab:
         self.message = font.Font(None, self.fontsize)
         self.pos = (self.fontsize,self.fontsize)
         self.menuitems = [
-                            "continue",
-                            "quit",
                          ]
+        for item in menuitems:
+            choice = Choice(self.message, item, self.width)
+            self.menuitems.append(choice)
         self.index = 0
         self.has_joystick = False
         pygame.joystick.init()
@@ -107,19 +120,61 @@ class Tab:
             self.joypad.init()
             self.has_joystick = True
 
-    def draw(self, x_offset):
+    def draw(self, x_offset, x_mod):
         # render menu
         y_offset = 32
         for i in range(1, len(self.menuitems), 1):
             if (i == self.index):
-                txt = self.message.render(self.menuitems[i], False, self.chosen)
+                txt = self.menuitems[i].draw(True, x_mod)
             else:
-                txt = self.message.render(self.menuitems[i], False, self.color)
+                txt = self.menuitems[i].draw(False, 0)
+
             r = self.screen.blit(
                 txt, 
                 (self.pos[0] + x_offset, self.pos[1] + y_offset), 
                 )
+
             y_offset += self.fontsize
+
+class Choice:
+    def __init__(self, renderer, text, scr_w):
+        self.message = renderer
+        self.text = text[0]
+        self.width = scr_w
+        if len(text) > 1:
+            self.choices = text[1:]
+        else:
+            self.choices = [" "]
+        self.xindex = 0
+        self.active_option = self.choices[0]
+        self.has_focus = False
+        self.color = color.Color("brown")
+        self.chosen = color.Color("pink")
+        self.option_c = color.Color(255,255,0)
+        self.unoption_c = color.Color(127,64,0)
+
+    def draw(self, has_focus, x_mod):
+        self.has_focus = has_focus
+        self.xindex = (self.xindex + x_mod) % len(self.choices)
+        self.active_option = self.choices[self.xindex]
+        last_x = 0
+        if (has_focus):
+            txt = self.message.render(self.text, False, self.chosen)
+
+        else:
+            txt = self.message.render(self.text, False, self.color)
+        ret = pygame.Surface((self.width, txt.get_height())) 
+        ret.blit(txt, (0,0))
+        last_x += txt.get_width()
+        for c in self.choices:
+            if (c == self.active_option):
+                option = self.message.render(c, False, self.option_c)
+            else:
+                option = self.message.render(c, False, self.unoption_c)
+            ret.blit(option, (last_x,0))
+            last_x += option.get_width()
+        return ret
+
 
 class KeySetup(Menu):
     def __init__(self, screen):
@@ -131,24 +186,11 @@ class KeySetup(Menu):
             value = int(keycode.find("value").text)
             name = keycode.get("name")
             self.menuitems[name] = value
-        print(self.menuitems)
         self.tree = tree
         self.root = root
-
-        #resolutionx = int(root.find("resolutionx").text)
-        #self.menuitems = {
-        #        0: "Up",
-        #        1: "Down",
-        #        2: "Left",
-        #        3: "Right",
-        #        4: "Shoot",
-        #        5: "Blast",
-        #        6: "Sprint"
-        #                 }
         self.index = 0
 
     def menuloop(self):
-        print("KeySetup menuloop")
         running = True
         s = "Press esc to cancel or key for: "
         ret = {}
@@ -173,7 +215,6 @@ class KeySetup(Menu):
                 #if (e.type == KEYUP):
                     # newkey = pygame.key.get_pressed()
                     newkey = e.key
-                    print(newkey)
                     #ret.append(newkey)
                     ret[list(self.menuitems)[self.index]] = newkey
                     txt = self.message.render(pygame.key.name(newkey), False, self.chosen)
