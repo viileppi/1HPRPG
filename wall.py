@@ -10,6 +10,7 @@ class Wall(pygame.sprite.Sprite):
         self.rect = pygame.draw.line(self.screen, self.color, start, end, 16)
         self.image = pygame.Surface((self.rect.width, self.rect.height))
         self.image.fill(self.color)
+        self.mask = pygame.mask.from_surface(self.image)
 
     def update(self):
         pass

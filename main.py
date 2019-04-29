@@ -155,7 +155,8 @@ while running:
         if (keys[1] == "menu"):
             M = Menu(scr.screen)
             mr = M.menuloop()
-            if (mr == "quit"):
+            print(mr)
+            if (mr == "Quit"):
                pygame.event.post(pygame.event.Event(pygame.QUIT))
         #if (e.type == KEYUP):
         #    keys = myKeyReader.readKeyDwn(pygame.key.get_pressed())

@@ -9,38 +9,46 @@ class Animator(pygame.sprite.Sprite):
         self.screen = screen
         # self.image = pygame.image.load(image).convert()
         self.image = image        
-        self.step = 0.5
+        self.step = 0.75
         self.image_w = self.image.get_width()
         self.image_h = self.image.get_height()
         self.crop_size = self.image_h
         self.move = 0
+        self.div = 0
         # self.image_crop = Rect(0,0,self.crop_size,self.crop_size)
         self.rect = Rect(0,0,self.crop_size,self.crop_size)
         self.crop_init = self.rect
         self.image_pos = pos
         self.target = (0,0)
         self.facing_right = True
-        self.step_multi = 0
+        self.step_multi = 2
         self.doblit = False
         self.frames = []
         self.frames_flip = []
+        self.mask_frames = []
+        self.mask_frames_flip = []
         s = pygame.Surface((self.rect.width, self.rect.height), pygame.SRCALPHA)
         self.image.scroll(-self.crop_size, 0)
         s.blit(self.image.copy(), (0,0))
         self.frames.append(s.copy())
+        self.mask_frames.append(pygame.mask.from_surface(s))
         sf = pygame.transform.flip(s, True, False) 
         self.frames_flip.append(sf.copy())
+        self.mask_frames_flip.append(pygame.mask.from_surface(sf))
         for i in range(int(self.image_w/self.crop_size)):
             s = pygame.Surface((self.rect.width, self.rect.height), pygame.SRCALPHA)
             self.image.scroll(-self.crop_size, 0)
             s.blit(self.image.copy(), (0,0))
             self.frames.append(s.copy())
+            self.mask_frames.append(pygame.mask.from_surface(s))
             sf = pygame.transform.flip(s, True, False) 
             self.frames_flip.append(sf.copy())
+            self.mask_frames_flip.append(pygame.mask.from_surface(sf))
         self.frame_count = len(self.frames)
         #self.skip = 0
         #self.skip_n = 1
         self.die_count = 0
+        self.current_mask = self.mask_frames[self.move]
 
     def add2group(self, group):
         self.group = group
@@ -64,25 +72,23 @@ class Animator(pygame.sprite.Sprite):
                 abs(self.target[0] - self.target[0]), 
                 abs(self.target[1] - self.target[1])
                 )
-            self.move = (self.move+1)%self.frame_count
-            #if (self.skip%self.skip_n == 0):
-            #    self.move = (self.move+1)%self.frame_count
-            #self.skip = (self.skip+1)
-            # self.move = (self.move+1)%self.frame_count
-            # self.move = (self.move+self.frame_skip[self.skip])%self.frame_count
+            self.div += 1
+            if (self.div%self.step_multi)==0:
+                self.move = (self.move+1)%self.frame_count
         if (self.facing_right):
             r = self.screen.blit(
                     self.frames[self.move],#.copy(), 
                     self.image_pos, 
                     self.rect
                     )
+            self.current_mask = self.mask_frames[self.move]
         else:
             r = self.screen.blit(
                     self.frames_flip[self.move],#.copy(), 
                     self.image_pos, 
                     self.rect
                     )
-  
+            self.current_mask = self.mask_frames_flip[self.move]
         return r
 
 

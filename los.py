@@ -53,34 +53,18 @@ class Cast(pygame.sprite.Sprite):
         #self.down = (self.pos[0], self.pos[1] + self.ray_len)
 
     def colli(self, l, r):
-        return (pygame.sprite.collide_mask(l, r) == None)
-
-    def test_old(self, to):
-        self.pos = self.source.get_pos()
-        ray_rect = self.source.rect.inflate(self.ray_shrink[0], self.ray_shrink[1])
-        # ray_w = self.ray_w + abs(int(self.ray_w * to[0]))
-        # ray_w = (1+abs(to[0])) * self.ray_w
-        # ray_len = (1+abs(to[1])) * self.ray_size
-        #ray_len = self.ray_size * (1+abs(to[1])/2)
-        #ray_rect = self.source.rect.inflate(-self.ray_size, 0)
-        #ray_rect = self.source.rect #.inflate(-self.size[0], -self.size[1])
-        #ray_rect = self.source.rect.inflate(-24,-8)
-        #self.ray_rect.move_ip(to[0] * self.ray_size, to[1] * self.ray_size)
-        ray_rect.move_ip(to[0] * self.ray_size, to[1] * self.ray_size)
-        #ray = pygame.draw.rect(self.screen, self.color, ray_rect)
-
-        if (ray_rect.collidelist(self.walls, ) == -1):
-            return (1,1)
-        else:
-            return (to[0] - to[0],to[1] - to[1])
+        return pygame.sprite.collide_mask(l, r)
 
     def test(self, to):
         self.pos = self.source.rect
-        #ray_rect = self.source.rect.inflate(self.ray_shrink[0], self.ray_shrink[1])
-        ray_rect = self.source.rect
-        ray_rect.move_ip((to[0]*2, to[1]*2))
+        ray_rect = self.source.rect.inflate(self.ray_shrink[0], self.ray_shrink[1])
+        ray_rect.move_ip((to[0]*self.ray_size, to[1]*self.ray_size))
         #ray = pygame.draw.rect(self.screen, self.color, ray_rect)
-        if (pygame.sprite.spritecollideany(self.source, self.source.wallgroup) == None):
+        #if (pygame.sprite.spritecollideany(self.source, self.source.wallgroup, self.colli) == None):
+        #c = pygame.sprite.spritecollideany(self.source, self.source.wallgroup, self.colli)
+        #c = pygame.sprite.spritecollideany(self.source, self.walls)#, pygame.sprite.collide_mask)
+        c = ray_rect.collidelist(self.walls)
+        if (c == -1):
             self.source.rect = self.pos
             return (1,1)
         else:

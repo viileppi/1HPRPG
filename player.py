@@ -53,7 +53,7 @@ class Player(Object):
         self.run_speed = self.speed * 2
         self.old_dir = (1,0)
         self.old_ammo_dir = (0,0)
-        self.ray_shrink = (-12,-6)
+        self.ray_shrink = (-24,-6)
         self.cast = Cast(self)
         self.ammo_spawner = Spawner(self, deltaAmmo, self.cooldown, self.ammo_speed, self.ammo_image, 1, self.ammogroup)
         self.blast_spawner = Spawner(self, Blast, self.blast_cool, 1, self.ammo_image, 1, self.blastgroup)
