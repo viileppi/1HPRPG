@@ -83,6 +83,19 @@ class Player(Object):
         if (keys[1] == "blast"):
             self.blast()
 
+    def read_mouse(self, mouse):
+        if (mouse == (0,0)):
+            self.blast()
+        else:
+            v1 = pygame.math.Vector2(self.get_pos())
+            v2 = pygame.math.Vector2(mouse)
+            v3 = v2 - v1
+            print(v3)
+            ammo_dir = (v3[0] * 90, v3[1] * 90)
+            if (self.ammo_spawner.cast(ammo_dir)):
+                pygame.event.post(userevents.player_shot_event())
+            self.old_ammo_dir = ammo_dir
+
 
     def blast(self):
         ammo_dir = self.blast_radius

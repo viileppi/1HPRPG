@@ -167,6 +167,9 @@ while running:
             lives_left -= 1
             start_again = True
             scr.top_msg.set_message("Level " + str(level.xy) + " Lifes: " + str(lives_left) + " Score: " + str(score))
+        if (e.type == MOUSEBUTTONDOWN):
+            mouse = myKeyReader.readMouse()
+            maze.player.read_mouse(mouse)
 
     if (running):
         pygame.display.update()

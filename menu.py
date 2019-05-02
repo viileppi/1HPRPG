@@ -71,6 +71,7 @@ class Menu:
         running = True
         while (running):
             x_mod = 0
+            #tab = self.items[self.tab_index]
             tab = self.items[self.tab_index]
             # evaluate keypresses
             EventList = pygame.event.get() 
@@ -148,6 +149,8 @@ class Choice:
         for c in choices:
             for d in c:
                 self.choices.append(d)
+        if (len(self.choices)>1):
+            self.choices.pop(0)
         self.option_c = color.Color(255,255,0)
         self.unoption_c = color.Color(127,64,0)
         self.xindex = 0
@@ -200,10 +203,11 @@ class Adjust:
         self.xindex = max(self.bottom, xindex)
         if (has_focus):
             txt = self.message.render(self.text, False, self.chosen)
-            option = self.message.render(str(self.xindex), False, self.option_c)
+            #option = self.message.render(str(self.xindex), False, self.option_c)
         else:
             txt = self.message.render(self.text, False, self.color)
-            option = self.message.render(str(self.xindex), False, self.unoption_c)
+            #option = self.message.render(str(self.xindex), False, self.unoption_c)
+        option = self.message.render(str(self.xindex), False, self.option_c)
         ret = pygame.Surface((self.width, txt.get_height())) 
         ret.blit(txt, (0,0))
         last_x = txt.get_width()
