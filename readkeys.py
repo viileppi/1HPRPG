@@ -25,6 +25,7 @@ class KeyReader:
                pygame.K_RETURN: "choose", 
                self.kd["fire"]: "fire", 
                self.kd["blast"]: "blast",
+               self.kd["bomb"]: "bomb",
                self.kd["run"]: "run"
                }
         self.joymap = {

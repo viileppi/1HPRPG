@@ -104,7 +104,6 @@ class Blast(pygame.sprite.Sprite):
     """ short-range ammo in all directions """
     #def __init__(self, source, image, coords, direction, speed):
     def __init__(self, source, image, coords, direction, speed):
-        print("blast")
         pygame.sprite.Sprite.__init__(self)
         self.source = source
         self.screen = self.source.screen
@@ -135,5 +134,28 @@ class Blast(pygame.sprite.Sprite):
     def destroy(self):
         self.kill()
         del self
+
+class Bomb(Blast):
+    #def __init__(self, source, image, coords, direction, speed):
+    #    Blast.__init__(self, source, image, coords, direction, speed)
+
+    def update(self):
+        # self.speed is the delay of timer
+        if (self.speed > 0):
+            self.speed -= 1
+            blink = (self.speed*8)%255
+            self.image = pygame.draw.rect(self.screen, 
+                    pygame.Color(blink, blink, blink), 
+                    pygame.Rect(self.coords[0], 
+                        self.coords[1],
+                        16,
+                        16))
+        else:
+            self.deltaR += int(self.radius/(self.deltaR*2)+2)
+            if (self.deltaR < self.radius):
+                self.rect = pygame.draw.circle(self.screen, self.color, self.coords, self.deltaR, self.blast_w)
+                self.blast_w = self.deltaR
+            else:
+                self.destroy()
 
 
