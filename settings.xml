@@ -36,7 +36,7 @@
     <ammo_speed>2</ammo_speed>
     <cooldown>250</cooldown>
     <blast_cool>2000</blast_cool>
-    <blast_radius>32</blast_radius>
+    <blast_radius>64</blast_radius>
     <run_cool>2500</run_cool>
     <run_time>750</run_time>
   </player>

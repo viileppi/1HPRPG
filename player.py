@@ -44,6 +44,7 @@ class Player(Object):
         self.ammo_image = path.join("images", "ammo.png")
         self.ammogroup = pygame.sprite.Group()
         self.blastgroup = pygame.sprite.Group()
+        self.bombgroup = pygame.sprite.Group()
         self.aimx = lambda x : x #* self.speed
         self.aimy = lambda y : y #* self.speed
         #self.shoot_start = pygame.time.get_ticks() - self.cooldown
@@ -58,7 +59,7 @@ class Player(Object):
         self.cast = Cast(self)
         self.ammo_spawner = Spawner(self, deltaAmmo, self.cooldown, self.ammo_speed, self.ammo_image, 1, self.ammogroup)
         self.blast_spawner = Spawner(self, Blast, self.blast_cool, 1, self.ammo_image, 1, self.blastgroup)
-        self.bomb_spawner = Spawner(self, Bomb, self.blast_cool, 250, self.ammo_image, 1, self.blastgroup)
+        self.bomb_spawner = Spawner(self, Bomb, self.blast_cool, 250, self.ammo_image, 1, self.bombgroup)
 
     def turnaround(self, p):
         pass
