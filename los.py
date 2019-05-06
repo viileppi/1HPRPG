@@ -22,7 +22,6 @@ class LOS(pygame.sprite.Sprite):
     def draw(self):
         self.rect = pygame.draw.line(self.surf, self.color, self.source.get_pos(), self.source.player.get_pos(), 1)
         #self.image = pygame.Surface((self.rect.width, self.rect.height))
-
         #self.mask = pygame.mask.from_surface(self.surf)
         #self.image = pygame.Surface((self.rect.width, self.rect.height))
         #print(c)
