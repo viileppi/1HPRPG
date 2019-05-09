@@ -25,6 +25,7 @@ class KeyReader:
                pygame.K_RETURN: "choose", 
                self.kd["fire"]: "fire", 
                self.kd["blast"]: "blast",
+               self.kd["bomb"]: "bomb",
                self.kd["run"]: "run"
                }
         self.joymap = {
@@ -32,6 +33,16 @@ class KeyReader:
                0: "blast",
                4: "run"
                }
+
+    def readMouse(self):
+        #print(pygame.mouse.get_pressed())
+        r = (0,0)
+        button = pygame.mouse.get_pressed()
+        if (button == (1, 0, 0)):
+            r = pygame.mouse.get_pos()
+        if (button == (0, 0, 1)):
+            pass
+        return r
 
     def readJoypad(self, joypad):
         keys = [(0,0), None]

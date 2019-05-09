@@ -43,6 +43,7 @@ class Object(pygame.sprite.Sprite):
     def update(self):
         if (self.alive):
             self.rect = self.move_animator.goto(self.dir)
+            self.mask = self.move_animator.current_mask
         else:
             self.destroy()
 

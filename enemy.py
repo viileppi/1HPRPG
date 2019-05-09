@@ -30,7 +30,7 @@ class Enemy(objects.Object):
         root = tree.getroot().find("enemy")
         fps = int(tree.getroot().find("main").find("fps").text)
         self.speed = int(root.find("speed").text) * self.difficulty
-        self.ammo_speed = int(root.find("ammo_speed").text) * (self.speed)
+        self.ammo_speed = int(root.find("ammo_speed").text) + (self.speed)
         self.walk_dist = int(root.find("walk_dist").text)
         self.boot_time = int(root.find("boot_time").text)
         self.cooldown = int(root.find("cooldown").text) / self.difficulty
@@ -71,6 +71,7 @@ class Enemy(objects.Object):
         self.dir_div = 0
         self.shot_no = random.randint(1,4)
         self.ammo_spawner = Spawner(self, deltaAmmo, self.cooldown, self.ammo_speed, self.ammo_image, self.shot_no, self.ammogroup)
+        self.move_animator.step = 0.5
 
     def destroy(self):
         corpse = Corpse(self)

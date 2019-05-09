@@ -23,7 +23,7 @@ class Screen:
             self.screen = pygame.display.set_mode((self.width, self.height), pygame.FULLSCREEN)
         else:
             self.screen = pygame.display.set_mode((self.width, self.height), pygame.RESIZABLE)
-        #self.screen.set_colorkey(SRCALPHA)
+        self.screen.set_colorkey(SRCALPHA)
         #self.gamearea = pygame.Rect(0, self.margin, self.width, (self.height - self.margin * 2))
         self.gamearea = self.screen.subsurface(Rect(0, self.top_h, self.width, self.middle_h)) 
         self.area_rect = self.gamearea.get_rect()

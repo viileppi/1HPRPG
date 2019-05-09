@@ -7,6 +7,7 @@ from pygame import time
 from ammo import deltaAmmo
 from ammo import Spawner
 from ammo import Blast
+from ammo import Bomb
 from os import path
 from los import Cast
 import userevents
@@ -43,6 +44,7 @@ class Player(Object):
         self.ammo_image = path.join("images", "ammo.png")
         self.ammogroup = pygame.sprite.Group()
         self.blastgroup = pygame.sprite.Group()
+        self.bombgroup = pygame.sprite.Group()
         self.aimx = lambda x : x #* self.speed
         self.aimy = lambda y : y #* self.speed
         #self.shoot_start = pygame.time.get_ticks() - self.cooldown
@@ -53,10 +55,11 @@ class Player(Object):
         self.run_speed = self.speed * 2
         self.old_dir = (1,0)
         self.old_ammo_dir = (0,0)
-        self.ray_shrink = (-12,-6)
+        self.ray_shrink = (-24,-6)
         self.cast = Cast(self)
         self.ammo_spawner = Spawner(self, deltaAmmo, self.cooldown, self.ammo_speed, self.ammo_image, 1, self.ammogroup)
         self.blast_spawner = Spawner(self, Blast, self.blast_cool, 1, self.ammo_image, 1, self.blastgroup)
+        self.bomb_spawner = Spawner(self, Bomb, self.blast_cool, 250, self.ammo_image, 1, self.bombgroup)
 
     def turnaround(self, p):
         pass
@@ -75,19 +78,41 @@ class Player(Object):
 
     def read_keys(self, keys):
         new_dir = (keys[0])
-        if (new_dir != (0,0)):
+        if (new_dir != (0,0)) and (new_dir != self.old_dir):
             self.old_dir = new_dir
         self.dir = (new_dir[0] * self.speed, new_dir[1] * self.speed)
         if (keys[1] == "fire"):
             self.shoot()
         if (keys[1] == "blast"):
             self.blast()
+        if (keys[1] == "bomb"):
+            self.bomb()
+
+
+    def read_mouse(self, mouse):
+        if (mouse == (0,0)):
+            self.blast()
+        else:
+            v1 = pygame.math.Vector2(self.get_pos())
+            v2 = pygame.math.Vector2(mouse)
+            v3 = v2 - v1
+            print(v3)
+            ammo_dir = (v3[0] * 90, v3[1] * 90)
+            if (self.ammo_spawner.cast(ammo_dir)):
+                pygame.event.post(userevents.player_shot_event())
+            self.old_ammo_dir = ammo_dir
 
 
     def blast(self):
         ammo_dir = self.blast_radius
         if (self.blast_spawner.cast(ammo_dir)):
             pygame.event.post(userevents.player_blast_event())
+
+    def bomb(self):
+        ammo_dir = self.blast_radius
+        if (self.bomb_spawner.cast(ammo_dir)):
+            pygame.event.post(userevents.player_blast_event())
+
 
     def shoot(self):
         if (self.dir == (0,0)):
