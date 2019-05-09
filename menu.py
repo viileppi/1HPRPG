@@ -24,27 +24,27 @@ class Menu:
         self.fontsize = int(self.height/15)
         self.message = font.Font(None, self.fontsize)        
         self.pos = (self.fontsize,self.fontsize)
-        self.mainmenu = Tab(self.screen, "Main", 
-            [
-            Choice(self.message, "Continue", w),
-            Choice(self.message, "New game", w),
-            Choice(self.message, "Quit", w),
-            Choice(self.message, "Difficulty: ", w, ["casual, ", "medium, ", "hard"])
-            ]
-            )
-        self.settings = Tab(self.screen, "Settings", 
-            [
-            Choice(self.message, "Resolution: ", w, ["320*240, ", "800*600"]), 
-            Choice(self.message, "Audio: ", w, ["on, ", "off"]), 
-            Adjust(self.message, "Volume: ", w, 0, 100, 70, 10)
-            ]
-            )
-        self.help = Tab(self.screen, "Help", 
-            [
-            Choice(self.message, "foobar", w)
-            ]
-            )
-        self.items = [self.mainmenu, self.settings, self.help]
+        #self.mainmenu = Tab(self.screen, "Main", 
+        #    [
+        #    Choice(self.message, "Continue", w),
+        #    Choice(self.message, "New game", w),
+        #    Choice(self.message, "Quit", w),
+        #    Choice(self.message, "Difficulty: ", w, ["casual, ", "medium, ", "hard"])
+        #    ]
+        #    )
+        #self.settings = Tab(self.screen, "Settings", 
+        #    [
+        #    Choice(self.message, "Resolution: ", w, ["320*240, ", "800*600"]), 
+        #    Choice(self.message, "Audio: ", w, ["on, ", "off"]), 
+        #    Adjust(self.message, "Volume: ", w, 0, 100, 70, 10)
+        #    ]
+        #    )
+        #self.help = Tab(self.screen, "Help", 
+        #    [
+        #    Choice(self.message, "foobar", w)
+        #    ]
+        #    )
+        self.items = None
         self.clk = pygame.time.Clock()
 
     def header_draw(self):
@@ -91,7 +91,8 @@ class Menu:
                         running = False
                     if (action == "fire") or (action == "choose"):
                         running = False
-                        r = [tab.menuitems[tab.index].text, tab.menuitems[tab.index].active_option]
+                        #r = [tab.menuitems[tab.index].text, tab.menuitems[tab.index].active_option]
+                        r = tab.menuitems[tab.index].retfunc
                         return r
             self.screen.fill(pygame.Color("black"))
             x_active = self.header_draw()
@@ -141,7 +142,7 @@ class Tab:
             y_offset += self.fontsize
 
 class Choice:
-    def __init__(self, renderer, text, scr_w, *choices):
+    def __init__(self, renderer, text, scr_w, retfunc, *choices):
         self.message = renderer
         self.text = text
         self.width = scr_w
@@ -158,6 +159,7 @@ class Choice:
         self.has_focus = False
         self.color = color.Color("brown")
         self.chosen = color.Color("pink")
+        self.retfunc = retfunc
 
     def draw(self, has_focus, x_mod):
         self.has_focus = has_focus

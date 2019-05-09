@@ -16,8 +16,9 @@ class LevelManager:
         self.total_levels = int(root.find("total_levels").text)
         self.screen = screen
         self.player_start = (int(root.find("player_startx").text),int(root.find("player_starty").text))
+        self.p_init_start = self.player_start
         self.xy = (int(root.find("start_x").text),int(root.find("start_y").text))
-        self.origin = self.xy
+        self.p_init_xy = self.xy
         self.current_level = maptest.LevelRenderer(self.screen, self.xy, self.player_start, self.difficulty) 
         self.start_top = (self.current_level.width/2, self.current_level.third/2)
         self.start_bottom = (self.current_level.width/2, self.current_level.third*2.33)
