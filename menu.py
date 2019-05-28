@@ -117,7 +117,7 @@ class Tab:
         self.title = self.message.render(title, False, self.chosen, None)
         self.untitle = self.message.render(title, False, self.color, None)
         self.menuitems = menuitems
-        self.index = 0
+        self.index = 1
         self.has_joystick = False
         pygame.joystick.init()
         if (pygame.joystick.get_count() > 0):
@@ -216,65 +216,28 @@ class Adjust:
         ret.blit(option, (last_x,0))
         return ret
 
+class Hiscore:
+    def __init__(self, screen, scoredict):
+        self.screen = screen
+        self.screen.fill(pygame.Color("black"))
+        self.width = screen.get_width()
+        self.height = screen.get_height()
+        #self.scorelist = scorelist
+        self.scoredict = {"ABC": 1000, "XYZ": 550}
+        self.color = pygame.Color("white")
+        font.init()
+        self.fontsize = int(self.height/15)
+        self.message = font.Font(None, self.fontsize)        
+        self.offset = (100,100)
 
-class KeySetup(Menu):
-    def __init__(self, screen):
-        Menu.__init__(self, screen)
-        self.menuitems = {}
-        tree = ET.parse("keymap.xml")
-        root = tree.getroot()
-        for keycode in root.findall("key"):
-            value = int(keycode.find("value").text)
-            name = keycode.get("name")
-            self.menuitems[name] = value
-        self.tree = tree
-        self.root = root
-        self.index = 0
-
-    def menuloop(self):
-        running = True
-        s = "Press esc to cancel or key for: "
-        ret = {}
-        while running:
-            y_offset = 0
-            # render menu
-            txt = self.message.render((s + list(self.menuitems)[self.index]), False, self.chosen)
-            r = self.screen.blit(
-                txt, 
-                (self.pos[0], self.pos[1] + y_offset + (self.index*y_offset)), 
-                )
+    def draw(self):
+        x_offset = self.offset[0]
+        y_offset = self.offset[1]
+        for k,v in self.scoredict.items():
+            score = k + ": " + str(v)
+            txt = self.message.render(score, False, self.color)
+            self.screen.blit(txt, (x_offset, y_offset))
             y_offset += self.fontsize
-            # evaluate keypresses
-            EventList = pygame.event.get() 
-            for e in EventList:
-                if (e.type == KEYDOWN):
-                    k = pygame.key.get_pressed()
-                    if (k[K_ESCAPE]):
-                        running = False
-                        self.screen.fill(Color("black"))
-                        break
-                #if (e.type == KEYUP):
-                    # newkey = pygame.key.get_pressed()
-                    newkey = e.key
-                    #ret.append(newkey)
-                    ret[list(self.menuitems)[self.index]] = newkey
-                    txt = self.message.render(pygame.key.name(newkey), False, self.chosen)
-                    r = self.screen.blit(
-                        txt, 
-                        (self.pos[0], self.pos[1] + y_offset + self.index*y_offset), 
-                        )
-                    pygame.display.update()
-                    self.index += 1
-                    pygame.time.wait(500)
-                    self.screen.fill(Color("black"))
-                if (self.index == len(self.menuitems)):
-                    running = False
-                    self.screen.fill(Color("black"))
-            pygame.display.update()
-        for keycode in self.root.iter("key"):
-            keycode.find("value").text = str(ret[keycode.get("name")])
-        self.tree.write("keymap.xml")
-        return ret
-
-
+        pygame.display.update()
+        pygame.time.wait(800)
 

@@ -9,6 +9,7 @@ from menu import Menu
 from menu import Tab
 from menu import Choice
 from menu import Adjust
+from menu import Hiscore
 import userevents
 import xml.etree.ElementTree as ET
 import copy
@@ -93,6 +94,9 @@ def restart():
     maze = level.current_level
 
 def Quit():
+    global running
+    running = False
+    print("quit called from menu")
     pygame.event.post(pygame.event.Event(pygame.QUIT))
 
 # setup mainmenu
@@ -135,7 +139,7 @@ while running:
     if (start_again):
         start_again = False
         #maze = level.next(score)
-        #maze = level.again()
+        maze = level.again()
         maze.render_map(scr.bg)
         pygame.display.flip()
         scr.top_msg.set_message("Level " + str(level.xy) + " Lifes: " + str(lives_left) + " Score: " + str(score))
@@ -179,9 +183,6 @@ while running:
         if (keys[1] == "menu"):
             mr = M.menuloop()
             mr()
-        #if (e.type == KEYUP):
-        #    keys = myKeyReader.readKeyDwn(pygame.key.get_pressed())
-        #    maze.player.read_keys(keys)
         if (e.type == player_died):
             # player dead
             bars()
@@ -196,6 +197,7 @@ while running:
         pygame.display.update()
         scr.update()
         clk.tick(fps)
+h = Hiscore(scr.screen, None)
+h.draw()
 
-print("game over")
-time.sleep(1)
+
