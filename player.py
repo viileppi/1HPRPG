@@ -8,6 +8,7 @@ from ammo import deltaAmmo
 from ammo import Spawner
 from ammo import Blast
 from ammo import Bomb
+from ammo import Run
 from os import path
 from los import Cast
 import userevents
@@ -34,6 +35,8 @@ class Player(Object):
         root = tree.getroot().find("player")
         fps = int(tree.getroot().find("main").find("fps").text)
         self.speed = int(root.find("speed").text)
+        self.double_speed = self.speed * 2
+        self.half_speed = self.speed
         self.velocity = 0.4
         self.ammo_speed = float(root.find("ammo_speed").text) * self.speed
         self.cooldown = int(root.find("cooldown").text)
@@ -60,6 +63,7 @@ class Player(Object):
         self.ammo_spawner = Spawner(self, deltaAmmo, self.cooldown, self.ammo_speed, self.ammo_image, 1, self.ammogroup)
         self.blast_spawner = Spawner(self, Blast, self.blast_cool, 1, self.ammo_image, 1, self.blastgroup)
         self.bomb_spawner = Spawner(self, Bomb, self.blast_cool, 250, self.ammo_image, 1, self.bombgroup)
+        self.run_spawner = Spawner(self, Run, 1000, 1000, None, 1, None)
 
     def turnaround(self, p):
         pass
@@ -75,6 +79,11 @@ class Player(Object):
         testdir = self.cast.test(self.dir)
         self.dir = (self.dir[0] * testdir[0], self.dir[1] * testdir[1])
         self.rect = self.move_animator.goto(self.dir)
+        try:
+            run = self.run_spawner.shot_list[0]
+            run.update()
+        except IndexError:
+            pass
 
     def read_keys(self, keys):
         new_dir = (keys[0])
@@ -87,7 +96,8 @@ class Player(Object):
             self.blast()
         if (keys[1] == "bomb"):
             self.bomb()
-
+        if (keys[1] == "run"):
+            self.run()
 
     def read_mouse(self, mouse):
         if (mouse == (0,0)):
@@ -113,6 +123,8 @@ class Player(Object):
         if (self.bomb_spawner.cast(ammo_dir)):
             pygame.event.post(userevents.player_blast_event())
 
+    def run(self):
+        self.run_spawner.cast((0,0))
 
     def shoot(self):
         if (self.dir == (0,0)):

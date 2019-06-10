@@ -20,8 +20,11 @@ def colli_basic(l, r):
 def colli_bounce(l, r):
     # testfunction for collision callbacks
     if (sprite.collide_rect(l, r)):
-        l.turnaround(r)
-        return True
+        if (l == r):
+            return False
+        else:
+            l.turnaround(r)
+            return True
     else:
         return False
 

@@ -15,6 +15,7 @@ import xml.etree.ElementTree as ET
 import copy
 from info import Info
 from readkeys import KeyReader
+from hiscore import Hiscore
 
 # read settings
 tree = ET.parse("settings.xml")
@@ -59,6 +60,13 @@ clk = pygame.time.Clock()
 pygame.key.set_repeat(key_rate,key_rate)
 pygame.display.update()
 
+hs = Hiscore(scr.screen)
+hs.draw()
+pygame.time.wait(500)
+hs.add("VTR", 250)
+hs.draw()
+pygame.time.wait(500)
+
 # level inits
 level = levelmanager.LevelManager(scr)
 maze = level.current_level
@@ -81,50 +89,53 @@ player_ran = userevents.player_ran().type
 player_blast = userevents.player_blast().type
 
 # setu up some functions to use with mainmenu
-def restart():
-    global lives_left
-    lives_left = 3
-    global score
-    score = 0
-    global start_again
-    start_again = True
-    global level
-    level = levelmanager.LevelManager(scr)
-    global maze
-    maze = level.current_level
-
-def Quit():
-    global running
-    running = False
-    print("quit called from menu")
-    pygame.event.post(pygame.event.Event(pygame.QUIT))
-
-# setup mainmenu
-M = Menu(scr.screen)
-w = M.width
-mainmenu = Tab(M.screen, "Main", 
-[
-    Choice(M.message, "Continue", w, lambda x : x),
-Choice(M.message, "New game", w, restart),
-Choice(M.message, "Quit", w, Quit),
-Choice(M.message, "Difficulty: ", w, lambda x : x, ["casual, ", "medium, ", "hard"])
-]
-)
-settings = Tab(M.screen, "Settings", 
-[
-    Choice(M.message, "Resolution: ", w, lambda x : x, ["320*240, ", "800*600"]), 
-    Choice(M.message, "Audio: ", w, lambda x : x, ["on, ", "off"]), 
-Adjust(M.message, "Volume: ", w, 0, 100, 70, 10)
-]
-)
-info = Tab(M.screen, "Help", 
-[
-    Choice(M.message, "foobar", w, lambda x: x)
-]
-)
-M.items = [mainmenu, settings, info]
-M.menuloop()
-
+### def restart():
+###     global lives_left
+###     lives_left = 3
+###     global score
+###     score = 0
+###     global start_again
+###     start_again = True
+###     global level
+###     level = levelmanager.LevelManager(scr)
+###     global maze
+###     maze = level.current_level
+### 
+### def Quit():
+###     global running
+###     running = False
+###     print("quit called from menu")
+###     pygame.event.post(pygame.event.Event(pygame.QUIT))
+### 
+### # setup mainmenu
+### M = Menu(scr.screen)
+### w = M.width
+### mainmenu = Tab(M.screen, "Main", 
+### [
+###     Choice(M.message, "Continue", w, lambda x : x),
+### Choice(M.message, "New game", w, restart),
+### Choice(M.message, "Quit", w, Quit),
+### Choice(M.message, "Difficulty: ", w, lambda x : x, ["casual, ", "medium, ", "hard"])
+### ]
+### )
+### settings = Tab(M.screen, "Settings", 
+### [
+###     Choice(M.message, "Resolution: ", w, lambda x : x, ["320*240, ", "800*600"]), 
+###     Choice(M.message, "Audio: ", w, lambda x : x, ["on, ", "off"]), 
+### Adjust(M.message, "Volume: ", w, 0, 100, 70, 10)
+### ]
+### )
+### info = Tab(M.screen, "Help", 
+### [
+###     Choice(M.message, "foobar", w, lambda x: x)
+### ]
+### )
+### M.items = [mainmenu, settings, info]
+### #M.menuloop()
+### startmenu = Choice(M.message, "New game", w, restart)
+### startmenu.screen = M.screen
+### startmenu.keyreader = M.keyreader
+### startmenu.menuloop()
 
 def bars():
     while(scr.load_animation()):
@@ -153,7 +164,8 @@ while running:
 
     if (lives_left < 0):
         pygame.time.wait(500)
-        mr = M.menuloop()
+        running = False
+        ### mr = M.menuloop()
     # get events and move player
     EventList = pygame.event.get() 
     for e in EventList:
@@ -181,8 +193,9 @@ while running:
             keys = myKeyReader.readKeyDwn(pygame.key.get_pressed())
             maze.player.read_keys(keys)
         if (keys[1] == "menu"):
-            mr = M.menuloop()
-            mr()
+            running = False
+            ### mr = M.menuloop()
+            ### mr()
         if (e.type == player_died):
             # player dead
             bars()

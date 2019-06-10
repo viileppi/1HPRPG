@@ -47,16 +47,36 @@ class Spawner:
 
     def cast(self, direction):
         r = False
-        where = direction
-        pos = (self.source.rect.centerx - self.source.old_dir[0] * -5, self.source.rect.centery - self.source.old_dir[1] * -5)
-        if (((pygame.time.get_ticks() - self.shoot_start) > self.cooldown)):
-            if (len(self.ammogroup.sprites()) < self.shots_n):
-                pew = self.spawnable(self, self.ammo_image, pos, where, self.ammo_speed)
-                self.ammogroup.add(pew)
-                self.shot_list.append(pew)
+        if (self.ammogroup == None):
+            if (((pygame.time.get_ticks() - self.shoot_start) > self.cooldown)):
                 self.shoot_start = pygame.time.get_ticks()
+                pew = self.spawnable(self, self.ammo_image, None, None, self.ammo_speed)
+                self.shot_list.append(pew)
                 r = True
+        else:
+            where = direction
+            pos = (self.source.rect.centerx - self.source.old_dir[0] * -5, self.source.rect.centery - self.source.old_dir[1] * -5)
+            if (((pygame.time.get_ticks() - self.shoot_start) > self.cooldown)):
+                if (len(self.ammogroup.sprites()) < self.shots_n):
+                    pew = self.spawnable(self, self.ammo_image, pos, where, self.ammo_speed)
+                    self.ammogroup.add(pew)
+                    self.shot_list.append(pew)
+                    self.shoot_start = pygame.time.get_ticks()
+                    r = True
         return r
+
+class Run:
+    ''' run time = speed '''
+    def __init__(self, source, image, coords, direction, speed):
+        self.source = source.source
+        self.timeout = speed
+        self.source.speed = self.source.double_speed
+        self.start = pygame.time.get_ticks()
+
+    def update(self):
+        if (self.timeout+self.start)<pygame.time.get_ticks():
+            self.source.speed = self.source.half_speed
+            del self
 
 class deltaAmmo(Ammo):
     """ interpolates to given coordinate by given speed """
@@ -123,6 +143,25 @@ class Blast(pygame.sprite.Sprite):
             self.rect = pygame.draw.circle(self.screen, self.color, self.source.source.get_pos(), self.deltaR, self.blast_w)
         else:
             self.destroy()
+
+    def draw(self):
+        self.rect = self.screen.blit(
+                self.image, 
+                self.rect, 
+                self.rect
+                )
+
+    def destroy(self):
+        self.kill()
+        del self
+
+class Shield(Blast):
+    def __init__(self, source, image, coords, direction, speed):
+        Blast.__init__(self, source, image, coords, direction, speed)
+        self.radius = 100
+
+    def update(self):
+        self.rect = pygame.draw.circle(self.screen, self.color, self.source.source.get_pos(), self.deltaR, self.blast_w)
 
     def draw(self):
         self.rect = self.screen.blit(

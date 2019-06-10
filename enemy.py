@@ -131,6 +131,9 @@ class Enemy(objects.Object):
                 self.where = self.turns[self.dir_div%len(self.turns)]
 
     def turnaround(self, point):
+        self.dir_div += random.randint(1,3)
+        self.where = self.turns[self.dir_div%len(self.turns)]
+
         # self.forward = not self.forward
         # self.walked = 1
         #if (self.where == (1,0)):
@@ -147,7 +150,7 @@ class Enemy(objects.Object):
         #self.where = (self.where[0] * self.speed, self.where[1] * self.speed)
         #c = self.cast.test(self.where)
         #self.where = (self.where[0] * c[0], self.where[1] * c[1])
-        pass
+        #pass
 
     def update(self):
         if (self.alive):

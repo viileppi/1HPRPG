@@ -183,6 +183,29 @@ class Choice:
             last_x += option.get_width()
         return ret
 
+    def menuloop(self):
+        running = True
+        while (running):
+            x_mod = 0
+            # evaluate keypresses
+            EventList = pygame.event.get() 
+            for e in EventList:
+                if (e.type == KEYDOWN):
+                    k = pygame.key.get_pressed()
+                    keys = self.keyreader.readKeyDwn(k)
+                    action = keys[1]
+                    if (action == "menu"):
+                        running = False
+                    if (action == "fire") or (action == "choose"):
+                        running = False
+                        r = self.retfunc
+                        return r
+            self.screen.fill(pygame.Color("black"))
+            self.image = self.message.render(self.text, False, self.chosen)
+            self.screen.blit(self.image, (32,32))
+            pygame.display.update()
+
+
 class Adjust:
     def __init__(self, renderer, text, scr_w, bottom, top, default, step):
         self.message = renderer

@@ -22,7 +22,7 @@
   <vision>
     <top_h>48</top_h>
     <bottom_h>32</bottom_h>
-    <fullscreen>False</fullscreen>
+    <fullscreen>True</fullscreen>
   </vision>
   <enemy>
     <speed>1</speed>
