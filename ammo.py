@@ -52,6 +52,7 @@ class Spawner:
                 self.shoot_start = pygame.time.get_ticks()
                 pew = self.spawnable(self, self.ammo_image, None, None, self.ammo_speed)
                 self.shot_list.append(pew)
+                self.shoot_start = pygame.time.get_ticks()
                 r = True
         else:
             where = direction
@@ -72,11 +73,13 @@ class Run:
         self.timeout = speed
         self.source.speed = self.source.double_speed
         self.start = pygame.time.get_ticks()
+        print(self.start)
 
     def update(self):
         if (self.timeout+self.start)<pygame.time.get_ticks():
             self.source.speed = self.source.half_speed
             del self
+            return True
 
 class deltaAmmo(Ammo):
     """ interpolates to given coordinate by given speed """

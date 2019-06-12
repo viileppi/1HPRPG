@@ -79,11 +79,10 @@ class Player(Object):
         testdir = self.cast.test(self.dir)
         self.dir = (self.dir[0] * testdir[0], self.dir[1] * testdir[1])
         self.rect = self.move_animator.goto(self.dir)
-        try:
-            run = self.run_spawner.shot_list[0]
-            run.update()
-        except IndexError:
-            pass
+        # dirty hack...
+        for run in self.run_spawner.shot_list:
+            if (run.update()):
+                self.run_spawner.shot_list = []
 
     def read_keys(self, keys):
         new_dir = (keys[0])
