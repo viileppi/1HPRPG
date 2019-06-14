@@ -61,10 +61,6 @@ pygame.key.set_repeat(key_rate,key_rate)
 pygame.display.update()
 
 hs = Hiscore(scr.screen)
-name = hs.alphabet_input(100)
-hs.add(name[0],name[1])
-hs.draw()
-pygame.time.wait(500)
 hs.draw()
 pygame.time.wait(500)
 
@@ -141,7 +137,7 @@ player_blast = userevents.player_blast().type
 def bars():
     while(scr.load_animation()):
         pygame.display.update()
-        clk.tick(fps)
+        clk.tick(60)
 bars()
 
 while running:
@@ -151,6 +147,8 @@ while running:
     if (start_again):
         start_again = False
         #maze = level.next(score)
+        # tähän fps suoraan settings.xml:stä
+        fps = int(root.find("fps").text)
         maze = level.again()
         maze.render_map(scr.bg)
         pygame.display.flip()
@@ -158,14 +156,23 @@ while running:
 
     if (maze.update_level()):
         # next level
+        fps = int(root.find("fps").text)
+        fps += int(score/450)
+        print(fps)
         maze = level.next(score)
         maze.render_map(scr.bg)
         pygame.display.flip()
         scr.top_msg.set_message("Level " + str(level.xy) + " Lifes: " + str(lives_left) + " Score: " + str(score))
 
     if (lives_left < 0):
-        pygame.time.wait(500)
         running = False
+        bars()
+        #name = hs.alphabet_input(score)
+        #print(name)
+        #hs.add(name[0],name[1])
+        hs.draw()
+        pygame.time.wait(500)
+        bars()
         ### mr = M.menuloop()
     # get events and move player
     EventList = pygame.event.get() 
@@ -183,9 +190,9 @@ while running:
                 if (e.type == enemy_shot):
                     enemy_ch.play(pew_sound)
         if (e.type == QUIT):
-            running = False
-            pygame.quit()
-            pygame.display.quit()
+            running = lives_left = -1
+            #pygame.quit()
+            #pygame.display.quit()
             break
         if (e.type == JOYAXISMOTION) or (e.type == JOYBUTTONDOWN):
             keys = myKeyReader.readJoypad(joypad) 
@@ -210,5 +217,7 @@ while running:
     if (running):
         pygame.display.update()
         scr.update()
-        clk.tick(fps)
-
+        fps += (clk.tick(fps)/500)
+pygame.quit()
+pygame.display.quit()
+ 

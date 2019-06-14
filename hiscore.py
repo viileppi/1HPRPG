@@ -51,7 +51,7 @@ class Hiscore:
         # 65 is ASCII-code for capital A
         alphabet = 65
         limits = (65,90)
-        text = [str(score), "A", "A", "A"]
+        text = ["A", "A", "A"]
         while running:
             self.screen.fill(pygame.Color("black"))
             for i in range(1,4,1):

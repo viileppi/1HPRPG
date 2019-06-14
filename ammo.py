@@ -188,7 +188,7 @@ class Bomb(Blast):
 
     def update(self):
         if (self.speed > 0):
-            self.speed -= 1
+            self.speed -= 4
             blink = (self.speed*8)%255
             self.image = pygame.draw.circle(self.screen, 
                     pygame.Color(blink, blink, blink), 
