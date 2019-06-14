@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <data>
   <main>
-    <resolutionx>800</resolutionx>
-    <resolutiony>600</resolutiony>
+    <resolutionx>1280</resolutionx>
+    <resolutiony>800</resolutiony>
     <sounds>True</sounds>
     <mixer_rate>8000</mixer_rate>
     <mixer_bitdepth>8</mixer_bitdepth>
@@ -27,12 +27,12 @@
   <enemy>
     <speed>2</speed>
     <walk_dist>150</walk_dist>
-    <ammo_speed>2</ammo_speed>
+    <ammo_speed>4</ammo_speed>
     <boot_time>2000</boot_time>
     <cooldown>750</cooldown>
   </enemy>
   <player>
-    <speed>8</speed>
+    <speed>7</speed>
     <ammo_speed>2</ammo_speed>
     <cooldown>250</cooldown>
     <blast_cool>2000</blast_cool>

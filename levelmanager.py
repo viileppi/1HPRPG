@@ -38,7 +38,8 @@ class LevelManager:
 
     def next(self, score):
         # del self.current_level
-        self.difficulty = max(1, int(score/1000))
+        self.difficulty = max(1, int(score/713))
+        print(self.difficulty)
         notfound = True
         xy = self.current_level.player.get_pos()
         player_items = self.current_level.player_items

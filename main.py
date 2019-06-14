@@ -34,6 +34,12 @@ lives_left = int(root.find("lives_left").text)
 # init stuff
 running = True
 score = 0
+# set some variables
+pygame.init()
+lives_left = 3
+start_again = False
+
+
 ## these settings are for 8bitdo sfc30
 scr = Screen(resolutionx, resolutiony)
 #screen = scr.screenhas_joystick = False
@@ -60,21 +66,12 @@ clk = pygame.time.Clock()
 pygame.key.set_repeat(key_rate,key_rate)
 pygame.display.update()
 
-hs = Hiscore(scr.screen)
-hs.draw()
-pygame.time.wait(500)
-
 # level inits
 level = levelmanager.LevelManager(scr)
 maze = level.current_level
 
 # map is rendered on background image
 maze.render_map(scr.bg)
-
-# set some variables
-pygame.init()
-lives_left = 3
-start_again = False
 
 # userevents setup
 player_shot = userevents.player_shot_event().type
@@ -165,14 +162,27 @@ while running:
         scr.top_msg.set_message("Level " + str(level.xy) + " Lifes: " + str(lives_left) + " Score: " + str(score))
 
     if (lives_left < 0):
-        running = False
+        # init stuff
+        pygame.time.wait(250)
+        scr = Screen(resolutionx, resolutiony)
         bars()
+        running = True
+        score = 0
+        # set some variables
+        pygame.init()
+        lives_left = 3
+        start_again = True
+        pygame.display.update()
+        stopped = True
+        while stopped:
+            EventList = pygame.event.get() 
+            for e in EventList:
+                if (e.type == KEYDOWN):
+                    stopped = False
+
         #name = hs.alphabet_input(score)
         #print(name)
         #hs.add(name[0],name[1])
-        hs.draw()
-        pygame.time.wait(500)
-        bars()
         ### mr = M.menuloop()
     # get events and move player
     EventList = pygame.event.get() 
@@ -190,7 +200,8 @@ while running:
                 if (e.type == enemy_shot):
                     enemy_ch.play(pew_sound)
         if (e.type == QUIT):
-            running = lives_left = -1
+            running = False
+            lives_left = lives_left = -1
             #pygame.quit()
             #pygame.display.quit()
             break
@@ -201,12 +212,13 @@ while running:
             keys = myKeyReader.readKeyDwn(pygame.key.get_pressed())
             maze.player.read_keys(keys)
         if (keys[1] == "menu"):
-            running = False
+            pass
             ### mr = M.menuloop()
             ### mr()
         if (e.type == player_died):
             # player dead
             bars()
+            pygame.display.update()
             lives_left -= 1
             start_again = True
             scr.top_msg.set_message("Level " + str(level.xy) + " Lifes: " + str(lives_left) + " Score: " + str(score))
