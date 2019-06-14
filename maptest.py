@@ -5,6 +5,7 @@ from os import path
 from colliders import *
 from player import Player
 from enemy import Enemy
+from enemy import Roomba
 from wall import Wall
 from wall import Finish
 import random
@@ -176,7 +177,9 @@ class LevelRenderer(object):
         for coord in self.spawn_points:
             point = (xy>>i)&3
             if (point == mask):
+                ### ROOMBA TEST ### 
                 e = Enemy(self, self.robot_image, coord, self.difficulty)
+                ### e = Roomba(self, self.robot_image, coord, self.difficulty)
                 if (e.playerCheck(200)) or (enemies < 0):
                     e.kill()
                     del e

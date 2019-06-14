@@ -9,7 +9,7 @@ from menu import Menu
 from menu import Tab
 from menu import Choice
 from menu import Adjust
-from menu import Hiscore
+#from menu import Hiscore
 import userevents
 import xml.etree.ElementTree as ET
 import copy
@@ -36,7 +36,7 @@ running = True
 score = 0
 ## these settings are for 8bitdo sfc30
 scr = Screen(resolutionx, resolutiony)
-screen = scr.screenhas_joystick = False
+#screen = scr.screenhas_joystick = False
 pygame.joystick.init()
 if (pygame.joystick.get_count() > 0):
     joypad = pygame.joystick.Joystick(0)
@@ -61,9 +61,10 @@ pygame.key.set_repeat(key_rate,key_rate)
 pygame.display.update()
 
 hs = Hiscore(scr.screen)
+name = hs.alphabet_input(100)
+hs.add(name[0],name[1])
 hs.draw()
 pygame.time.wait(500)
-hs.add("VTR", 250)
 hs.draw()
 pygame.time.wait(500)
 
@@ -210,7 +211,4 @@ while running:
         pygame.display.update()
         scr.update()
         clk.tick(fps)
-h = Hiscore(scr.screen, None)
-h.draw()
-
 

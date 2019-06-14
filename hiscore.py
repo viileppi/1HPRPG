@@ -3,12 +3,14 @@ import time
 import readkeys as keyreader
 import pickle
 import pygame
+from pygame.locals import *
 
 class Hiscore:
     ''' class to display and enter hiscores '''
     def __init__(self, screen):
         self.screen = screen
-        self.rect = screen.get_rect()
+        print(self.screen)
+        #self.rect = self.screen.get_rect()
         self.width = self.screen.get_width()
         self.height = self.screen.get_height()
         self.scoreboard = pickle.load( open( "scores.pickle", "rb" ) )
@@ -41,4 +43,35 @@ class Hiscore:
         if (len(self.scoreboard) > self.max_n):
             self.scoreboard.pop()
         pickle.dump( self.scoreboard, open("scores.pickle", "wb") )
+
+    def alphabet_input(self, score):
+        running = True
+        y_mod = 1
+        x_mod = 0
+        # 65 is ASCII-code for capital A
+        alphabet = 65
+        limits = (65,90)
+        text = [str(score), "A", "A", "A"]
+        while running:
+            self.screen.fill(pygame.Color("black"))
+            for i in range(1,4,1):
+                surf = self.message.render(text[i], False, pygame.Color("yellow"), None)
+                self.screen.blit(surf, (self.pos[0]+(i*self.fontsize), self.pos[1]))
+            pygame.display.update()            
+            EventList = pygame.event.get()
+            for e in EventList:
+                if (e.type == KEYDOWN):
+                    k = pygame.key.get_pressed()
+                    keys = self.keyreader.readKeyDwn(k)
+                    y_mod = (y_mod + keys[0][1]) % (limits[1]-limits[0])
+                    text[x_mod] = chr(alphabet+y_mod)
+                    action = keys[1]
+                    if (action == "fire") or (action == "choose"):
+                        if (x_mod<3):
+                            x_mod += 1
+                        else:
+                            running = False
+                            r = [str(text[1] + text[2] + text[3]), score]
+                            print(r)
+                            return r
 

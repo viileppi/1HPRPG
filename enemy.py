@@ -233,3 +233,48 @@ class Snake(Enemy):
             self.attack_start = pygame.time.get_ticks()
         self.seek()
 
+class Roomba(Enemy):
+    ''' inspired by a cheap vacuuming robot '''
+    def __init__(self, source, image, coords, difficulty):
+        Enemy.__init__(self, source, image, coords, difficulty)
+        self.speed = 1
+        self.death_image = path.join("images", "snake.png")
+        self.ray_shrink = (0,0)
+        self.cast = Cast(self)
+        self.where = (1,1)
+        self.attack_cool = self.boot_time
+        self.speed * self.speed * 2
+        self.attack_start = pygame.time.get_ticks()
+        self.creation_time = pygame.time.get_ticks()
+        self.turns = [
+                        (-self.speed,self.speed), 
+                        (-self.speed,-self.speed), 
+                        (self.speed,-self.speed),
+                        (self.speed,self.speed), 
+                        ]
+        self.dir_div = 0
+
+    def destroy(self):
+        self.dir = (0,0)
+        self.alive = False
+        self.kill()
+        del self
+        pygame.event.post(userevents.death_event())
+
+    def seek(self):
+        pass
+
+    def update(self):
+        c = self.cast.test(self.where)
+        self.where = (self.where[0] * c[0], self.where[1] * c[1])
+        if (c != (1,1)):
+            self.where = self.turns[self.dir_div%len(self.turns)]
+            self.dir_div += 1
+        self.rect = self.move_animator.goto(self.where)
+
+        if (self.attack_start + self.attack_cool) < pygame.time.get_ticks():
+            #self.where = (self.where[0]*-1, self.where[1]*-1)
+            self.seen_player = self.los.draw()
+            self.attack_start = pygame.time.get_ticks()
+        self.seek()
+
