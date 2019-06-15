@@ -73,7 +73,7 @@ class Run:
         self.timeout = speed
         self.source.speed = self.source.double_speed
         self.start = pygame.time.get_ticks()
-        print(self.start)
+        self.direction = direction
 
     def update(self):
         if (self.timeout+self.start)<pygame.time.get_ticks():

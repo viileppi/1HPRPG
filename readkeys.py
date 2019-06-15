@@ -33,6 +33,8 @@ class KeyReader:
                0: "blast",
                4: "run"
                }
+        self.last_call = pygame.time.get_ticks()
+        self.machine_gun_time = 750
 
     def readMouse(self):
         #print(pygame.mouse.get_pressed())

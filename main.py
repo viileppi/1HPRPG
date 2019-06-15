@@ -42,6 +42,7 @@ start_again = False
 
 ## these settings are for 8bitdo sfc30
 scr = Screen(resolutionx, resolutiony)
+print(pygame.display.list_modes())
 #screen = scr.screenhas_joystick = False
 pygame.joystick.init()
 if (pygame.joystick.get_count() > 0):
@@ -59,6 +60,7 @@ if (sounds):
     player_pew = pygame.mixer.Sound(path.join("sounds", "wep.wav"))
     blast = pygame.mixer.Sound(path.join("sounds", "blast.wav"))
     obj_death = pygame.mixer.Sound(path.join("sounds", "death.wav"))
+    pygame.mixer.music.load(path.join("sounds", "song.xm"))
 
 
 # setup framerate and keyboard repeat rate
@@ -82,56 +84,9 @@ player_died = userevents.player_died().type
 player_ran = userevents.player_ran().type
 player_blast = userevents.player_blast().type
 
-# setu up some functions to use with mainmenu
-### def restart():
-###     global lives_left
-###     lives_left = 3
-###     global score
-###     score = 0
-###     global start_again
-###     start_again = True
-###     global level
-###     level = levelmanager.LevelManager(scr)
-###     global maze
-###     maze = level.current_level
-### 
-### def Quit():
-###     global running
-###     running = False
-###     print("quit called from menu")
-###     pygame.event.post(pygame.event.Event(pygame.QUIT))
-### 
-### # setup mainmenu
-### M = Menu(scr.screen)
-### w = M.width
-### mainmenu = Tab(M.screen, "Main", 
-### [
-###     Choice(M.message, "Continue", w, lambda x : x),
-### Choice(M.message, "New game", w, restart),
-### Choice(M.message, "Quit", w, Quit),
-### Choice(M.message, "Difficulty: ", w, lambda x : x, ["casual, ", "medium, ", "hard"])
-### ]
-### )
-### settings = Tab(M.screen, "Settings", 
-### [
-###     Choice(M.message, "Resolution: ", w, lambda x : x, ["320*240, ", "800*600"]), 
-###     Choice(M.message, "Audio: ", w, lambda x : x, ["on, ", "off"]), 
-### Adjust(M.message, "Volume: ", w, 0, 100, 70, 10)
-### ]
-### )
-### info = Tab(M.screen, "Help", 
-### [
-###     Choice(M.message, "foobar", w, lambda x: x)
-### ]
-### )
-### M.items = [mainmenu, settings, info]
-### #M.menuloop()
-### startmenu = Choice(M.message, "New game", w, restart)
-### startmenu.screen = M.screen
-### startmenu.keyreader = M.keyreader
-### startmenu.menuloop()
-
 def bars():
+    if (sounds):
+        pygame.mixer.music.play(-1)
     while(scr.load_animation()):
         pygame.display.update()
         clk.tick(60)
@@ -142,6 +97,7 @@ while running:
     # pygame.display.set_caption(str(enemy.rect) + str(player.rect))
     start = 0
     if (start_again):
+        bars()
         start_again = False
         #maze = level.next(score)
         # tähän fps suoraan settings.xml:stä
@@ -153,6 +109,7 @@ while running:
 
     if (maze.update_level()):
         # next level
+        bars()
         fps = int(root.find("fps").text)
         fps += int(score/450)
         print(fps)
@@ -165,7 +122,6 @@ while running:
         # init stuff
         pygame.time.wait(250)
         scr = Screen(resolutionx, resolutiony)
-        bars()
         running = True
         score = 0
         # set some variables
@@ -221,7 +177,7 @@ while running:
             pygame.display.update()
             lives_left -= 1
             start_again = True
-            scr.top_msg.set_message("Level " + str(level.xy) + " Lifes: " + str(lives_left) + " Score: " + str(score))
+            scr.top_msg.set_message("Level " + str(level.xy) + " Lifes: " + str(lives_left) + " Score: ")
         if (e.type == MOUSEBUTTONDOWN):
             mouse = myKeyReader.readMouse()
             maze.player.read_mouse(mouse)
@@ -229,7 +185,8 @@ while running:
     if (running):
         pygame.display.update()
         scr.update()
-        fps += (clk.tick(fps)/500)
+        fps = min(60, fps + (clk.tick(fps)/667))
+        #clk.tick(fps)
 pygame.quit()
 pygame.display.quit()
  

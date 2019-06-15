@@ -21,6 +21,7 @@ class Screen:
         self.middle_h = self.height - self.top_h - self.bottom_h
         if (root.find("fullscreen").text == "True"):
             self.screen = pygame.display.set_mode((self.width, self.height), pygame.FULLSCREEN)
+            self.screen = pygame.display.set_mode((self.width, self.height), pygame.HWSURFACE)
         else:
             self.screen = pygame.display.set_mode((self.width, self.height), pygame.RESIZABLE)
         self.screen.set_colorkey(SRCALPHA)
@@ -36,14 +37,14 @@ class Screen:
         run = pygame.image.load(path.join("images", "run.png")).convert_alpha()
         blast = pygame.image.load(path.join("images", "blast.png")).convert_alpha()
         self.hk_list = [run, blast, gun]
-        self.bottom_msg = HotKeys((self.width, self.bottom_h), 16, self.hk_list)
+        #self.bottom_msg = HotKeys((self.width, self.bottom_h), 16, self.hk_list)
         self.line_w = 1
 
     def update(self):
         self.top_msg.update()
         self.screen.blit(self.top_msg.background, (0,0))
         self.screen.blit(self.top_msg.image, (0,0))
-        self.screen.blit(self.bottom_msg.image, (self.bottom_h, self.height - self.bottom_h))
+        #self.screen.blit(self.bottom_msg.image, (self.bottom_h, self.height - self.bottom_h))
         #self.screen.blit(self.bg, (0,self.top_h))
         self.gamearea.blit(self.bg, self.area_rect, self.area_rect)
 

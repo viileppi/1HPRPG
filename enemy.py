@@ -72,6 +72,7 @@ class Enemy(objects.Object):
         self.shot_no = random.randint(1,4)
         self.ammo_spawner = Spawner(self, deltaAmmo, self.cooldown, self.ammo_speed, self.ammo_image, self.shot_no, self.ammogroup)
         self.move_animator.step = 0.5
+        self.speed_up = 50
 
     def destroy(self):
         corpse = Corpse(self)
@@ -95,6 +96,14 @@ class Enemy(objects.Object):
             return True
         else:
             return False
+
+    def speedup(self):
+        self.speed_up -= 1
+        if (self.speed_up < 0) and (self.speed < 8):
+            self.speed += 1
+            self.ammo_speed += self.speed 
+            print(self.speed)
+            self.speed_up = 50
 
     def seek(self):
         if (self.seen_player):
@@ -153,6 +162,7 @@ class Enemy(objects.Object):
         #pass
 
     def update(self):
+        self.speedup()
         if (self.alive):
             if (self.ready):
                 self.seen_player = self.los.draw()
@@ -220,6 +230,7 @@ class Snake(Enemy):
 
 
     def update(self):
+        self.speedup()
         c = self.cast.test(self.where)
         self.where = (self.where[0] * c[0], self.where[1] * c[1])
         if (c != (1,1)):
@@ -265,6 +276,7 @@ class Roomba(Enemy):
         pass
 
     def update(self):
+        self.speedup()
         c = self.cast.test(self.where)
         self.where = (self.where[0] * c[0], self.where[1] * c[1])
         if (c != (1,1)):

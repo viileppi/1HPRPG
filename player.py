@@ -61,6 +61,7 @@ class Player(Object):
         self.ray_shrink = (-24,-6)
         self.cast = Cast(self)
         self.ammo_spawner = Spawner(self, deltaAmmo, self.cooldown, self.ammo_speed, self.ammo_image, 1, self.ammogroup)
+        self.sarja_spawner = Spawner(self, deltaAmmo, self.cooldown/2, self.ammo_speed/2, self.ammo_image, 8, self.ammogroup)
         self.blast_spawner = Spawner(self, Blast, self.blast_cool, 1, self.ammo_image, 1, self.blastgroup)
         self.bomb_spawner = Spawner(self, Bomb, self.blast_cool, 250, self.ammo_image, 1, self.bombgroup)
         self.run_spawner = Spawner(self, Run, 1000, 1000, None, 1, None)
@@ -97,6 +98,8 @@ class Player(Object):
             self.bomb()
         if (keys[1] == "run"):
             self.run()
+        if (keys[1] == "fire") and (keys[0] == (0,0)):
+            self.sarja()
 
     def read_mouse(self, mouse):
         if (mouse == (0,0)):
@@ -123,7 +126,7 @@ class Player(Object):
             pygame.event.post(userevents.player_blast_event())
 
     def run(self):
-        self.run_spawner.cast((0,0))
+        self.run_spawner.cast((self.dir))
 
     def shoot(self):
         if (self.dir == (0,0)):
@@ -132,7 +135,15 @@ class Player(Object):
             ammo_dir = (self.rect.centerx - self.dir[0] * -100, self.rect.centery - self.dir[1] * -100)
         if (self.ammo_spawner.cast(ammo_dir)):
             pygame.event.post(userevents.player_shot_event())
-        self.dir = (0,0)
+        self.old_ammo_dir = ammo_dir
+
+    def sarja(self):
+        if (self.dir == (0,0)):
+            ammo_dir = (self.rect.centerx - self.old_dir[0] * -100, self.rect.centery - self.old_dir[1] * -100)
+        else:
+            ammo_dir = (self.rect.centerx - self.dir[0] * -100, self.rect.centery - self.dir[1] * -100)
+        if (self.sarja_spawner.cast(ammo_dir)):
+            pygame.event.post(userevents.player_shot_event())
         self.old_ammo_dir = ammo_dir
 
 

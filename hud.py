@@ -21,6 +21,7 @@ class HUD:
 
 
     def set_message(self, string):
+        self.image.fill(pygame.Color("black"))
         self.text = string
         self.image.blit(self.background, self.rect)
         self.image = self.message.render(self.text, False, self.color, self.bg_color)
