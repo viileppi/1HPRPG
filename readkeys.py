@@ -26,7 +26,8 @@ class KeyReader:
                self.kd["fire"]: "fire", 
                self.kd["blast"]: "blast",
                self.kd["bomb"]: "bomb",
-               self.kd["run"]: "run"
+               self.kd["run"]: "run",
+               self.kd["sarja"]: "sarja"
                }
         self.joymap = {
                1: "fire",

@@ -98,7 +98,7 @@ class Player(Object):
             self.bomb()
         if (keys[1] == "run"):
             self.run()
-        if (keys[1] == "fire") and (keys[0] == (0,0)):
+        if (keys[1] == "sarja"):
             self.sarja()
 
     def read_mouse(self, mouse):
@@ -144,6 +144,7 @@ class Player(Object):
             ammo_dir = (self.rect.centerx - self.dir[0] * -100, self.rect.centery - self.dir[1] * -100)
         if (self.sarja_spawner.cast(ammo_dir)):
             pygame.event.post(userevents.player_shot_event())
+        self.dir = (0,0)
         self.old_ammo_dir = ammo_dir
 
 
