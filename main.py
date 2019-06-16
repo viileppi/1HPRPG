@@ -83,10 +83,15 @@ enemy_shot = userevents.enemy_shot_event().type
 player_died = userevents.player_died().type
 player_ran = userevents.player_ran().type
 player_blast = userevents.player_blast().type
+music_stop = userevents.music_stop().type
+pygame.mixer.music.set_endevent(music_stop)
+
+def start_music():
+    if (sounds):
+        pygame.mixer.music.play()
 
 def bars():
-    if (sounds):
-        pygame.mixer.music.play(-1)
+    start_music()
     while(scr.load_animation()):
         pygame.display.update()
         clk.tick(30)
@@ -147,17 +152,20 @@ while running:
     EventList = pygame.event.get() 
     for e in EventList:
         if (sounds):
-                if (e.type == player_shot):
-                    player_ch.play(player_pew)
-                if (e.type == player_blast):
-                    player_ch.play(blast)
-                if (e.type == death):
-                    enemy_ch.play(obj_death)
-                    # add score
-                    score += 100
-                    scr.top_msg.set_message("Level " + str(level.xy) + " Lifes: " + str(lives_left) + " Score: " + str(score))
-                if (e.type == enemy_shot):
-                    enemy_ch.play(pew_sound)
+            if (e.type == music_stop):
+                maze.generate_maze(maze.screen)
+                start_music()
+            if (e.type == player_shot):
+                player_ch.play(player_pew)
+            if (e.type == player_blast):
+                player_ch.play(blast)
+            if (e.type == death):
+                enemy_ch.play(obj_death)
+                # add score
+                score += 100
+                scr.top_msg.set_message("Level " + str(level.xy) + " Lifes: " + str(lives_left) + " Score: " + str(score))
+            if (e.type == enemy_shot):
+                enemy_ch.play(pew_sound)
         if (e.type == QUIT):
             running = False
             lives_left = lives_left = -1

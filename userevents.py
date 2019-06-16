@@ -25,5 +25,8 @@ def player_blast():
 def player_gun():
     return pygame.event.Event(pygame.USEREVENT + 8)
 
+def music_stop():
+    return pygame.event.Event(pygame.USEREVENT + 9)
+
 
 
