@@ -125,7 +125,7 @@ while running:
 
     if (maze.update_level()):
         # next level
-        score += 251
+        score += 247
         bars()
         fps = int(root.find("fps").text)
         fps += int(score/450)

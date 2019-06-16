@@ -12,7 +12,7 @@ class Hiscore:
         self.width = self.screen.get_width()
         self.height = self.screen.get_height()
         self.keyreader = keyreader.KeyReader()
-        self.max_n = 10
+        self.max_n = 7
         self.color = pygame.Color(255,255,255)
         pygame.font.init()
         self.fontsize = int(self.height/15)
@@ -21,6 +21,10 @@ class Hiscore:
         self.scoreboard = pickle.load( open("scoreboard.pickle", "rb"))
         self.sorted_scores = list(self.scoreboard.values())
         self.sorted_scores.sort()
+        l = len(self.sorted_scores)
+        m = l - self.max_n
+        self.sorted_scores = self.sorted_scores[m:l]
+        self.sorted_scores.reverse()
         ### this might reset scoreboard when uncommented...
         ###self.scoreboard = {
         ###                    "foo": 500,
@@ -28,6 +32,13 @@ class Hiscore:
         ###                    }
 
     def draw(self):
+        self.scoreboard = pickle.load( open("scoreboard.pickle", "rb"))
+        self.sorted_scores = list(self.scoreboard.values())
+        self.sorted_scores.sort()
+        l = len(self.sorted_scores)
+        m = l - 10
+        self.sorted_scores = self.sorted_scores[m:l]
+        self.sorted_scores.reverse()
         i = 0
         self.screen.fill(pygame.Color("black"))
         text = "HIGHSCORES" 
