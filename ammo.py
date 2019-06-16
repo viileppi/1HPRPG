@@ -130,7 +130,7 @@ class Blast(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.source = source
         self.screen = self.source.screen
-        self.radius = 64
+        self.radius = direction
         self.coords = (int(coords[0]), int(coords[1]))
         self.deltaR = 2
         self.speed = int(speed)

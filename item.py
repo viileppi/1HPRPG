@@ -42,7 +42,7 @@ class Item(pygame.sprite.Sprite):
         if self.kindof == 1:
             # we don't want too large blast but we want more blasts
             if (target.blast_radius < 100):
-                target.blast_radius += 16
+                target.blast_radius += 32
                 self.items["blast_radius"] = target.blast_radius
             else:
                 target.blast_spawner.shots_n += 1

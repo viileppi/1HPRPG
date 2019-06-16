@@ -62,12 +62,19 @@ class Enemy(objects.Object):
         self.image_backup = self.image.copy()
         self.divider = self.rect.height
         self.cast = Cast(self)
-        self.turns = [
+        self.turns = []
+        self.all_turns = [
+                        (self.speed,self.speed), 
+                        (-self.speed,self.speed), 
+                        (-self.speed,-self.speed), 
+                        (-self.speed,self.speed), 
                         (-self.speed,0), 
                         (0,-self.speed), 
                         (self.speed,0),
                         (0,self.speed), 
                         ]
+        for i in range(random.randint(3,8)):
+            self.turns.append(random.choice(self.all_turns))
         self.dir_div = 0
         self.shot_no = random.randint(1,4)
         self.ammo_spawner = Spawner(self, deltaAmmo, self.cooldown, self.ammo_speed, self.ammo_image, self.shot_no, self.ammogroup)
@@ -195,12 +202,12 @@ class Snake(Enemy):
         self.speed * self.speed * 2
         self.attack_start = pygame.time.get_ticks()
         self.creation_time = pygame.time.get_ticks()
-        self.turns = [
-                        (-self.speed,self.speed), 
-                        (-self.speed,-self.speed), 
-                        (self.speed,-self.speed),
-                        (self.speed,self.speed), 
-                        ]
+        ### self.turns = [
+        ###                 (-self.speed,self.speed), 
+        ###                 (-self.speed,-self.speed), 
+        ###                 (self.speed,-self.speed),
+        ###                 (self.speed,self.speed), 
+        ###                 ]
         self.dir_div = 0
 
     def destroy(self):

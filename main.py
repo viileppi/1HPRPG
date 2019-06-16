@@ -89,7 +89,7 @@ def bars():
         pygame.mixer.music.play(-1)
     while(scr.load_animation()):
         pygame.display.update()
-        clk.tick(60)
+        clk.tick(30)
 bars()
 
 while running:
@@ -109,6 +109,7 @@ while running:
 
     if (maze.update_level()):
         # next level
+        score += 250
         bars()
         fps = int(root.find("fps").text)
         fps += int(score/450)
@@ -120,15 +121,8 @@ while running:
 
     if (lives_left < 0):
         # init stuff
-        pygame.time.wait(250)
-        scr = Screen(resolutionx, resolutiony)
-        running = True
-        score = 0
-        # set some variables
-        pygame.init()
-        lives_left = 3
-        start_again = True
-        pygame.display.update()
+        pygame.time.wait(500)
+        pygame.event.clear()
         stopped = True
         while stopped:
             EventList = pygame.event.get() 
@@ -136,6 +130,15 @@ while running:
                 if (e.type == KEYDOWN):
                     stopped = False
 
+        scr = Screen(resolutionx, resolutiony)
+        running = True
+        score = 0
+        # set some variables
+        pygame.init()
+        lives_left = 3
+        start_again = True
+        maze = level.next(score)
+        pygame.display.update()
         #name = hs.alphabet_input(score)
         #print(name)
         #hs.add(name[0],name[1])
