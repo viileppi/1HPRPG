@@ -10,6 +10,7 @@ from wall import Wall
 from wall import Finish
 import random
 import item
+from item import Item
 
 class LevelRenderer(object):
     """
@@ -54,6 +55,7 @@ class LevelRenderer(object):
         for item in self.keypoints:
             self.spawn_points.append((item[0] + 64, item[1] + 64))
             self.spawn_points.append((item[0] - 64, item[1] - 64))
+        self.gived_items = False
         self.finish = None
         self.borders = [
                             # top row
@@ -147,6 +149,7 @@ class LevelRenderer(object):
         self.waypoints.draw(surface)
 
     def generate_maze(self, surface):
+        self.itemgroup.empty()
         i = 0
         end = (0,0)
         xy = (self.xy[1]<<8)|self.xy[0]
@@ -262,6 +265,12 @@ class LevelRenderer(object):
         #    del c
         #    ##  self.render_map(scr.bg)
         #    pygame.display.flip()
+        if (len(self.enemygroup.sprites()) <= 0) and (not self.gived_items):
+            self.gived_items = True
+            for point in self.spawn_points:
+                if (random.randint(0,4)>2):
+                    i = Item(self, point)
+                    self.itemgroup.add(i)
         for item in pla_item:
             self.player_items = item.levelUp(self.player)
         for u in pla_fin:

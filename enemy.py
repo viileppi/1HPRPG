@@ -13,7 +13,6 @@ from pygame.math import Vector2
 import random
 import userevents
 import xml.etree.ElementTree as ET
-from item import Item
 
 class Enemy(objects.Object):
     def __init__(self, source, image, coords, difficulty):
@@ -87,9 +86,6 @@ class Enemy(objects.Object):
         if (random.randint(0, 5) > 3) and (self.kindof == 0):
             e = Snake(self, path.join("images", "snake.png"), (self.rect[0],self.rect[1]), self.difficulty)
             self.groups()[0].add(e)
-        elif (random.randint(0, 5) > 3):
-            i = Item(self)
-            self.source.itemgroup.add(i)
         self.dir = (0,0)
         self.alive = False
         self.kill()

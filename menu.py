@@ -9,6 +9,20 @@ from readkeys import KeyReader
 
 #class Menu(vision.Screen):
 
+class Text2Image:
+    ''' returns a given text as image '''
+    def __init__(self):
+        font.init()
+        self.color = pygame.Color("white")
+
+    def make_image(self, text, size):
+        ''' returns a image from given text '''
+        self.fontsize = int(size)
+        self.message = font.Font(None, self.fontsize)        
+        self.image = self.message.render(text, False, self.color, None)
+        return self.image
+
+
 class Menu:
     def __init__(self, screen):
         self.screen = screen

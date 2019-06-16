@@ -9,6 +9,7 @@ from menu import Menu
 from menu import Tab
 from menu import Choice
 from menu import Adjust
+from menu import Text2Image
 #from menu import Hiscore
 import userevents
 import xml.etree.ElementTree as ET
@@ -34,6 +35,8 @@ lives_left = int(root.find("lives_left").text)
 # init stuff
 running = True
 score = 0
+p = Text2Image()
+pressakey = p.make_image("press a key", 100)
 # set some variables
 pygame.init()
 lives_left = 3
@@ -86,6 +89,15 @@ player_blast = userevents.player_blast().type
 music_stop = userevents.music_stop().type
 pygame.mixer.music.set_endevent(music_stop)
 
+stopped = True
+r = scr.screen.blit(pressakey, (100,100))
+pygame.display.update()
+while stopped:
+    EventList = pygame.event.get() 
+    for e in EventList:
+        if (e.type == KEYDOWN):
+            stopped = False
+
 def start_music():
     if (sounds):
         pygame.mixer.music.play()
@@ -102,7 +114,6 @@ while running:
     # pygame.display.set_caption(str(enemy.rect) + str(player.rect))
     start = 0
     if (start_again):
-        bars()
         start_again = False
         #maze = level.next(score)
         # tähän fps suoraan settings.xml:stä
@@ -129,13 +140,15 @@ while running:
         pygame.time.wait(500)
         pygame.event.clear()
         stopped = True
+        scr = Screen(resolutionx, resolutiony)
+        r = scr.screen.blit(pressakey, (100,100))
+        pygame.display.update()
         while stopped:
             EventList = pygame.event.get() 
             for e in EventList:
                 if (e.type == KEYDOWN):
                     stopped = False
 
-        scr = Screen(resolutionx, resolutiony)
         running = True
         score = 0
         # set some variables
@@ -143,7 +156,6 @@ while running:
         lives_left = 3
         start_again = True
         maze = level.next(score)
-        pygame.display.update()
         #name = hs.alphabet_input(score)
         #print(name)
         #hs.add(name[0],name[1])

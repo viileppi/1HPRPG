@@ -4,7 +4,7 @@ import random
 from os import path
 
 class Item(pygame.sprite.Sprite):
-    def __init__(self, source):
+    def __init__(self, source, pos):
         pygame.sprite.Sprite.__init__(self)
         self.source = source
         self.screen = self.source.screen
@@ -15,20 +15,23 @@ class Item(pygame.sprite.Sprite):
         self.kindof = random.randint(0,len(self.hk_list)-1)
         self.image = self.hk_list[self.kindof]
         self.rect = self.image.get_rect()
-        self.rect.x = self.source.rect.x
-        self.rect.y = self.source.rect.y
+        self.rect.x = pos[0]
+        self.rect.y = pos[1]
         self.items = {  "speed": self.source.player.speed,
                         "blast_radius": self.source.player.blast_radius,
                         "shots_n": self.source.player.ammo_spawner.shots_n,
                         "blasts_n": self.source.player.blast_spawner.shots_n
                     }
+        self.timeout = 200
 
     def destroy(self):
         self.kill()
         del self
 
     def update(self):
-        pass
+        self.timeout -= 1
+        if self.timeout < 0:
+            self.destroy()
         #self.rect = self.screen.blit(
         #        self.image, 
         #        self.rect, 
@@ -48,6 +51,7 @@ class Item(pygame.sprite.Sprite):
                 target.blast_spawner.shots_n += 1
                 self.items["blasts_n"] = target.blast_spawner.shots_n
         if self.kindof == 2:
+            target.ammo_spawner.ammo_speed += 1
             target.ammo_spawner.shots_n += 1
             self.items["shots_n"] = target.ammo_spawner.shots_n
         return self.items
