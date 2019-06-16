@@ -18,10 +18,14 @@ class Hiscore:
         self.fontsize = int(self.height/15)
         self.message = pygame.font.Font(None, self.fontsize)        
         self.pos = (self.fontsize,self.fontsize)        
-        self.scoreboard = {
-                            "foo": 500,
-                            "bar": 450
-                            }
+        self.scoreboard = pickle.load( open("scoreboard.pickle", "rb"))
+        self.sorted_scores = list(self.scoreboard.values())
+        self.sorted_scores.sort()
+        ### this might reset scoreboard when uncommented...
+        ###self.scoreboard = {
+        ###                    "foo": 500,
+        ###                    "bar": 450
+        ###                    }
 
     def draw(self):
         i = 0
@@ -29,11 +33,13 @@ class Hiscore:
         text = "HIGHSCORES" 
         surf = self.message.render(text, False, self.color, None)
         self.screen.blit(surf, (self.pos[0], self.pos[1]+(i*self.fontsize)))
-        for key, value in self.scoreboard.items():
-            i += 1
-            text = str(key) + " : " + str(value)
-            surf = self.message.render(text, False, self.color, None)
-            self.screen.blit(surf, (self.pos[0], self.pos[1]+(i*self.fontsize)))
+        for sortedscore in self.sorted_scores:
+            for key, value in self.scoreboard.items():
+                if (value == sortedscore):
+                    i += 1
+                    text = str(key) + " : " + str(value)
+                    surf = self.message.render(text, False, self.color, None)
+                    self.screen.blit(surf, (self.pos[0], self.pos[1]+(i*self.fontsize)))
         pygame.display.update()
 
     def input(self, score):
@@ -71,4 +77,5 @@ class Hiscore:
                         name[x] = chr(character)
         userinput = str(name[0]+name[1]+name[2])
         self.scoreboard[userinput] = score
+        pickle.dump( self.scoreboard, open("scoreboard.pickle", "wb") )
 

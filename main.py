@@ -125,7 +125,7 @@ while running:
 
     if (maze.update_level()):
         # next level
-        score += 250
+        score += 251
         bars()
         fps = int(root.find("fps").text)
         fps += int(score/450)
@@ -166,7 +166,14 @@ while running:
     for e in EventList:
         if (sounds):
             if (e.type == music_stop):
-                maze.generate_maze(maze.screen)
+                #maze.generate_maze(maze.screen)
+                # current level must be finished before song ends
+                # player dead
+                bars()
+                pygame.display.update()
+                lives_left -= 1
+                start_again = True
+                scr.top_msg.set_message("Level " + str(level.xy) + " Lifes: " + str(lives_left) + " Score: ")
                 start_music()
             if (e.type == player_shot):
                 player_ch.play(player_pew)
