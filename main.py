@@ -10,7 +10,6 @@ from menu import Tab
 from menu import Choice
 from menu import Adjust
 from menu import Text2Image
-#from menu import Hiscore
 import userevents
 import xml.etree.ElementTree as ET
 import copy
@@ -90,8 +89,9 @@ music_stop = userevents.music_stop().type
 pygame.mixer.music.set_endevent(music_stop)
 
 stopped = True
-r = scr.screen.blit(pressakey, (100,100))
-pygame.display.update()
+#r = scr.screen.blit(pressakey, (100,100))
+hs = Hiscore(scr.screen)
+hs.draw()
 while stopped:
     EventList = pygame.event.get() 
     for e in EventList:
@@ -141,7 +141,8 @@ while running:
         pygame.event.clear()
         stopped = True
         scr = Screen(resolutionx, resolutiony)
-        r = scr.screen.blit(pressakey, (100,100))
+        hs.input(score)
+        hs.draw()
         pygame.display.update()
         while stopped:
             EventList = pygame.event.get() 
