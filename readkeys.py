@@ -64,15 +64,15 @@ class KeyReader:
             pygame.event.post(pygame.event.Event(pygame.QUIT))
         if (start):
             #keys = [(0,0), "menu"]
-            action = "menu"
+            action = "choose"
         elif (x_button):
             action = "bomb"
         elif (a_button):
             action = "blast"
         elif (b_button):
-            action = "fire"
-        elif (r_trig):
             action = "run"
+        elif (r_trig):
+            action = "fire"
         elif (y_button):
             action = "sarja"
         #else:

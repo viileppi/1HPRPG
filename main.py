@@ -43,7 +43,7 @@ start_again = False
 
 
 ## these settings are for 8bitdo sfc30
-reso = pygame.display.list_modes()[3]
+reso = pygame.display.list_modes()[4]
 #scr = Screen(resolutionx, resolutiony)
 scr = Screen(reso[0], reso[1])
 #screen = scr.screenhas_joystick = False
