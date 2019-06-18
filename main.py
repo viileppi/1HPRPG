@@ -95,7 +95,7 @@ hs.draw()
 while stopped:
     EventList = pygame.event.get() 
     for e in EventList:
-        if (e.type == KEYDOWN):
+        if (e.type == KEYDOWN) or (e.type == JOYAXISMOTION):
             stopped = False
 
 def start_music():
@@ -147,7 +147,7 @@ while running:
         while stopped:
             EventList = pygame.event.get() 
             for e in EventList:
-                if (e.type == KEYDOWN):
+                if (e.type == KEYDOWN) or (e.type == JOYAXISMOTION):
                     stopped = False
 
         running = True
@@ -216,7 +216,7 @@ while running:
     if (running):
         pygame.display.update()
         scr.update()
-        fps = min(60, fps + (clk.tick(fps)/667))
+        fps = min(120, fps + (clk.tick(fps)/1667))
         #clk.tick(fps)
 pygame.quit()
 pygame.display.quit()

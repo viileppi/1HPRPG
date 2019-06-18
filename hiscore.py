@@ -4,6 +4,8 @@ import readkeys as keyreader
 import pickle
 import pygame
 from pygame.locals import *
+from animator import Animator
+from os import path
 
 class Hiscore:
     ''' class to display and enter hiscores '''
@@ -25,6 +27,9 @@ class Hiscore:
         m = l - self.max_n
         self.sorted_scores = self.sorted_scores[m:l]
         self.sorted_scores.reverse()
+        self.file = path.join("images", "1HPRPG_INTRO_FULL.png")
+        self.image = pygame.image.load(self.file).convert_alpha()
+        self.move_animator = Animator(self.screen, self.image, self.image.get_rect())
         ### this might reset scoreboard when uncommented...
         ###self.scoreboard = {
         ###                    "foo": 500,
@@ -54,6 +59,7 @@ class Hiscore:
         pygame.display.update()
 
     def input(self, score):
+        start = pygame.time.get_ticks()
         x = 0
         y = 0
         i = 0
@@ -65,6 +71,9 @@ class Hiscore:
         running = True
         #inputarea = self.screen.subsurface(pygame.Rect(200, self.fontsize, self.fontsize*4, self.fontsize))
         while running:
+            self.move_animator.goto(-1,0)
+            if (pygame.time.get_ticks() > (start + 10000)):
+                running = False
             self.screen.fill(pygame.Color("black"))
             self.screen.blit(surf, (self.pos[0], self.pos[1]+(i*self.fontsize)))
             j = 0
@@ -76,7 +85,7 @@ class Hiscore:
             pygame.display.update()
             EventList = pygame.event.get()
             for e in EventList:
-                if (e.type == pygame.KEYDOWN):
+                if (e.type == pygame.KEYDOWN): 
                     keys = self.keyreader.readKeyDwn(pygame.key.get_pressed())
                     if (keys[1] == "fire"):
                         # choose

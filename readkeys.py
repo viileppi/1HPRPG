@@ -32,6 +32,7 @@ class KeyReader:
         self.joymap = {
                1: "fire",
                0: "blast",
+               3: "sarja",
                4: "run"
                }
         self.last_call = pygame.time.get_ticks()
@@ -48,24 +49,38 @@ class KeyReader:
         return r
 
     def readJoypad(self, joypad):
+        action = None
         keys = [(0,0), None]
         start = joypad.get_button(11)
         select = joypad.get_button(10)
-        #x_button = joypad.get_button(3)
-        #y_button = joypad.get_button(4)
-        #a_button = joypad.get_button(0)
-        #b_button = joypad.get_button(1)
+        x_button = joypad.get_button(3)
+        y_button = joypad.get_button(4)
+        a_button = joypad.get_button(0)
+        b_button = joypad.get_button(1)
+        l_trig = joypad.get_button(6)
+        r_trig = joypad.get_button(7)
 
         if (start * select == 1):
             pygame.event.post(pygame.event.Event(pygame.QUIT))
         if (start):
-            keys = [(0,0), "menu"]
-        else:
-            for bn in self.joymap.keys():
-                action = self.joymap[bn]
-            x_axis = joypad.get_axis(0)
-            y_axis = joypad.get_axis(1)
-            keys = [(x_axis, y_axis), action]
+            #keys = [(0,0), "menu"]
+            action = "menu"
+        elif (x_button):
+            action = "bomb"
+        elif (a_button):
+            action = "blast"
+        elif (b_button):
+            action = "fire"
+        elif (r_trig):
+            action = "run"
+        elif (y_button):
+            action = "sarja"
+        #else:
+        #    for bn in self.joymap.keys():
+        #        action = self.joymap[bn]
+        x_axis = joypad.get_axis(0)
+        y_axis = joypad.get_axis(1)
+        keys = [(x_axis, y_axis), action]
         return keys
 
     def readKeyDwn(self, k):

@@ -142,10 +142,10 @@ class Player(Object):
             ammo_dir = (self.rect.centerx - self.old_dir[0] * -100, self.rect.centery - self.old_dir[1] * -100)
         else:
             ammo_dir = (self.rect.centerx - self.dir[0] * -100, self.rect.centery - self.dir[1] * -100)
-            if (self.dir != self.old_ammo_dir) and (self.dir != (0,0)):
-                v1 = pygame.math.Vector2(self.dir)
-                v2 = pygame.math.Vector2(ammo_dir)
-                ammo_dir = (v1+v2)
+            #if (self.dir != self.old_ammo_dir) and (self.dir != (0,0)):
+            #    v1 = pygame.math.Vector2(self.dir)
+            #    v2 = pygame.math.Vector2(ammo_dir)
+            #    ammo_dir = (v1+v2)
         if (self.sarja_spawner.cast(ammo_dir)):
             pygame.event.post(userevents.player_shot_event())
         self.dir = (0,0)
