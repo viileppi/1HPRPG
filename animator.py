@@ -21,7 +21,7 @@ class Animator(pygame.sprite.Sprite):
         self.image_pos = pos
         self.target = (0,0)
         self.facing_right = True
-        self.step_multi = 1
+        self.step_multi = 2
         self.doblit = False
         self.frames = []
         self.frames_flip = []

@@ -19,7 +19,7 @@ class Enemy(objects.Object):
         """ image should be a spritesheet of square sprites """
         self.kindof = random.randint(0,1)
         if (self.kindof == 1):
-            image = path.join("images", "android.png")
+            image = path.join("images", "robot.png")
             self.death_image = path.join("images", "android.png")
         else:
             self.death_image = path.join("images", "robot_death.png")
@@ -84,7 +84,7 @@ class Enemy(objects.Object):
         corpse = Corpse(self)
         self.source.corpsegroup.add(corpse)
         if (random.randint(0, 5) > 3) and (self.kindof == 0):
-            e = Snake(self, path.join("images", "snake.png"), (self.rect[0],self.rect[1]), self.difficulty)
+            e = Snake(self, path.join("images", "boss.png"), (self.rect[0],self.rect[1]), self.difficulty)
             self.groups()[0].add(e)
         self.dir = (0,0)
         self.alive = False
@@ -188,9 +188,9 @@ class Snake(Enemy):
         # snake should paralyze and not kill the player! TODOTODOTODO
         # snakes could spawn randomly from dead enemies
         Enemy.__init__(self, source, image, coords, difficulty)
-        # self.speed = 2
+        self.speed *= 2
         # self.walk_dist = 200
-        self.death_image = path.join("images", "snake.png")
+        self.death_image = path.join("images", "boss.png")
         self.ray_shrink = (0,-12)
         self.cast = Cast(self)
         self.where = (1,1)
@@ -216,7 +216,8 @@ class Snake(Enemy):
         else:
             # TODO snake shouldn't die right after the spawn...
             print("snake not ready!")
-
+            e = Snake(self, path.join("images", "boss.png"), (self.rect[0],self.rect[1]), self.difficulty)
+            self.groups()[0].add(e)
     def seek(self):
         if (self.seen_player):
             self.seen_player = False

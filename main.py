@@ -43,7 +43,7 @@ start_again = False
 
 
 ## these settings are for 8bitdo sfc30
-reso = pygame.display.list_modes()[1]
+reso = pygame.display.list_modes()[3]
 #scr = Screen(resolutionx, resolutiony)
 scr = Screen(reso[0], reso[1])
 #screen = scr.screenhas_joystick = False
@@ -218,7 +218,13 @@ while running:
     if (running):
         pygame.display.update()
         scr.update()
-        fps = min(120, fps + (clk.tick(fps)/1667))
+        #fps = min(90, fps + (clk.tick(fps)/1667))
+        clk.tick(fps)
+        secs = int(pygame.time.get_ticks()/100)
+        if ((secs%10) == 0) and (fps<69):
+            fps = min(70, fps + 1)
+            #print("secs: " + str(secs) + "|fps: " + str(fps))
+
         #clk.tick(fps)
 pygame.quit()
 pygame.display.quit()
