@@ -25,15 +25,15 @@
     <fullscreen>False</fullscreen>
   </vision>
   <enemy>
-    <speed>1</speed>
+    <speed>2</speed>
     <walk_dist>150</walk_dist>
-    <ammo_speed>2</ammo_speed>
+    <ammo_speed>3</ammo_speed>
     <boot_time>2000</boot_time>
     <cooldown>1750</cooldown>
   </enemy>
   <player>
-    <speed>2</speed>
-    <ammo_speed>5</ammo_speed>
+    <speed>6</speed>
+    <ammo_speed>8</ammo_speed>
     <cooldown>250</cooldown>
     <blast_cool>2000</blast_cool>
     <blast_radius>64</blast_radius>

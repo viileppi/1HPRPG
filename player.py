@@ -35,7 +35,7 @@ class Player(Object):
         root = tree.getroot().find("player")
         fps = int(tree.getroot().find("main").find("fps").text)
         self.speed = int(root.find("speed").text)
-        self.double_speed = self.speed * 2
+        self.double_speed = self.speed * 3
         self.half_speed = self.speed
         self.velocity = 0.4
         self.ammo_speed = float(root.find("ammo_speed").text) * self.speed
