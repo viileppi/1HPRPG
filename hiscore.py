@@ -34,7 +34,12 @@ class Hiscore:
         self.image_crop = self.screen.get_rect()
         self.scroll_index = 0
         self.scroll_step = 3
-        ### this might reset scoreboard when uncommented...
+        pygame.joystick.init()
+        if (pygame.joystick.get_count() > 0):
+            self.joypad = pygame.joystick.Joystick(0)
+            self.joypad.init()
+            self.has_joystick = True
+### this might reset scoreboard when uncommented...
         ###self.scoreboard = {
         ###                    "foo": 500,
         ###                    "bar": 450
@@ -102,6 +107,16 @@ class Hiscore:
             pygame.display.update()
             EventList = pygame.event.get()
             for e in EventList:
+                if (e.type == pygame.JOYAXISMOTION) or (e.type == JOYBUTTONDOWN): 
+                    keys = myKeyReader.readJoypad(joypad) 
+                    if (keys[1] == "choose"):
+                        # choose
+                        running = False
+                    else:
+                        y = keys[0][1]
+                        x = (x + keys[0][0])%len(name)
+                        character += y
+                        name[x] = chr(character)
                 if (e.type == pygame.KEYDOWN): 
                     keys = self.keyreader.readKeyDwn(pygame.key.get_pressed())
                     if (keys[1] == "fire"):

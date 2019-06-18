@@ -89,26 +89,34 @@ player_blast = userevents.player_blast().type
 music_stop = userevents.music_stop().type
 pygame.mixer.music.set_endevent(music_stop)
 
-stopped = True
-#r = scr.screen.blit(pressakey, (100,100))
-hs = Hiscore(scr.screen)
-hs.draw()
-pygame.time.wait(1000)
-while stopped and hs.intro():
-    EventList = pygame.event.get() 
-    for e in EventList:
-        if (e.type == KEYDOWN) or (e.type == JOYAXISMOTION):
-            stopped = False
 
 def start_music():
+    pygame.mixer.music.load(path.join("sounds", "song.xm"))
     if (sounds):
         pygame.mixer.music.play()
+
+def start_sung():
+    pygame.mixer.music.load(path.join("sounds", "sing.xm"))
+    if (sounds):
+        pygame.mixer.music.play(-1)
 
 def bars():
     start_music()
     while(scr.load_animation()):
         pygame.display.update()
         clk.tick(30)
+
+stopped = True
+#r = scr.screen.blit(pressakey, (100,100))
+hs = Hiscore(scr.screen)
+hs.draw()
+pygame.time.wait(1000)
+start_sung()
+while stopped and hs.intro():
+    EventList = pygame.event.get() 
+    for e in EventList:
+        if (e.type == KEYDOWN) or (e.type == JOYAXISMOTION):
+            stopped = False
 bars()
 
 while running:
@@ -146,6 +154,7 @@ while running:
         hs.input(score)
         hs.draw()
         pygame.display.update()
+        start_sung()
         while stopped:
             EventList = pygame.event.get() 
             for e in EventList:
