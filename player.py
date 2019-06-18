@@ -35,8 +35,8 @@ class Player(Object):
         root = tree.getroot().find("player")
         fps = int(tree.getroot().find("main").find("fps").text)
         self.speed = int(root.find("speed").text)
-        self.double_speed = self.speed * 3
-        self.half_speed = self.speed
+        self.double_speed = self.speed * 2
+        self.half_speed = int(self.speed)
         self.velocity = 0.4
         self.ammo_speed = float(root.find("ammo_speed").text) * self.speed
         self.cooldown = int(root.find("cooldown").text)
@@ -64,7 +64,7 @@ class Player(Object):
         self.sarja_spawner = Spawner(self, deltaAmmo, self.cooldown/2, self.ammo_speed/2, self.ammo_image, 8, self.ammogroup)
         self.blast_spawner = Spawner(self, Blast, self.blast_cool, 1, self.ammo_image, 1, self.blastgroup)
         self.bomb_spawner = Spawner(self, Bomb, self.blast_cool, 250, self.ammo_image, 1, self.bombgroup)
-        self.run_spawner = Spawner(self, Run, 1000, 1000, None, 1, None)
+        self.run_spawner = Spawner(self, Run, self.run_cool, self.run_time, None, 1, None)
 
     def turnaround(self, p):
         pass

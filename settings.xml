@@ -37,7 +37,7 @@
     <cooldown>250</cooldown>
     <blast_cool>2000</blast_cool>
     <blast_radius>64</blast_radius>
-    <run_cool>2500</run_cool>
-    <run_time>750</run_time>
+    <run_cool>100</run_cool>
+    <run_time>500</run_time>
   </player>
 </data>

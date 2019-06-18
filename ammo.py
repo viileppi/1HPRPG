@@ -49,7 +49,6 @@ class Spawner:
         r = False
         if (self.ammogroup == None):
             if (((pygame.time.get_ticks() - self.shoot_start) > self.cooldown)):
-                self.shoot_start = pygame.time.get_ticks()
                 pew = self.spawnable(self, self.ammo_image, None, None, self.ammo_speed)
                 self.shot_list.append(pew)
                 self.shoot_start = pygame.time.get_ticks()
