@@ -92,7 +92,8 @@ stopped = True
 #r = scr.screen.blit(pressakey, (100,100))
 hs = Hiscore(scr.screen)
 hs.draw()
-while stopped:
+pygame.time.wait(1000)
+while stopped and hs.intro():
     EventList = pygame.event.get() 
     for e in EventList:
         if (e.type == KEYDOWN) or (e.type == JOYAXISMOTION):
