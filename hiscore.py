@@ -33,7 +33,7 @@ class Hiscore:
         self.image_width = self.image.get_width()
         self.image_crop = self.screen.get_rect()
         self.scroll_index = 0
-        self.scroll_step = 3
+        self.scroll_step = 160
         pygame.joystick.init()
         if (pygame.joystick.get_count() > 0):
             self.joypad = pygame.joystick.Joystick(0)

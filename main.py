@@ -92,13 +92,11 @@ pygame.mixer.music.set_endevent(music_stop)
 
 def start_music():
     pygame.mixer.music.load(path.join("sounds", "song.xm"))
-    if (sounds):
-        pygame.mixer.music.play()
+    pygame.mixer.music.play()
 
 def start_sung():
     pygame.mixer.music.load(path.join("sounds", "sing.xm"))
-    if (sounds):
-        pygame.mixer.music.play(-1)
+    pygame.mixer.music.play()
 
 def bars():
     start_music()
@@ -106,19 +104,25 @@ def bars():
         pygame.display.update()
         clk.tick(30)
 
-stopped = True
-#r = scr.screen.blit(pressakey, (100,100))
 hs = Hiscore(scr.screen)
-hs.draw()
-pygame.time.wait(1000)
-start_sung()
-while stopped and hs.intro():
-    EventList = pygame.event.get() 
-    for e in EventList:
-        if (e.type == KEYDOWN) or (e.type == JOYAXISMOTION):
-            stopped = False
-bars()
-
+#r = scr.screen.blit(pressakey, (100,100))
+def introduction():
+    start_sung()
+    stopped = True
+    intro_repeats = 120
+    while stopped and (intro_repeats > 0):
+        intro_repeats -= 1
+        hs.intro()
+        pygame.display.update()
+        EventList = pygame.event.get() 
+        for e in EventList:
+            if (e.type == music_stop):
+                pygame.mixer.music.play()
+            elif (e.type == KEYDOWN) or (e.type == JOYAXISMOTION):
+                stopped = False
+        clk.tick(24)
+    bars()
+introduction()
 while running:
     # uncomment to see coordinates
     # pygame.display.set_caption(str(enemy.rect) + str(player.rect))
@@ -154,13 +158,7 @@ while running:
         hs.input(score)
         hs.draw()
         pygame.display.update()
-        start_sung()
-        while stopped:
-            EventList = pygame.event.get() 
-            for e in EventList:
-                if (e.type == KEYDOWN) or (e.type == JOYAXISMOTION):
-                    stopped = False
-
+        introduction()
         running = True
         score = 0
         # set some variables
