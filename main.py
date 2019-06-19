@@ -43,9 +43,9 @@ start_again = False
 
 
 ## these settings are for 8bitdo sfc30
-reso = pygame.display.list_modes()[4]
+reso = pygame.display.list_modes()
 #scr = Screen(resolutionx, resolutiony)
-scr = Screen(reso[0], reso[1])
+scr = Screen(resolutionx, resolutiony)
 #screen = scr.screenhas_joystick = False
 pygame.joystick.init()
 if (pygame.joystick.get_count() > 0):
@@ -109,10 +109,9 @@ hs = Hiscore(scr.screen)
 def introduction():
     start_sung()
     stopped = True
-    intro_repeats = 120
-    while stopped and (intro_repeats > 0):
-        intro_repeats -= 1
-        hs.intro()
+    while stopped:
+        pygame.time.wait(1500)
+        hs.intro(800)
         pygame.display.update()
         EventList = pygame.event.get() 
         for e in EventList:
@@ -120,7 +119,6 @@ def introduction():
                 pygame.mixer.music.play()
             elif (e.type == KEYDOWN) or (e.type == JOYAXISMOTION):
                 stopped = False
-        clk.tick(24)
     bars()
 introduction()
 while running:
@@ -151,18 +149,15 @@ while running:
 
     if (lives_left < 0):
         # init stuff
-        pygame.time.wait(500)
         pygame.event.clear()
         stopped = True
         scr = Screen(resolutionx, resolutiony)
-        hs.input(score)
-        hs.draw()
+        #hs.input(score)
+        #hs.draw()
         pygame.display.update()
-        introduction()
         running = True
         score = 0
         # set some variables
-        pygame.init()
         lives_left = 3
         start_again = True
         maze = level.next(score)
@@ -225,14 +220,13 @@ while running:
     if (running):
         pygame.display.update()
         scr.update()
-        #fps = min(90, fps + (clk.tick(fps)/1667))
         clk.tick(fps)
-        secs = int(pygame.time.get_ticks()/100)
-        if ((secs%10) == 0) and (fps<69):
-            fps = min(70, fps + 1)
-            #print("secs: " + str(secs) + "|fps: " + str(fps))
+        #fps = min(90, fps + (clk.tick(fps)/1667))
+        #secs = int(pygame.time.get_ticks()/100)
+        #if ((secs%10) == 0) and (fps<69):
+        #    fps = min(70, fps + 1)
+        #    #print("secs: " + str(secs) + "|fps: " + str(fps))
 
-        #clk.tick(fps)
 pygame.quit()
 pygame.display.quit()
  

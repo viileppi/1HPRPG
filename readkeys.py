@@ -23,11 +23,11 @@ class KeyReader:
                }
         self.keya = {
                pygame.K_RETURN: "choose", 
-               self.kd["fire"]: "fire", 
+               self.kd["fire"]: "sarja", 
                self.kd["blast"]: "blast",
                self.kd["bomb"]: "bomb",
                self.kd["run"]: "run",
-               self.kd["sarja"]: "sarja"
+               #self.kd["sarja"]: "sarja"
                }
         self.joymap = {
                1: "fire",

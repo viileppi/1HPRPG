@@ -8,7 +8,7 @@
     <mixer_bitdepth>8</mixer_bitdepth>
     <mixer_channels>2</mixer_channels>
     <mixer_buffer>128</mixer_buffer>
-    <fps>24</fps>
+    <fps>30</fps>
     <key_rate>60</key_rate>
     <lives_left>3</lives_left>
   </main>
@@ -22,12 +22,12 @@
   <vision>
     <top_h>48</top_h>
     <bottom_h>32</bottom_h>
-    <fullscreen>False</fullscreen>
+    <fullscreen>True</fullscreen>
   </vision>
   <enemy>
-    <speed>4</speed>
+    <speed>1</speed>
     <walk_dist>150</walk_dist>
-    <ammo_speed>4</ammo_speed>
+    <ammo_speed>3</ammo_speed>
     <boot_time>2000</boot_time>
     <cooldown>1750</cooldown>
   </enemy>
