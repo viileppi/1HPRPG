@@ -106,17 +106,17 @@ def bars():
 
 hs = Hiscore(scr.screen)
 #r = scr.screen.blit(pressakey, (100,100))
+hs.intro(800)
 def introduction():
     start_sung()
     stopped = True
     while stopped:
-        pygame.time.wait(1500)
-        hs.intro(800)
-        pygame.display.update()
         EventList = pygame.event.get() 
         for e in EventList:
             if (e.type == music_stop):
                 pygame.mixer.music.play()
+                hs.intro(800)
+                pygame.display.update()
             elif (e.type == KEYDOWN) or (e.type == JOYAXISMOTION):
                 stopped = False
     bars()

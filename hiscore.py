@@ -31,7 +31,8 @@ class Hiscore:
         self.umage = pygame.image.load(self.file).convert_alpha()
         self.image = self.umage.copy()
         self.image_width = self.image.get_width()
-        self.image_crop = self.screen.get_rect()
+        #self.image_crop = self.screen.get_rect()
+        self.image_crop = pygame.Rect(0,0,800,600)
         self.scroll_index = 0
         self.scroll_step = 800
         pygame.joystick.init()
