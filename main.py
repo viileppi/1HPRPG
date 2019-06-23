@@ -105,6 +105,7 @@ def bars():
         clk.tick(30)
 
 hs = Hiscore(scr.screen)
+hs.draw()
 #r = scr.screen.blit(pressakey, (100,100))
 hs.intro(800)
 def introduction():
@@ -140,8 +141,7 @@ while running:
         score += 247
         bars()
         fps = int(root.find("fps").text)
-        fps += int(score/450)
-        print(fps)
+        #fps += int(score/450)
         maze = level.next(score)
         maze.render_map(scr.bg)
         pygame.display.flip()

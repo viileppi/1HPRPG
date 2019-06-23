@@ -61,7 +61,7 @@ class Player(Object):
         self.ray_shrink = (-24,-6)
         self.cast = Cast(self)
         self.ammo_spawner = Spawner(self, deltaAmmo, self.cooldown, self.ammo_speed, self.ammo_image, 1, self.ammogroup)
-        self.sarja_spawner = Spawner(self, deltaAmmo, self.cooldown/2, self.ammo_speed/2, self.ammo_image, 8, self.ammogroup)
+        self.sarja_spawner = Spawner(self, deltaAmmo, self.cooldown, self.ammo_speed, self.ammo_image, 6, self.ammogroup)
         self.blast_spawner = Spawner(self, Blast, self.blast_cool, 1, self.ammo_image, 1, self.blastgroup)
         self.bomb_spawner = Spawner(self, Bomb, self.blast_cool, 250, self.ammo_image, 1, self.bombgroup)
         self.run_spawner = Spawner(self, Run, self.run_cool, self.run_time, None, 1, None)

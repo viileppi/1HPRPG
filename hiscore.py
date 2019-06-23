@@ -21,12 +21,17 @@ class Hiscore:
         self.message = pygame.font.Font(None, self.fontsize)        
         self.pos = (self.fontsize,self.fontsize)        
         self.scoreboard = pickle.load( open("scoreboard.pickle", "rb"))
+        print(self.scoreboard)
         self.sorted_scores = list(self.scoreboard.values())
         self.sorted_scores.sort()
-        l = len(self.sorted_scores)
-        m = l - self.max_n
-        self.sorted_scores = self.sorted_scores[m:l]
+        self.sorted_scores = self.sorted_scores[:10]
         self.sorted_scores.reverse()
+        final_board = {}
+        for sortedscore in self.sorted_scores:
+            for key, value in self.scoreboard.items():
+                if (value == sortedscore):
+                    final_board[key] = value
+        pickle.dump( final_board, open("scoreboard.pickle", "wb") )
         self.file = path.join("images", "1HPRPG_INTRO_FULL.png")
         self.umage = pygame.image.load(self.file).convert_alpha()
         self.image = self.umage.copy()
@@ -49,11 +54,6 @@ class Hiscore:
     def draw(self):
         self.scoreboard = pickle.load( open("scoreboard.pickle", "rb"))
         self.sorted_scores = list(self.scoreboard.values())
-        self.sorted_scores.sort()
-        l = len(self.sorted_scores)
-        m = l - 10
-        self.sorted_scores = self.sorted_scores[m:l]
-        self.sorted_scores.reverse()
         i = 0
         self.screen.fill(pygame.Color("black"))
         text = "HIGHSCORES" 

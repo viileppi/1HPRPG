@@ -20,9 +20,7 @@ class Enemy(objects.Object):
         self.kindof = random.randint(0,1)
         if (self.kindof == 1):
             image = path.join("images", "robot.png")
-            self.death_image = path.join("images", "android.png")
-        else:
-            self.death_image = path.join("images", "robot_death.png")
+        self.death_image = path.join("images", "robot_death.png")
         objects.Object.__init__(self, source, image, coords)
         self.difficulty = min(12, max(2, difficulty))
         tree = ET.parse("settings.xml")
@@ -78,12 +76,13 @@ class Enemy(objects.Object):
         self.shot_no = random.randint(1,4)
         self.ammo_spawner = Spawner(self, deltaAmmo, self.cooldown, self.ammo_speed, self.ammo_image, self.shot_no, self.ammogroup)
         self.move_animator.step = 0.5
+        self.move_animator.step_multi = 3
         self.speed_up = 50
 
     def destroy(self):
         corpse = Corpse(self)
         self.source.corpsegroup.add(corpse)
-        if (random.randint(0, 5) > 3) and (self.kindof == 0):
+        if (random.randint(0, 5) > 4) and (self.kindof == 0):
             e = Snake(self, path.join("images", "boss.png"), (self.rect[0],self.rect[1]), self.difficulty)
             self.groups()[0].add(e)
         self.dir = (0,0)
