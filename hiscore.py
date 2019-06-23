@@ -81,23 +81,21 @@ class Hiscore:
         else:
             return True
 
-
-
     def input(self, score):
         start = pygame.time.get_ticks()
         x = 0
         y = 0
         i = 0
-        character = 65
+        #character = 65
+        character = 0
         name = ["A", "A", "A"]
         self.screen.fill(pygame.Color("black"))
         text = "Game over! Input your name for scoreboard" 
         surf = self.message.render(text, False, self.color, self.active)
         running = True
         #inputarea = self.screen.subsurface(pygame.Rect(200, self.fontsize, self.fontsize*4, self.fontsize))
+        mod = 0
         while running:
-            if (pygame.time.get_ticks() > (start + 10000)):
-                running = False
             self.screen.fill(pygame.Color("black"))
             self.screen.blit(surf, (self.pos[0], self.pos[1]+(i*self.fontsize)))
             j = 0
@@ -111,24 +109,30 @@ class Hiscore:
             for e in EventList:
                 if (e.type == pygame.JOYAXISMOTION) or (e.type == JOYBUTTONDOWN): 
                     keys = myKeyReader.readJoypad(joypad) 
-                    if (keys[1] == "choose"):
-                        # choose
-                        running = False
-                    else:
-                        y = keys[0][1]
-                        x = (x + keys[0][0])%len(name)
-                        character += y
-                        name[x] = chr(character)
+                    #if (y >= 3):
+                    #    running = False
+                    #if (keys[1] == "fire"):
+                    #    #running = False
+                    #    y += 1
+                    #else:
+                    #    y = keys[0][1]
+                    #    x = (x + keys[0][0])%len(name)
+                    #    character = (character + y) % 26
+                    #    name[x] = chr(character + 65)
                 if (e.type == pygame.KEYDOWN): 
                     keys = self.keyreader.readKeyDwn(pygame.key.get_pressed())
-                    if (keys[1] == "fire"):
-                        # choose
+                    if (keys[1] == "bomb"):
                         running = False
+                    if (keys[1] == "sarja") or (keys[1] == "fire") or (keys[1] == "choose"):
+                        mod = 1
                     else:
                         y = keys[0][1]
-                        x = (x + keys[0][0])%len(name)
-                        character += y
-                        name[x] = chr(character)
+                        x = (x + mod) % 3
+                        character = (character + y) % 26
+                        name[x] = chr(character + 65)
+                        mod = 0
+                    if (x >= 3):
+                        running = False
         userinput = str(name[0]+name[1]+name[2])
         self.scoreboard[userinput] = score
         pickle.dump( self.scoreboard, open("scoreboard.pickle", "wb") )
