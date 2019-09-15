@@ -40,7 +40,7 @@ class Item(pygame.sprite.Sprite):
 
     def levelUp(self, target):
         if self.kindof == 0:
-            target.speed += 2
+            target.speed *= 2
             self.items["speed"] = target.speed
         if self.kindof == 1:
             # we don't want too large blast but we want more blasts

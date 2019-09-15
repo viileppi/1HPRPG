@@ -20,8 +20,8 @@ class Screen:
         self.bottom_h = int(root.find("bottom_h").text)
         self.middle_h = self.height - self.top_h - self.bottom_h
         if (root.find("fullscreen").text == "True"):
-            self.screen = pygame.display.set_mode((self.width, self.height), pygame.FULLSCREEN)
-            #self.screen = pygame.display.set_mode((self.width, self.height), pygame.HWSURFACE)
+            #self.screen = pygame.display.set_mode((self.width, self.height), pygame.FULLSCREEN)
+            self.screen = pygame.display.set_mode((self.width, self.height), pygame.HWSURFACE)
         else:
             self.screen = pygame.display.set_mode((self.width, self.height), pygame.RESIZABLE)
         self.screen.set_colorkey(SRCALPHA)

@@ -9,7 +9,7 @@
     <mixer_channels>2</mixer_channels>
     <mixer_buffer>128</mixer_buffer>
     <fps>48</fps>
-    <key_rate>30</key_rate>
+    <key_rate>24</key_rate>
     <lives_left>3</lives_left>
   </main>
   <levelmanager>
@@ -27,17 +27,17 @@
   <enemy>
     <speed>1</speed>
     <walk_dist>150</walk_dist>
-    <ammo_speed>2</ammo_speed>
+    <ammo_speed>3</ammo_speed>
     <boot_time>2000</boot_time>
     <cooldown>1750</cooldown>
   </enemy>
   <player>
-    <speed>3</speed>
+    <speed>2</speed>
     <ammo_speed>3</ammo_speed>
     <cooldown>250</cooldown>
     <blast_cool>2000</blast_cool>
     <blast_radius>64</blast_radius>
-    <run_cool>100</run_cool>
+    <run_cool>200</run_cool>
     <run_time>500</run_time>
   </player>
 </data>

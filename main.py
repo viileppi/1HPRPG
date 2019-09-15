@@ -145,7 +145,7 @@ while running:
         maze = level.next(score)
         maze.render_map(scr.bg)
         pygame.display.flip()
-        scr.top_msg.set_message("Level " + str(level.xy) + " Lifes: " + str(lives_left) + " Score: " + str(score))
+        scr.top_msg.set_message("Level " + str(level.xy) + " Lifes: " + str(lives_left) + " Score: " + str(score) + " FPS: " + str(fps))
 
     if (lives_left < 0):
         # init stuff

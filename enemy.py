@@ -22,7 +22,7 @@ class Enemy(objects.Object):
             image = path.join("images", "robot.png")
         self.death_image = path.join("images", "robot_death.png")
         objects.Object.__init__(self, source, image, coords)
-        self.difficulty = min(12, max(2, difficulty))
+        self.difficulty = min(8, max(1, (difficulty*0.67)))
         tree = ET.parse("settings.xml")
         root = tree.getroot().find("enemy")
         fps = int(tree.getroot().find("main").find("fps").text)
